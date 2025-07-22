@@ -195,7 +195,7 @@ const About = () => {
                 className="d-flex align-items-center bg-light mb-4"
                 style={{ padding: "30px" }}
               >
-                <h1 className="fa fa-check text-primary m-0 mr-3"></h1>
+                <h1 className="fa fa-check text-primary m-0 mr-3">Quality Product</h1>
                 <h5 className="font-weight-semi-bold m-0">Quality Product</h5>
               </div>
             </div>
@@ -204,7 +204,7 @@ const About = () => {
                 className="d-flex align-items-center bg-light mb-4"
                 style={{ padding: "30px" }}
               >
-                <h1 className="fa fa-shipping-fast text-primary m-0 mr-2"></h1>
+                <h1 className="fa fa-shipping-fast text-primary m-0 mr-2">Free Shipping</h1>
                 <h5 className="font-weight-semi-bold m-0">Free Shipping</h5>
               </div>
             </div>
@@ -213,7 +213,7 @@ const About = () => {
                 className="d-flex align-items-center bg-light mb-4"
                 style={{ padding: "30px" }}
               >
-                <h1 className="fas fa-exchange-alt text-primary m-0 mr-3"></h1>
+                <h1 className="fas fa-exchange-alt text-primary m-0 mr-3">14-Day Return</h1>
                 <h5 className="font-weight-semi-bold m-0">14-Day Return</h5>
               </div>
             </div>
@@ -222,7 +222,7 @@ const About = () => {
                 className="d-flex align-items-center bg-light mb-4"
                 style={{ padding: "30px" }}
               >
-                <h1 className="fa fa-phone-volume text-primary m-0 mr-3"></h1>
+                <h1 className="fa fa-phone-volume text-primary m-0 mr-3">24/7 Support</h1>
                 <h5 className="font-weight-semi-bold m-0">24/7 Support</h5>
               </div>
             </div>
