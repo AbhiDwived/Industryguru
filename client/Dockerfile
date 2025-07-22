@@ -1,3 +1,4 @@
+ENV CI=false
 FROM node:20-alpine as builder
 
 # Set working directory
