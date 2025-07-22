@@ -1,0 +1,7 @@
+{
+  "MERCHANT_ID": "SG178",
+  "PRIVATE_KEY_PATH": "justpay/privateKey.pem",
+  "PUBLIC_KEY_PATH": "justpay/key_ba5774ccc17b495a92bfe6d2e8dbc5ff.pem",
+  "KEY_UUID": "key_ba5774ccc17b495a92bfe6d2e8dbc5ff",
+  "PAYMENT_PAGE_CLIENT_ID": "hdfcmaster"
+}
