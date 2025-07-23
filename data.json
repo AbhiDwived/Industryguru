@@ -1,0 +1,322 @@
+[
+  {
+  "_id": {
+    "$oid": "68808bf4602e452ea2d6b42c"
+  },
+  "name": "PG GLANDS & METRIC GLANDS WITH LOCK NUT",
+  "maincategory": {
+    "$oid": "686a27cadeb6717a29c2cd71"
+  },
+  "subcategory": {
+    "$oid": "686a2847deb6717a29c2cd78"
+  },
+  "brand": {
+    "$oid": "686a2857deb6717a29c2cd7f"
+  },
+  "slug": {
+    "$oid": "68806855602e452ea2d699ae"
+  },
+  "subSlug": {
+    "$oid": "688086e3602e452ea2d6af74"
+  },
+  "color": "Multiple",
+  "size": "Multiple",
+  "baseprice": 5526,
+  "discount": 0,
+  "finalprice": 5526,
+  "stock": 505047475050505000,
+  "specification": [
+    {
+      "key": "Variants",
+      "value": 9
+    }
+  ],
+  "description": "A Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
+  "pic2": "",
+  "pic3": "",
+  "pic4": "",
+  "variants": [
+    {
+      "innerSlug": "PG",
+      "innerSubSlug": "PG-07",
+      "color": "Black",
+      "size": "PG07",
+      "baseprice": 4500,
+      "discount": 5,
+      "finalprice": 4275,
+      "stock": 50,
+      "description": "A PG-07 Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
+      "specification": [
+        {
+          "key": "RATE/PCS",
+          "value": "105",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b42e"
+          }
+        },
+        {
+          "key": "PCS/PKT",
+          "value": "100",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b42f"
+          }
+        }
+      ],
+      "_id": {
+        "$oid": "68808bf4602e452ea2d6b42d"
+      }
+    },
+    {
+      "innerSlug": "PG",
+      "innerSubSlug": "PG-09",
+      "color": "BLACK",
+      "size": "PG-09",
+      "baseprice": 5000,
+      "discount": 5,
+      "finalprice": 4750,
+      "stock": 50,
+      "description": "A PG-09 Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
+      "specification": [
+        {
+          "key": "RATE/PCS",
+          "value": "115",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b431"
+          }
+        },
+        {
+          "key": "PCS/PKT",
+          "value": "100",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b432"
+          }
+        }
+      ],
+      "_id": {
+        "$oid": "68808bf4602e452ea2d6b430"
+      }
+    },
+    {
+      "innerSlug": "PG",
+      "innerSubSlug": "PG-11",
+      "color": "BLACK",
+      "size": "PG-11",
+      "baseprice": 6000,
+      "discount": 5,
+      "finalprice": 5700,
+      "stock": 47,
+      "description": "A PG-011 Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
+      "specification": [
+        {
+          "key": "RATE/PCS",
+          "value": "195",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b434"
+          }
+        },
+        {
+          "key": "PCS/PKT",
+          "value": "100",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b435"
+          }
+        }
+      ],
+      "_id": {
+        "$oid": "68808bf4602e452ea2d6b433"
+      }
+    },
+    {
+      "innerSlug": "PG",
+      "innerSubSlug": "PG-13.5",
+      "color": "BLACK",
+      "size": "PG-11",
+      "baseprice": 7000,
+      "discount": 5,
+      "finalprice": 6650,
+      "stock": 47,
+      "description": "A PG-11  Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
+      "specification": [
+        {
+          "key": "RATE/PCS",
+          "value": "185",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b437"
+          }
+        },
+        {
+          "key": "PCS/PKT",
+          "value": "100",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b438"
+          }
+        }
+      ],
+      "_id": {
+        "$oid": "68808bf4602e452ea2d6b436"
+      }
+    },
+    {
+      "innerSlug": "PG",
+      "innerSubSlug": "PG-16",
+      "color": "BLACK",
+      "size": "PG-16",
+      "baseprice": 8500,
+      "discount": 5,
+      "finalprice": 8075,
+      "stock": 50,
+      "description": "A PG-16  Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
+      "specification": [
+        {
+          "key": "RATE/PCS",
+          "value": "175",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b43a"
+          }
+        },
+        {
+          "key": "PCS/PKT",
+          "value": "100",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b43b"
+          }
+        }
+      ],
+      "_id": {
+        "$oid": "68808bf4602e452ea2d6b439"
+      }
+    },
+    {
+      "innerSlug": "PG",
+      "innerSubSlug": "PG-21",
+      "color": "BLACK",
+      "size": "PG-21",
+      "baseprice": 11000,
+      "discount": 5,
+      "finalprice": 10450,
+      "stock": 50,
+      "description": "A PG-21  Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
+      "specification": [
+        {
+          "key": "RATE/PCS",
+          "value": "165",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b43d"
+          }
+        },
+        {
+          "key": "PCS/PKT",
+          "value": "100",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b43e"
+          }
+        }
+      ],
+      "_id": {
+        "$oid": "68808bf4602e452ea2d6b43c"
+      }
+    },
+    {
+      "innerSlug": "PG",
+      "innerSubSlug": "PG-29",
+      "color": "BLACK",
+      "size": "PG-29",
+      "baseprice": 6750,
+      "discount": 5,
+      "finalprice": 6413,
+      "stock": 50,
+      "description": "A PG-29  Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
+      "specification": [
+        {
+          "key": "RATE/PCS",
+          "value": "145",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b440"
+          }
+        },
+        {
+          "key": "PCS/PKT",
+          "value": "50",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b441"
+          }
+        }
+      ],
+      "_id": {
+        "$oid": "68808bf4602e452ea2d6b43f"
+      }
+    },
+    {
+      "innerSlug": "PG",
+      "innerSubSlug": "PG-36",
+      "color": "BLACK",
+      "size": "PG-36",
+      "baseprice": 1650,
+      "discount": 5,
+      "finalprice": 1568,
+      "stock": 50,
+      "description": "A PG-36  Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
+      "specification": [
+        {
+          "key": "RATE/PCS",
+          "value": "135",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b443"
+          }
+        },
+        {
+          "key": "PCS/PKT",
+          "value": "10",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b444"
+          }
+        }
+      ],
+      "_id": {
+        "$oid": "68808bf4602e452ea2d6b442"
+      }
+    },
+    {
+      "innerSlug": "PG",
+      "innerSubSlug": "PG-48",
+      "color": "BLACK",
+      "size": "PG-48",
+      "baseprice": 1950,
+      "discount": 5,
+      "finalprice": 1853,
+      "stock": 50,
+      "description": "A PG-48  Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
+      "specification": [
+        {
+          "key": "RATE/PCS",
+          "value": "125",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b446"
+          }
+        },
+        {
+          "key": "PCS/PKT",
+          "value": "10",
+          "_id": {
+            "$oid": "68808bf4602e452ea2d6b447"
+          }
+        }
+      ],
+      "_id": {
+        "$oid": "68808bf4602e452ea2d6b445"
+      }
+    }
+  ],
+  "addedBy": {
+    "$oid": "687927880fc8e2587dd1c04c"
+  },
+  "pic1": "1753254900681Pipe Gland.jpg",
+  "createdAt": {
+    "$date": "2025-07-23T07:15:00.694Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T07:15:00.694Z"
+  },
+  "__v": 0
+}
+]

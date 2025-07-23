@@ -11,7 +11,7 @@ import { getBrand, getBrandBySubCategoryId } from "../../Store/ActionCreators/Br
 import { getAdminSlug } from "../../Store/ActionCreators/AdminSlugActionCreators"
 import { getAdminSubSlugByParent, getAdminSubSlug } from "../../Store/ActionCreators/AdminSlugActionCreators"
 
-const initialVariant = { 
+const getInitialVariant = () => ({ 
   color: '', 
   size: '', 
   innerSlug: '',
@@ -20,9 +20,9 @@ const initialVariant = {
   finalprice: 0, 
   baseprice: 0, 
   discount: 0, 
-  description: 'This is a sample variant description',
+  variantDescription: '',
   specification: [{ key: '', value: '' }] 
-}
+})
 
 export default function AddProduct() {
   const [form, setForm] = useState({
@@ -39,7 +39,7 @@ export default function AddProduct() {
     pic4: '',
   })
   const [variantList, setVariantList] = useState([])
-  const [variant, setVariant] = useState({ ...initialVariant })
+  const [variant, setVariant] = useState(getInitialVariant())
 
   // State for inner slugs and sub slugs
   const [innerSlugs, setInnerSlugs] = useState([])
@@ -98,9 +98,7 @@ export default function AddProduct() {
     if (!variant.baseprice || !variant.stock) {
       return alert('Please enter both Base Price and Stock')
     }
-    if (!variant.description.trim()) {
-      return alert('Please enter a description for this variant')
-    }
+
     
     // Validate specifications - ensure at least one spec has both key and value
     const validSpecs = variant.specification.filter(spec => spec.key.trim() && spec.value.trim());
@@ -110,16 +108,24 @@ export default function AddProduct() {
     
     // Calculate final price
     const finalPrice = Math.round(variant.baseprice - (variant.baseprice * variant.discount) / 100)
+    
+    // Combine main product description with variant-specific description in bullet points
+    let combinedDescription = '• ' + form.description;
+    if (variant.variantDescription.trim()) {
+      combinedDescription += '\n• ' + variant.variantDescription;
+    }
+    
     const variantWithFinalPrice = { 
       ...variant, 
       finalprice: finalPrice,
+      description: combinedDescription,
       specification: validSpecs // Only include valid specifications
     }
     
     console.log('Adding variant with specifications:', variantWithFinalPrice.specification);
     
     setVariantList([...variantList, variantWithFinalPrice])
-    setVariant({ ...initialVariant })
+    setVariant(getInitialVariant())
           }
 
   // Remove variant from list
@@ -241,7 +247,7 @@ export default function AddProduct() {
         pic4: '',
       })
       setVariantList([])
-      setVariant({ ...initialVariant })
+      setVariant(getInitialVariant())
       setInnerSlugs([])
       setInnerSubSlugs([])
       
@@ -555,12 +561,22 @@ export default function AddProduct() {
                               </div>
                       </div>
                       <div className="ui__form">
-                        <label className="ui__form__label">Variant Description</label>
+                        <label className="ui__form__label">Default Description (Will appear as first bullet point)</label>
+                        <textarea
+                          value={'• ' + form.description}
+                          readOnly
+                          rows="2"
+                          className="ui__form__field"
+                          style={{backgroundColor: '#f5f5f5', color: '#666'}}
+                        />
+                      </div>
+                      <div className="ui__form">
+                        <label className="ui__form__label">Additional Variant Description </label>
                                   <textarea
-                          name="description"
-                          value={variant.description}
+                          name="variantDescription"
+                          value={variant.variantDescription}
                           onChange={handleVariantChange}
-                          placeholder="Variant specific description"
+                          placeholder="variant specific description"
                           rows="3"
                           className="ui__form__field"
                         />
@@ -621,7 +637,10 @@ export default function AddProduct() {
                                   <div className="flex-grow-1">
                                     <strong>{v.innerSlug} - {v.innerSubSlug}</strong><br/>
                                     <small>Color: {v.color} | Size: {v.size} | Price: ₹{v.finalprice} | Stock: {v.stock}</small><br/>
-                                    <small className="text-muted">Description: {v.description}</small>
+                                    <small className="text-muted">
+                                      <strong>Description:</strong><br/>
+                                      <div style={{whiteSpace: 'pre-line'}}>{v.description}</div>
+                                    </small>
                                     </div>
                                   <button
                                     type="button"

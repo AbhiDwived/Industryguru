@@ -34,6 +34,10 @@ export default function Login() {
                 localStorage.setItem("userid", response.data._id);
                 localStorage.setItem("role", response.data.role);
                 localStorage.setItem("token", response.token);
+                
+                // Dispatch custom event to notify App component of localStorage changes
+                window.dispatchEvent(new Event('localStorageChange'));
+                
                 if (response.data.role === "Admin") navigate("/admin");
                 else if (response.data.role === "Vendor") navigate("/vendor");
                 else navigate("/profile");
@@ -102,7 +106,7 @@ export default function Login() {
                   {/* 👇 Add this section for Vendor Login */}
                   <h3 className="form__desc text-center mt-4">
                     <strong>
-                      <Link to="/vendor/login">Vendor Login</Link>
+                      <Link to="/vendor-login">Vendor Login</Link>
                     </strong>
                   </h3>
                 </Form>

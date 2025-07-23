@@ -57,6 +57,8 @@ export default function VendorApprovalPending() {
 
   const handleLogout = () => {
     localStorage.clear();
+    // Dispatch custom event to notify App component of localStorage changes
+    window.dispatchEvent(new Event('localStorageChange'));
     navigate('/vendor-login');
   };
 

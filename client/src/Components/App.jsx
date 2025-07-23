@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Cart from "./Cart";
@@ -89,6 +89,39 @@ export default function App() {
     { path: "/shop/:maincat/:subcat/:brnd", Component: Shop },
     { path: "/single-product/:_id", Component: SingleProduct },
   ]);
+
+  // Authentication state management
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("login"));
+  const [userRole, setUserRole] = useState(localStorage.getItem("role"));
+
+  // Listen for localStorage changes
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setIsLoggedIn(!!localStorage.getItem("login"));
+      setUserRole(localStorage.getItem("role"));
+    };
+
+    // Listen for storage events (when localStorage changes in other tabs)
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Custom event for same-tab localStorage changes
+    window.addEventListener('localStorageChange', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('localStorageChange', handleStorageChange);
+    };
+  }, []);
+
+  // Helper function for protected routes
+  const ProtectedRoute = ({ children, adminOnly = false, vendorOnly = false }) => {
+    if (!isLoggedIn) return <Login />;
+    
+    if (adminOnly && userRole !== "Admin") return <Profile />;
+    if (vendorOnly && userRole !== "Vendor") return <Profile />;
+    
+    return children;
+  };
   return (
     <BrowserRouter>
       <Navbar />
@@ -113,39 +146,57 @@ export default function App() {
         <Route path="/ratings/:_id" element={<Rating />} />
         <Route
           path="/confirmation"
-          element={localStorage.getItem("login") ? <Confirmation /> : <Login />}
+          element={isLoggedIn ? <Confirmation /> : <Login />}
         />
         <Route
           path="/confirmation/:_id"
           element={
-            localStorage.getItem("login") ? <ConfirmationBank /> : <Login />
+            isLoggedIn ? <ConfirmationBank /> : <Login />
           }
         />
         <Route
           path="/payment/:_id"
-          element={localStorage.getItem("login") ? <Payment /> : <Login />}
+          element={isLoggedIn ? <Payment /> : <Login />}
         />
         <Route
           path="/profile"
-          element={localStorage.getItem("login") ? <Profile /> : <Login />}
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/update-profile"
           element={
-            localStorage.getItem("login") ? <UpdateProfile /> : <Login />
+            <ProtectedRoute>
+              <UpdateProfile />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/cart"
-          element={localStorage.getItem("login") ? <Cart /> : <Login />}
+          element={
+            <ProtectedRoute>
+              <Cart />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/checkout"
-          element={localStorage.getItem("login") ? <Checkout /> : <Login />}
+          element={
+            <ProtectedRoute>
+              <Checkout />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/order"
-          element={localStorage.getItem("login") ? <Order /> : <Login />}
+          element={
+            <ProtectedRoute>
+              <Order />
+            </ProtectedRoute>
+          }
         />
         <Route path="/about" element={<About />} />
 
@@ -154,15 +205,9 @@ export default function App() {
         <Route
           path="/admin"
           element={
-            localStorage.getItem("login") ? (
-              localStorage.getItem("role") === "Admin" ? (
-                <AdminHome />
-              ) : (
-                <Profile />
-              )
-            ) : (
-              <Login />
-            )
+            <ProtectedRoute adminOnly={true}>
+              <AdminHome />
+            </ProtectedRoute>
           }
         />
         <Route

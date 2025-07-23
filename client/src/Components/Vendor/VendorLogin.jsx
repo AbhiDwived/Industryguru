@@ -55,6 +55,9 @@ export default function VendorLogin() {
         localStorage.setItem("phone", result.data.phone);
         localStorage.setItem("isApproved", result.data.isApproved);
 
+        // Dispatch custom event to notify App component of localStorage changes
+        window.dispatchEvent(new Event('localStorageChange'));
+
         // Redirect based on approval status
         if (!result.data.isApproved) {
           navigate("/vendor-approval-pending");

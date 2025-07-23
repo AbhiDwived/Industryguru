@@ -52,6 +52,8 @@ export default function Navbar({ product }) {
 
   function logout() {
     localStorage.clear();
+    // Dispatch custom event to notify App component of localStorage changes
+    window.dispatchEvent(new Event('localStorageChange'));
     navigate("/login");
   }
 
