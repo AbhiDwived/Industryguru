@@ -24,7 +24,7 @@ export default function Navbar({ product }) {
   var allMaincategories = useSelector((state) => state.MaincategoryStateData);
   var allSubcategories = useSelector((state) => state.SubcategoryStateData);
   var allWishlists = useSelector((state) => state.WishlistStateData);
-  var allBrands = useSelector((state) => state.BrandStateData);
+  var allBrands = useSelector((state) => state.BrandStateData || []);
   var allCart = useSelector((state) => state.CartStateData);
   var dispatch = useDispatch();
   const containerRef = useRef(null);
@@ -485,13 +485,15 @@ export default function Navbar({ product }) {
                       <div className="dropdown-menu dropdown-menu-right allcat dropdown-menu-scrollable">
                         <button className="dropdown-item ">All</button>
                         {allMaincategories.map((category, index) => (
-                          <button
-                            key={index}
-                            className="dropdown-item "
-                            onClick={() => handleChange(category._id)}
-                          >
-                            {category.name}
-                          </button>
+                          category && category.name ? (
+                            <button
+                              key={index}
+                              className="dropdown-item "
+                              onClick={() => handleChange(category._id)}
+                            >
+                              {category.name}
+                            </button>
+                          ) : null
                         ))}
                       </div>
                     </div>
@@ -656,16 +658,18 @@ export default function Navbar({ product }) {
             ref={containerRef}
           >
             {allBrands.map((item, index) => (
-              <div
-                key={index}
-                className="brand-item mr-2"
-                style={{ fontSize: "12px", maxWidth: "100%" }}
-              >
-                {/* Your button content */}
-                {item.name.length > 10
-                  ? `${item.name.slice(0, 10)}...`
-                  : item.name}
-              </div>
+              item && item.name ? (
+                <div
+                  key={index}
+                  className="brand-item mr-2"
+                  style={{ fontSize: "12px", maxWidth: "100%" }}
+                >
+                  {/* Your button content */}
+                  {item.name.length > 10
+                    ? `${item.name.slice(0, 10)}...`
+                    : item.name}
+                </div>
+              ) : null
             ))}
           </div>
         </div>

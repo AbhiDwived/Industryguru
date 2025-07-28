@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import SideNavbar from "./SideNavbar";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Box, Typography, Paper, TextField, Button, MenuItem, FormControl, Select, FormHelperText } from "@mui/material";
+import { Box, Typography, Paper, TextField, Button, MenuItem, FormControl, Select, FormHelperText, Chip } from "@mui/material";
 
 import formValidation from "../CustomValidation/formValidation";
 import {
@@ -14,7 +14,7 @@ import { getSubcategory } from "../../Store/ActionCreators/SubcategoryActionCrea
 export default function AddBrand() {
   let name = useRef("");
 
-  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedSubcategories, setSelectedSubcategories] = useState([]);
   let [message, setMessage] = useState("Brand Name must Required");
   let [show, setShow] = useState(false);
   var allSubcategories = useSelector((state) => state.SubcategoryStateData);
@@ -30,17 +30,18 @@ export default function AddBrand() {
   
   async function postData(e) {
     e.preventDefault();
-    if (message.length === 0) {
-      let item =
-        allbrands.length && allbrands.find((x) => x.name === name.current && x.subcategory === selectedOption);
-      if (item) {
-        setShow(true);
-        setMessage("Brand Name Already Exists in this Sub-Category");
-      } else {
-        dispatch(addBrand({ name: name.current, subcategory: selectedOption }));
-        navigate("/admin-brands");
+    if (message.length === 0 && selectedSubcategories.length > 0) {
+      // Create brand entries for each selected subcategory
+      for (let subcategoryId of selectedSubcategories) {
+        dispatch(addBrand({ name: name.current, subcategory: subcategoryId }));
       }
-    } else setShow(true);
+      setTimeout(() => navigate("/admin-brands"), 1000);
+    } else {
+      setShow(true);
+      if (selectedSubcategories.length === 0) {
+        setMessage("Please select at least one sub-category");
+      }
+    }
   }
   
   function getAPIData() {
@@ -89,12 +90,12 @@ export default function AddBrand() {
                     <div className="col-md-6">
                       <Box sx={{ mb: 3 }}>
                         <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 500 }}>
-                          Select Sub-Category
+                          Select Sub-Categories
                         </Typography>
                         <FormControl 
                           fullWidth
                           variant="outlined"
-                          error={selectedOption === ""}
+                          error={selectedSubcategories.length === 0}
                           sx={{
                             '& .MuiOutlinedInput-root': {
                               borderRadius: '8px',
@@ -105,15 +106,31 @@ export default function AddBrand() {
                           }}
                         >
                           <Select
-                            value={selectedOption}
-                            onChange={(e) => setSelectedOption(e.target.value)}
+                            multiple
+                            value={selectedSubcategories}
+                            onChange={(e) => setSelectedSubcategories(e.target.value)}
                             displayEmpty
+                            renderValue={(selected) => (
+                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                {selected.map((value) => {
+                                  const category = allSubcategories.find(cat => cat._id === value);
+                                  return (
+                                    <Chip
+                                      key={value}
+                                      label={category?.name}
+                                      size="small"
+                                      sx={{ bgcolor: '#6068bf', color: 'white' }}
+                                    />
+                                  );
+                                })}
+                              </Box>
+                            )}
                             startAdornment={
                               <i className="fa fa-sitemap me-2" style={{ color: '#6068bf' }}></i>
                             }
                           >
                             <MenuItem value="" disabled>
-                              <em>Select a sub-category</em>
+                              <em>Select sub-categories</em>
                             </MenuItem>
                             {allSubcategories.map((category, i) => (
                               <MenuItem key={i} value={category._id}>
@@ -121,8 +138,8 @@ export default function AddBrand() {
                               </MenuItem>
                             ))}
                           </Select>
-                          {selectedOption === "" && (
-                            <FormHelperText>Please select a sub-category</FormHelperText>
+                          {selectedSubcategories.length === 0 && (
+                            <FormHelperText>Please select at least one sub-category</FormHelperText>
                           )}
                         </FormControl>
                       </Box>

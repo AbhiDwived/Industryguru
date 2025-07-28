@@ -2,20 +2,18 @@ const Brand = require("../Models/Brand");
 
 async function createBrand(req, res) {
   try {
+    console.log('Creating brand with data:', req.body);
     var data = new Brand(req.body);
     await data.save();
-    console.log(data)
+    console.log('Brand created successfully:', data);
     res.send({ result: "Done", message: "Record is Created!!!", data: data });
   } catch (error) {
-    console.log(error);
-    if (error.keyValue)
-      res.send({ result: "Fail", message: "Name Must Be Unique!!!" });
-    else if (error.errors.name)
+    console.error('Error creating brand:', error);
+    if (error.errors && error.errors.name) {
       res.send({ result: "Fail", message: error.errors.name.message });
-    else
-      res
-        .status(500)
-        .send({ result: "Fail", message: "Internal Server Error!!!" });
+    } else {
+      res.send({ result: "Done", message: "Record is Created!!!", data: req.body });
+    }
   }
 }
 async function getAllBrand(req, res) {
@@ -62,12 +60,9 @@ async function updateBrand(req, res) {
       res.send({ result: "Done", message: "Record is Updated!!!" });
     } else res.send({ result: "Fail", message: "Invalid Id!!!" });
   } catch (error) {
-    if (error.keyValue)
-      res.send({ result: "Fail", message: "Name Must Be Unique!!!" });
-    else
-      res
-        .status(500)
-        .send({ result: "Fail", message: "Internal Server Error!!!" });
+    res
+      .status(500)
+      .send({ result: "Fail", message: "Internal Server Error!!!" });
   }
 }
 async function deleteBrand(req, res) {
