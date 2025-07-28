@@ -7,6 +7,8 @@ import {
   deleteCart,
 } from "../Store/ActionCreators/CartActionCreators";
 import { apiLink } from "../utils/utils";
+import useToast from "../hooks/useToast";
+import { commonToasts } from "../utils/toastUtils";
 
 export default function Cart() {
   const [subtotal, setSubTotal] = useState(0);
@@ -15,6 +17,7 @@ export default function Cart() {
   const [carts, setCarts] = useState([]);
   const allCarts = useSelector((state) => state.CartStateData);
   const dispatch = useDispatch();
+  const toast = useToast();
 
   useEffect(() => {
     getAPIData();
@@ -46,11 +49,16 @@ export default function Cart() {
     let item = carts.find((x) => x._id === _id);
     const variant = item.selectedVariant || item;
     const unitPrice = variant.finalprice || variant.price;
-    if (op === "Dec" && item.qty === 1) return;
+    if (op === "Dec" && item.qty === 1) {
+      toast.warning("Minimum quantity is 1. Use remove button to delete item.", "Cannot Decrease");
+      return;
+    }
     else if (op === "Dec") {
       item.qty = item.qty - 1;
+      toast.info(`Decreased quantity of ${item.name}`, "Cart Updated");
     } else {
       item.qty = item.qty + 1;
+      toast.info(`Increased quantity of ${item.name}`, "Cart Updated");
     }
     item.total = item.qty * unitPrice;
     dispatch(updateCart({ ...item }));
@@ -58,7 +66,9 @@ export default function Cart() {
   }
 
   function deleteItem(_id) {
+    const item = carts.find((x) => x._id === _id);
     dispatch(deleteCart({ _id: _id }));
+    toast.success(`${item.name} removed from cart`, "Item Removed");
     getAPIData();
   }
 
