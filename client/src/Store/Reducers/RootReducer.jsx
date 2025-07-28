@@ -16,6 +16,7 @@ import VendorSlugReducer from "./VendorSlugReducer";
 import VendorSubSlugReducer from "./VendorSubSlugReducer";
 import AdminSlugReducer from "./AdminSlugReducer";
 import AdminSubSlugReducer from "./AdminSubSlugReducer";
+import toastReducer from "../Slices/toastSlice";
 
 export default combineReducers({
   MaincategoryStateData: MaincategoryReducer,
@@ -34,4 +35,5 @@ export default combineReducers({
   VendorSubSlugStateData: VendorSubSlugReducer,
   AdminSlugStateData: AdminSlugReducer,
   AdminSubSlugStateData: AdminSubSlugReducer,
+  toast: toastReducer,
 });

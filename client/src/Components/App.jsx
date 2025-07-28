@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import ToastContainer from "./Toast/ToastContainer";
+import ToastDemo from "./ToastDemo";
 import Cart from "./Cart";
 import Checkout from "./Checkout";
 import Order from "./Order";
@@ -125,6 +127,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Navbar />
+      <ToastContainer />
       <Routes>
         {routes.map((item, index) => (
           <Route key={index} path={item.path} element={<item.Component />} />
@@ -199,6 +202,7 @@ export default function App() {
           }
         />
         <Route path="/about" element={<About />} />
+        <Route path="/toast-demo" element={<ToastDemo />} />
 
         {/* Admin */}
 

@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { Form, Formik, Field } from "formik";
 import { apiLink } from "../utils/utils";
+import useToast from "../hooks/useToast";
+import { commonToasts } from "../utils/toastUtils";
 
 export default function Login() {
   var [data, setData] = useState({
@@ -10,6 +12,7 @@ export default function Login() {
     password: "",
   });
   var navigate = useNavigate();
+  const toast = useToast();
   return (
     <div className="page-container">
       <div className="container-fluid">
@@ -19,29 +22,41 @@ export default function Login() {
           <Formik
             initialValues={data}
             onSubmit={async (values, { setSubmitting }) => {
-              var response = await fetch(`${apiLink}/api/user/login`, {
-                method: "post",
-                headers: {
-                  "content-type": "application/json",
-                },
-                body: JSON.stringify(values),
-              });
-              response = await response.json();
-              if (response.result === "Done") {
-                localStorage.setItem("login", true);
-                localStorage.setItem("username", response.data.username);
-                localStorage.setItem("name", response.data.name);
-                localStorage.setItem("userid", response.data._id);
-                localStorage.setItem("role", response.data.role);
-                localStorage.setItem("token", response.token);
+              try {
+                var response = await fetch(`${apiLink}/api/user/login`, {
+                  method: "post",
+                  headers: {
+                    "content-type": "application/json",
+                  },
+                  body: JSON.stringify(values),
+                });
+                response = await response.json();
                 
-                // Dispatch custom event to notify App component of localStorage changes
-                window.dispatchEvent(new Event('localStorageChange'));
-                
-                if (response.data.role === "Admin") navigate("/admin");
-                else if (response.data.role === "Vendor") navigate("/vendor");
-                else navigate("/profile");
-              } else alert(response.message);
+                if (response.result === "Done") {
+                  localStorage.setItem("login", true);
+                  localStorage.setItem("username", response.data.username);
+                  localStorage.setItem("name", response.data.name);
+                  localStorage.setItem("userid", response.data._id);
+                  localStorage.setItem("role", response.data.role);
+                  localStorage.setItem("token", response.token);
+                  
+                  // Dispatch custom event to notify App component of localStorage changes
+                  window.dispatchEvent(new Event('localStorageChange'));
+                  
+                  // Show success toast
+                  commonToasts.loginSuccess();
+                  
+                  if (response.data.role === "Admin") navigate("/admin");
+                  else if (response.data.role === "Vendor") navigate("/vendor");
+                  else navigate("/profile");
+                } else {
+                  toast.error(response.message || "Login failed. Please check your credentials.", "Login Failed");
+                }
+              } catch (error) {
+                toast.error("Network error. Please check your connection and try again.", "Connection Error");
+              } finally {
+                setSubmitting(false);
+              }
             }}
             validationSchema={Yup.object().shape({
               username: Yup.string().required("Enter valid username"),

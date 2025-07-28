@@ -9,6 +9,8 @@ import { getSubSlugByParent } from "../Store/ActionCreators/SubSlugActionCreator
 import { apiLink } from "../utils/utils";
 import Comment from "./Comment";
 import './SingleProduct.css';
+import useToast from "../hooks/useToast";
+import { commonToasts } from "../utils/toastUtils";
 
 const SingleProduct = () => {
   const { _id } = useParams();
@@ -39,6 +41,7 @@ const SingleProduct = () => {
   const allWishlists = useSelector((state) => state.WishlistStateData);
   const allSlugs = useSelector((state) => state.SlugStateData);
   const allSubSlugs = useSelector((state) => state.SubSlugStateData);
+  const toast = useToast();
 
   // Function to get available inner slugs and sub slugs from variants
   const getAvailableOptions = (variants) => {
@@ -183,7 +186,10 @@ const SingleProduct = () => {
 
   // Cart and Wishlist functions
   const addToCart = () => {
-    if (!selectedVariant) return;
+    if (!selectedVariant) {
+      toast.warning("Please select a variant before adding to cart.", "Variant Required");
+      return;
+    }
         
     // Check for duplicate by productid, color, and size
     var item = allCarts.find(
@@ -194,7 +200,10 @@ const SingleProduct = () => {
         x.size === selectedVariant.size
     );
     if (item) {
-      window.location.href = "/cart";
+      toast.info("This item is already in your cart. Redirecting to cart page...", "Item Already Added");
+      setTimeout(() => {
+        window.location.href = "/cart";
+      }, 1000);
     } else {
       var cartItem = {
         userid: localStorage.getItem("userid"),
@@ -213,7 +222,10 @@ const SingleProduct = () => {
         rating: product.rating
       };
       dispatch(addCart(cartItem));
-      window.location.href = "/cart";
+      commonToasts.itemAddedToCart(product.name);
+      setTimeout(() => {
+        window.location.href = "/cart";
+      }, 1000);
     }
   };
 
