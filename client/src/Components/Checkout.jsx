@@ -8,6 +8,7 @@ import {
 import { addCheckout } from "../Store/ActionCreators/CheckoutActionCreators";
 import BuyerProfile from "./BuyerProfile";
 import { apiLink } from "../utils/utils";
+import { showToast } from "../utils/toast";
 
 export default function Checkout() {
   const [user, setUser] = useState({});
@@ -78,12 +79,8 @@ export default function Checkout() {
     ) {
       return true;
     } else {
-      const confirmation = window.confirm(
-        "Please update your address before placing the order. Do you want to update now?"
-      );
-      if (confirmation) {
-        navigate("/update-profile");
-      }
+      showToast.warning("Please update your address before placing the order.");
+      setTimeout(() => navigate("/update-profile"), 2000);
       return false;
     }
   }
@@ -109,6 +106,7 @@ export default function Checkout() {
       for (let item of cart) {
         dispatch(deleteCart({ _id: item._id }));
       }
+      showToast.success("Order placed successfully!");
       navigate("/confirmation")
       setProcessing(false);
       return
@@ -128,7 +126,7 @@ export default function Checkout() {
       if (response.status === "NEW") {
         return window.location.href = response.payment_links.web;
       } else {
-        alert(response.message||"");
+        showToast.error(response.message || "Payment failed. Please try again.");
       }
     }).finally(() => setProcessing(false));
   }

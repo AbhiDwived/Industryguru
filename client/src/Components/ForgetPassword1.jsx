@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiLink } from "../utils/utils";
+import { showToast } from "../utils/toast";
 
 export default function ForgetPassword1() {
   var [data, setData] = useState({
@@ -28,8 +29,9 @@ export default function ForgetPassword1() {
     response = await response.json();
     if (response.result === "Done") {
       localStorage.setItem("reset-password-user", data.username);
+      showToast.success("OTP sent successfully!");
       navigate("/forget-password-2");
-    } else alert(response.message);
+    } else showToast.error(response.message);
   }
   return (
     <div className="container-fluid my-3">

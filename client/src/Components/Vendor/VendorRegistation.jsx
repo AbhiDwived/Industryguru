@@ -6,6 +6,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { apiLink } from "../../utils/utils";
 // Import Redux Actions
 import { getMaincategory } from "../../Store/ActionCreators/MaincategoryActionCreators";
+import { showToast } from "../../utils/toast";
 
 const states = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
@@ -131,12 +132,12 @@ export default function BecomeSeller() {
         setPhoneSent(formattedPhone); // Save phone for next step
         setTimer(300); // Start 5-minute timer
         setIsResendDisabled(true);
-        alert("OTP sent successfully!");
+        showToast.success("OTP sent successfully!");
       } else {
-        alert(result.message || "Failed to send OTP.");
+        showToast.error(result.message || "Failed to send OTP.");
       }
     } catch (error) {
-      alert("Failed to send OTP.");
+      showToast.error("Failed to send OTP.");
     }
   }
 
@@ -153,12 +154,13 @@ export default function BecomeSeller() {
       const result = await response.json();
 
       if (result.success) {
+        showToast.success("OTP verified successfully!");
         await registerVendor({ ...values, phone: phoneSent });
       } else {
-        alert(result.message || "Invalid OTP!");
+        showToast.error(result.message || "Invalid OTP!");
       }
     } catch (error) {
-      alert("Failed to verify OTP.");
+      showToast.error("Failed to verify OTP.");
     }
   }
 
@@ -175,12 +177,13 @@ export default function BecomeSeller() {
       const result = await response.json();
 
       if (result.result === "Done") {
+        showToast.success("Registration successful! Please login.");
         navigate("/vendor/login");
       } else {
-        alert(result.message);
+        showToast.error(result.message);
       }
     } catch (error) {
-      alert("Registration failed. Please try again.");
+      showToast.error("Registration failed. Please try again.");
     }
   }
 
@@ -197,14 +200,14 @@ export default function BecomeSeller() {
       const result = await response.json();
 
       if (result.success) {
-        alert("OTP resent successfully!");
+        showToast.success("OTP resent successfully!");
         setTimer(300);
         setIsResendDisabled(true);
       } else {
-        alert(result.message || "Failed to resend OTP.");
+        showToast.error(result.message || "Failed to resend OTP.");
       }
     } catch (error) {
-      alert("Error sending OTP.");
+      showToast.error("Error sending OTP.");
     }
   };
 

@@ -20,6 +20,7 @@ import {
   getSubSlug,
 } from "../../Store/ActionCreators/SubSlugActionCreators";
 import Wrapper from "./Wrapper";
+import { showToast } from "../../utils/toast";
 
 const initialVariant = {
   color: '',
@@ -94,21 +95,21 @@ export default function VendorAddProduct() {
   // Add variant to list
   const addVariant = () => {
     if (!variant.innerSlug || !variant.innerSubSlug) {
-      return alert('Please select both Inner Slug and Inner Sub Slug');
+      return showToast.error('Please select both Inner Slug and Inner Sub Slug');
     }
     if (!variant.color || !variant.size) {
-      return alert('Please enter both Color and Size');
+      return showToast.error('Please enter both Color and Size');
     }
     if (!variant.baseprice || !variant.stock) {
-      return alert('Please enter both Base Price and Stock');
+      return showToast.error('Please enter both Base Price and Stock');
     }
     if (!variant.description.trim()) {
-      return alert('Please enter a description for this variant');
+      return showToast.error('Please enter a description for this variant');
     }
     // Validate specifications - ensure at least one spec has both key and value
     const validSpecs = variant.specification.filter(spec => spec.key.trim() && spec.value.trim());
     if (validSpecs.length === 0) {
-      return alert('Please add at least one specification with both key and value');
+      return showToast.error('Please add at least one specification with both key and value');
     }
     // Calculate final price
     const finalPrice = Math.round(variant.baseprice - (variant.baseprice * variant.discount) / 100);
@@ -119,6 +120,7 @@ export default function VendorAddProduct() {
     };
     setVariantList([...variantList, variantWithFinalPrice]);
     setVariant({ ...initialVariant });
+    showToast.success('Variant added successfully');
   };
 
   // Remove variant from list
@@ -179,10 +181,10 @@ export default function VendorAddProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.pic1) {
-      return alert('Please upload at least one product image');
+      return showToast.error('Please upload at least one product image');
     }
     if (variantList.length === 0) {
-      return alert('Please add at least one variant');
+      return showToast.error('Please add at least one variant');
     }
     try {
       // Create single product with variants array
@@ -208,8 +210,9 @@ export default function VendorAddProduct() {
       productItem.append("color", "Multiple");
       productItem.append("size", "Multiple");
       productItem.append("specification", JSON.stringify([{ key: "Variants", value: variantList.length }]));
+      const loadingToast = showToast.loading('Uploading product...');
       await dispatch(addProduct(productItem));
-      alert('Product uploaded successfully!');
+      showToast.success('Product uploaded successfully!');
       navigate("/vendor-products");
       // Reset form
       setForm({
@@ -231,7 +234,7 @@ export default function VendorAddProduct() {
       setInnerSubSlugs([]);
     } catch (error) {
       console.error("Error creating product:", error);
-      alert('Error uploading product. Please try again.');
+      showToast.error('Error uploading product. Please try again.');
     }
   };
 

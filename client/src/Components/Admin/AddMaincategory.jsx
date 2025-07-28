@@ -9,6 +9,7 @@ import {
   addMaincategory,
   getMaincategory,
 } from "../../Store/ActionCreators/MaincategoryActionCreators";
+import { showToast } from "../../utils/toast";
 
 export default function AddMaincategory() {
   let name = useRef("");
@@ -34,11 +35,16 @@ export default function AddMaincategory() {
       if (item) {
         setShow(true);
         setMessage("Maincategory Name Already Exist");
+        showToast.error("Maincategory Name Already Exist");
       } else {
         dispatch(addMaincategory({ name: name.current }));
+        showToast.success("Main category added successfully!");
         navigate("/admin-maincategories");
       }
-    } else setShow(true);
+    } else {
+      setShow(true);
+      showToast.error(message);
+    }
   }
   
   function getAPIData() {

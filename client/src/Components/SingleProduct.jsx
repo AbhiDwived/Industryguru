@@ -9,8 +9,7 @@ import { getSubSlugByParent } from "../Store/ActionCreators/SubSlugActionCreator
 import { apiLink } from "../utils/utils";
 import Comment from "./Comment";
 import './SingleProduct.css';
-import useToast from "../hooks/useToast";
-import { commonToasts } from "../utils/toastUtils";
+import { showToast } from "../utils/toast";
 
 const SingleProduct = () => {
   const { _id } = useParams();
@@ -41,7 +40,6 @@ const SingleProduct = () => {
   const allWishlists = useSelector((state) => state.WishlistStateData);
   const allSlugs = useSelector((state) => state.SlugStateData);
   const allSubSlugs = useSelector((state) => state.SubSlugStateData);
-  const toast = useToast();
 
   // Function to get available inner slugs and sub slugs from variants
   const getAvailableOptions = (variants) => {
@@ -186,10 +184,7 @@ const SingleProduct = () => {
 
   // Cart and Wishlist functions
   const addToCart = () => {
-    if (!selectedVariant) {
-      toast.warning("Please select a variant before adding to cart.", "Variant Required");
-      return;
-    }
+    if (!selectedVariant) return;
         
     // Check for duplicate by productid, color, and size
     var item = allCarts.find(
@@ -200,10 +195,8 @@ const SingleProduct = () => {
         x.size === selectedVariant.size
     );
     if (item) {
-      toast.info("This item is already in your cart. Redirecting to cart page...", "Item Already Added");
-      setTimeout(() => {
-        window.location.href = "/cart";
-      }, 1000);
+      showToast.info("Item already in cart. Redirecting...");
+      setTimeout(() => window.location.href = "/cart", 1000);
     } else {
       var cartItem = {
         userid: localStorage.getItem("userid"),
@@ -222,10 +215,8 @@ const SingleProduct = () => {
         rating: product.rating
       };
       dispatch(addCart(cartItem));
-      commonToasts.itemAddedToCart(product.name);
-      setTimeout(() => {
-        window.location.href = "/cart";
-      }, 1000);
+      showToast.success("Item added to cart!");
+      setTimeout(() => window.location.href = "/cart", 1000);
     }
   };
 
@@ -236,7 +227,8 @@ const SingleProduct = () => {
       (x) => x.userid === localStorage.getItem("userid") && x.productid === product._id
     );
     if (item) {
-      window.location.href = "/wishlist";
+      showToast.info("Item already in wishlist. Redirecting...");
+      setTimeout(() => window.location.href = "/wishlist", 1000);
     } else {
       var wishlistItem = {
         userid: localStorage.getItem("userid"),
@@ -252,7 +244,8 @@ const SingleProduct = () => {
         // Do NOT include selectedVariant here
       };
       dispatch(addWishlist(wishlistItem));
-      window.location.href = "/profile";
+      showToast.success("Item added to wishlist!");
+      setTimeout(() => window.location.href = "/profile", 1000);
     }
   };
 

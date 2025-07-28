@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { Formik, Form, Field } from "formik";
 import { apiLink } from "../../utils/utils";
+import { showToast } from "../../utils/toast";
 
 export default function VendorLogin() {
   const [data] = useState({ username: "", password: "" });
@@ -39,7 +40,7 @@ export default function VendorLogin() {
 
       if (result.result === "Done") {
         if (result.data.role !== "Vendor") {
-          setError("Only vendors are allowed to access this page.");
+          showToast.error("Only vendors are allowed to access this page.");
           setSubmitting(false);
           return;
         }
@@ -60,17 +61,19 @@ export default function VendorLogin() {
 
         // Redirect based on approval status
         if (!result.data.isApproved) {
+          showToast.warning("Your vendor account is pending approval.");
           navigate("/vendor-approval-pending");
         } else {
+          showToast.success(`Welcome back, ${result.data.name}!`);
           navigate("/vendor");
         }
       } else {
-        setError(result.message || "Login failed");
+        showToast.error(result.message || "Login failed");
         setSubmitting(false);
       }
     } catch (error) {
       console.error("Login error:", error);
-      setError("An error occurred during login. Please try again.");
+      showToast.error("An error occurred during login. Please try again.");
       setSubmitting(false);
     }
   };

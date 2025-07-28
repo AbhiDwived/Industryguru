@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiLink } from "../utils/utils";
 import SideNavbar from "./Admin/SideNavbar";
+import { showToast } from "../utils/toast";
 
 export default function UpdateProfile() {
   var [data, setData] = useState({
@@ -91,16 +92,17 @@ export default function UpdateProfile() {
         // Clear the preview since we now have the actual image
         setImagePreview(null);
         
+        showToast.success("Profile updated successfully!");
         if (data.role === "Admin") navigate("/admin");
         else if (data.role === "Vendor") {
           navigate("/vendor");
         } else navigate("/profile", { state: { refresh: true } });
       } else {
-        alert(response.message);
+        showToast.error(response.message);
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Failed to update profile. Please try again.");
+      showToast.error("Failed to update profile. Please try again.");
     }
   }
 

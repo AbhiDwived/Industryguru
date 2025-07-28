@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Badge from "@mui/material/Badge";
 import { apiLink } from "../utils/utils";
 import { Button, Dropdown } from "react-bootstrap";
+import { showToast } from "../utils/toast";
 
 export default function Navbar({ product }) {
   var [user, setUser] = useState({});
@@ -51,9 +52,12 @@ export default function Navbar({ product }) {
   }
 
   function logout() {
+    const userName = localStorage.getItem("name") || "User";
+    const userRole = localStorage.getItem("role") || "User";
     localStorage.clear();
     // Dispatch custom event to notify App component of localStorage changes
     window.dispatchEvent(new Event('localStorageChange'));
+    showToast.success(`Goodbye ${userName}! You have been logged out successfully.`);
     navigate("/login");
   }
 

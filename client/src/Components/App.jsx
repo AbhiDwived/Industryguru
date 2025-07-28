@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import ToastContainer from "./Toast/ToastContainer";
-import ToastDemo from "./ToastDemo";
 import Cart from "./Cart";
 import Checkout from "./Checkout";
 import Order from "./Order";
@@ -127,7 +127,6 @@ export default function App() {
   return (
     <BrowserRouter>
       <Navbar />
-      <ToastContainer />
       <Routes>
         {routes.map((item, index) => (
           <Route key={index} path={item.path} element={<item.Component />} />
@@ -202,7 +201,6 @@ export default function App() {
           }
         />
         <Route path="/about" element={<About />} />
-        <Route path="/toast-demo" element={<ToastDemo />} />
 
         {/* Admin */}
 
@@ -660,6 +658,18 @@ export default function App() {
 
       </Routes>
       <Footer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </BrowserRouter>
   );
 }

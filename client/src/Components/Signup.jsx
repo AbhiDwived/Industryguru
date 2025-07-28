@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { apiLink } from "../utils/utils";
 import * as Yup from "yup";
 import { Form, Formik, Field } from "formik";
+import { showToast } from "../utils/toast";
 
 // eslint-disable-next-line react/prop-types
 export default function Signup({ seller = false }) {
@@ -39,9 +40,10 @@ export default function Signup({ seller = false }) {
               response = await response.json();
              if (response.result === "Done") {
                 localStorage.setItem("signup-user", item.email);
+                showToast.success("Account created successfully! Please verify your email.");
                 navigate("/verify");
               }
-              else alert(response.message);
+              else showToast.error(response.message);
             }}
             validationSchema={Yup.object().shape({
               name: Yup.string().required("Enter valid name"),

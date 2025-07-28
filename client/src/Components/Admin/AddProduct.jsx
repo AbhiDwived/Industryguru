@@ -10,6 +10,7 @@ import { getSubcategory, getSubcategoryByMainId } from "../../Store/ActionCreato
 import { getBrand, getBrandBySubCategoryId } from "../../Store/ActionCreators/BrandActionCreators"
 import { getAdminSlug } from "../../Store/ActionCreators/AdminSlugActionCreators"
 import { getAdminSubSlugByParent, getAdminSubSlug } from "../../Store/ActionCreators/AdminSlugActionCreators"
+import { showToast } from "../../utils/toast"
 
 const getInitialVariant = () => ({ 
   color: '', 
@@ -90,20 +91,20 @@ export default function AddProduct() {
   // Add variant to list
   const addVariant = () => {
     if (!variant.innerSlug || !variant.innerSubSlug) {
-      return alert('Please select both Inner Slug and Inner Sub Slug')
+      return showToast.error('Please select both Inner Slug and Inner Sub Slug')
     }
     if (!variant.color || !variant.size) {
-      return alert('Please enter both Color and Size')
+      return showToast.error('Please enter both Color and Size')
     }
     if (!variant.baseprice || !variant.stock) {
-      return alert('Please enter both Base Price and Stock')
+      return showToast.error('Please enter both Base Price and Stock')
     }
 
     
     // Validate specifications - ensure at least one spec has both key and value
     const validSpecs = variant.specification.filter(spec => spec.key.trim() && spec.value.trim());
     if (validSpecs.length === 0) {
-      return alert('Please add at least one specification with both key and value')
+      return showToast.error('Please add at least one specification with both key and value')
     }
     
     // Calculate final price
@@ -126,6 +127,7 @@ export default function AddProduct() {
     
     setVariantList([...variantList, variantWithFinalPrice])
     setVariant(getInitialVariant())
+    showToast.success('Variant added successfully')
           }
 
   // Remove variant from list
@@ -189,11 +191,11 @@ export default function AddProduct() {
     e.preventDefault()
     
     if (!form.pic1) {
-      return alert('Please upload at least one product image')
+      return showToast.error('Please upload at least one product image')
     }
     
     if (variantList.length === 0) {
-      return alert('Please add at least one variant')
+      return showToast.error('Please add at least one variant')
     }
     
     console.log('Submitting variants:', variantList);
@@ -227,9 +229,10 @@ export default function AddProduct() {
       productItem.append("size", "Multiple")
       productItem.append("specification", JSON.stringify([{ key: "Variants", value: variantList.length }]))
       
+      const loadingToast = showToast.loading('Uploading product...')
       await dispatch(addProduct(productItem))
       
-      alert('Product uploaded successfully!')
+      showToast.success('Product uploaded successfully!')
       navigate("/admin-products")
       
       // Reset form
@@ -253,7 +256,7 @@ export default function AddProduct() {
       
     } catch (error) {
       console.error("Error creating product:", error)
-      alert('Error uploading product. Please try again.')
+      showToast.error('Error uploading product. Please try again.')
     }
   }
 

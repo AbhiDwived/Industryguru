@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { addContactUs } from "../Store/ActionCreators/ContactUsActionCreators";
 import { useDispatch } from "react-redux";
+import { showToast } from "../utils/toast";
 
 export default function Contact() {
   const [data, setData] = useState({
@@ -10,7 +11,7 @@ export default function Contact() {
     subject: "",
     message: "",
   });
-  const [show, setShow] = useState(false);
+
   const dispatch = useDispatch();
 
   function getInputData(e) {
@@ -19,7 +20,7 @@ export default function Contact() {
       ...prevState,
       [name]: value,
     }));
-    setShow(false);
+
   }
 
   function postData(e) {
@@ -34,7 +35,7 @@ export default function Contact() {
       date: new Date(),
     };
     dispatch(addContactUs(item));
-    setShow(true);
+    showToast.success("Thanks for reaching out! Our team will get in touch with you soon.");
     setData({
       name: "",
       email: "",
@@ -50,12 +51,7 @@ export default function Contact() {
         <div className="row">
           <div className="col-lg-7 mb-5">
             <div className="contact-form bg-light p-4 rounded">
-              {show && (
-                <div className="alert alert-success text-center alert-dismissible fade show" role="alert">
-                  Thanks for reaching out! Our team will get in touch with you soon.
-                  <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-              )}
+
               <h4 className="section-title text-uppercase mb-4">Contact Us</h4>
               <form onSubmit={postData}>
                 <div className="mb-3">

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiLink } from '../utils/utils';
+import { showToast } from '../utils/toast';
 
 export default function Verify() {
   const [otp, setOtp] = useState('');
@@ -10,7 +11,7 @@ export default function Verify() {
     e.preventDefault();
     const email = localStorage.getItem('signup-user');
     if (!email) {
-      alert('No email found for verification.');
+      showToast.error('No email found for verification.');
       return;
     }
 
@@ -26,15 +27,15 @@ export default function Verify() {
       const data = await response.json();
 
       if (data.result === 'Done') {
-        alert('Account verified successfully! You can now log in.');
+        showToast.success('Account verified successfully! You can now log in.');
         localStorage.removeItem('signup-user');
         navigate('/login');
       } else {
-        alert(data.message || 'Invalid OTP. Please try again.');
+        showToast.error(data.message || 'Invalid OTP. Please try again.');
       }
     } catch (error) {
       console.error('Verification error:', error);
-      alert('An error occurred during verification. Please try again.');
+      showToast.error('An error occurred during verification. Please try again.');
     }
   };
 

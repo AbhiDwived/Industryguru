@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiLink } from "../utils/utils";
+import { showToast } from "../utils/toast";
 
 export default function ForgetPassword3() {
   var [data, setData] = useState({
@@ -33,9 +34,10 @@ export default function ForgetPassword3() {
       response = await response.json();
       if (response.result === "Done") {
         localStorage.removeItem("reset-password-user");
+        showToast.success("Password reset successfully!");
         navigate("/login");
-      } else alert(response.message);
-    } else alert("Password and Confirm Password Doesn't Matched!!!");
+      } else showToast.error(response.message);
+    } else showToast.error("Password and Confirm Password Doesn't Matched!!!");
   }
   return (
     <div className="container-fluid my-3">

@@ -11,6 +11,7 @@ import {
 import { getMaincategory } from "../../Store/ActionCreators/MaincategoryActionCreators";
 import { getSubcategory } from "../../Store/ActionCreators/SubcategoryActionCreators";
 import { getBrand } from "../../Store/ActionCreators/BrandActionCreators";
+import { showToast } from "../../utils/toast";
 
 export default function UpdateProduct() {
 
@@ -105,9 +106,14 @@ export default function UpdateProduct() {
       item.append("pic1", data.pic2);
       item.append("pic2", data.pic3);
       item.append("pic3", data.pic4);
+      const loadingToast = showToast.loading('Updating product...');
       dispatch(updateProduct(item));
+      showToast.success('Product updated successfully!');
       navigate("/admin-products");
-    } else setShow(true);
+    } else {
+      setShow(true);
+      showToast.error('Please fix the validation errors');
+    }
   }
 
   function getAPIData() {
