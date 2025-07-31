@@ -31,6 +31,7 @@ import Login from "./Login";
 import Signup from "./Signup";
 import Profile from "./Profile";
 import UpdateProfile from "./UpdateProfile";
+import Verify from "./Verify";
 import Confirmation from "./Confirmation";
 import ConfirmationBank from "./ConfirmationBank";
 import Newslatter from "./Admin/Newslatter";
@@ -134,12 +135,14 @@ export default function App() {
         {/* <Route path="/rate-product" element={<ProductRatingForm />} /> */}
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/vendor-login" element={<VendorLogin />} />
         <Route path="/vendor_registation" element={<VendorRegistation />} />
         <Route path="/forget-password-1" element={<ForgetPassword1 />} />
         <Route path="/forget-password-2" element={<ForgetPassword2 />} />
         <Route path="/forget-password-3" element={<ForgetPassword3 />} />
         <Route path="/createaccount" element={<CreateAccount />} />
+        <Route path="/verify" element={<Verify />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/shipping-policy" element={<ShippingPolicy />} />
         <Route path="/return-refund" element={<ReturnRefundPolicy />} />
@@ -522,8 +525,6 @@ export default function App() {
 
 
         {/* \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\           Vendor           ////////////////////////////////// */}
-
-        <Route path="/vendor-login" element={<VendorLogin />} />
         <Route path="/vendor_registation" element={<VendorRegistation />} />
         <Route path="/vendor-approval-pending" element={<VendorApprovalPending />} />
         

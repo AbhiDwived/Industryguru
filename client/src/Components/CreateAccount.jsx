@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import {
     MDBBtn,
     MDBContainer,
@@ -49,10 +50,14 @@ const CreateAccount = () => {
                                     <MDBCheckbox name='flexCheck' value=''  id='flexCheckDefault' label='Subscribe to our newsletter' />
                                 </div>
 
-                                <MDBBtn className='w-100 mb-4' size='md'>sign up</MDBBtn>
+                                <Link to="/signup">
+                                    <MDBBtn className='w-100 mb-4' size='md'>Create Account</MDBBtn>
+                                </Link>
 
                                 <div className="text-center">
-
+                                    <p className="mt-3">
+                                        Already have an account? <Link to="/login">Login</Link>
+                                    </p>
                                     <p>or sign up with:</p>
 
                                     <MDBBtn tag='a' color='none' className='mx-3' style={{ color: '#1266f1' }}>

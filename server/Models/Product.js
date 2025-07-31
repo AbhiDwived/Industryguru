@@ -46,7 +46,6 @@ const ProductShema = new mongoose.Schema({
   },
   discount: {
     type: Number,
-    default: 0,
   },
   finalprice: {
     type: Number,
@@ -62,7 +61,9 @@ const ProductShema = new mongoose.Schema({
   },
   pic1: {
     type: String,
-    required: [true, "Pic1 Must Required!!!"],
+    required: function() {
+      return this.isNew;
+    },
   },
   pic2: {
     type: String,
@@ -79,11 +80,11 @@ const ProductShema = new mongoose.Schema({
   variants: [{
     innerSlug: {
       type: String,
-      required: true,
+      required: false,
     },
     innerSubSlug: {
       type: String,
-      required: true,
+      required: false,
     },
     color: {
       type: String,
@@ -99,7 +100,6 @@ const ProductShema = new mongoose.Schema({
     },
     discount: {
       type: Number,
-      default: 0,
     },
     finalprice: {
       type: Number,

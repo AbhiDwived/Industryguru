@@ -18,11 +18,40 @@ export default function Home() {
   function getAPIData() {
     dispatch(getProduct());
   }
-  const sortedProducts = products.sort((a, b) => b.discount - a.discount);
+  // Helper function to get display price for products with variants
+  const getDisplayPrice = (product) => {
+    if (product.variants && product.variants.length > 0) {
+      const firstVariant = product.variants[0];
+      return {
+        finalprice: firstVariant.finalprice,
+        baseprice: firstVariant.baseprice,
+        discount: firstVariant.discount
+      };
+    }
+    return {
+      finalprice: product.finalprice,
+      baseprice: product.baseprice,
+      discount: product.discount
+    };
+  };
+
+  const sortedProducts = products.sort((a, b) => {
+    const aPrice = getDisplayPrice(a);
+    const bPrice = getDisplayPrice(b);
+    return bPrice.discount - aPrice.discount;
+  });
+  
   const getTrendingProducts = () => {
     return allproducts
-      .filter((product) => product.discount > 0)
-      .sort((a, b) => b.discount - a.discount)
+      .filter((product) => {
+        const displayPrice = getDisplayPrice(product);
+        return displayPrice.discount > 0;
+      })
+      .sort((a, b) => {
+        const aPrice = getDisplayPrice(a);
+        const bPrice = getDisplayPrice(b);
+        return bPrice.discount - aPrice.discount;
+      })
       .slice(0, 12);
   };
   const trendingProducts = getTrendingProducts();
@@ -140,15 +169,22 @@ export default function Home() {
                             : `${item.name}`}
                         </Link>
                         <div className="d-flex align-items-center justify-content-center mt-2">
-                          <h5>&#8377;{item.finalprice}</h5>
-                          <h6 className="text-muted ml-2">
-                            <del className="text-danger">
-                              &#8377;{item.baseprice}
-                            </del>{" "}
-                            <sup className="text-success">
-                              {item.discount}% OFF
-                            </sup>
-                          </h6>
+                          {(() => {
+                            const displayPrice = getDisplayPrice(item);
+                            return (
+                              <>
+                                <h5>&#8377;{displayPrice.finalprice}</h5>
+                                <h6 className="text-muted ml-2">
+                                  <del className="text-danger">
+                                    &#8377;{displayPrice.baseprice}
+                                  </del>{" "}
+                                  <sup className="text-success">
+                                    {displayPrice.discount}% OFF
+                                  </sup>
+                                </h6>
+                              </>
+                            );
+                          })()} 
                         </div>
                       </div>
                     </div>
@@ -199,11 +235,18 @@ export default function Home() {
                       : `${item.name}`}
                   </Link>
                   <div className="d-flex align-items-center justify-content-center mt-2 text-s">
-                    <h6>&#8377;{item.finalprice}</h6>
-                    <h6 className="text-muted ml-2 text-s">
-                      <del className="text-danger">&#8377;{item.baseprice}</del>{" "}
-                      <sup className="text-success">{item.discount}% Off</sup>
-                    </h6>
+                    {(() => {
+                      const displayPrice = getDisplayPrice(item);
+                      return (
+                        <>
+                          <h6>&#8377;{displayPrice.finalprice}</h6>
+                          <h6 className="text-muted ml-2 text-s">
+                            <del className="text-danger">&#8377;{displayPrice.baseprice}</del>{" "}
+                            <sup className="text-success">{displayPrice.discount}% Off</sup>
+                          </h6>
+                        </>
+                      );
+                    })()} 
                   </div>
                 </div>
               </div>
@@ -247,13 +290,20 @@ export default function Home() {
                         : `${item.name}`}
                     </Link>
                     <div className="d-flex align-items-center justify-content-center mt-2 text-s">
-                      <h6>&#8377;{item.finalprice}</h6>
-                      <h6 className="text-muted ml-2 text-s">
-                        <del className="text-danger">
-                          &#8377;{item.baseprice}
-                        </del>{" "}
-                        <sup className="text-success">{item.discount}% OFF</sup>
-                      </h6>
+                      {(() => {
+                        const displayPrice = getDisplayPrice(item);
+                        return (
+                          <>
+                            <h6>&#8377;{displayPrice.finalprice}</h6>
+                            <h6 className="text-muted ml-2 text-s">
+                              <del className="text-danger">
+                                &#8377;{displayPrice.baseprice}
+                              </del>{" "}
+                              <sup className="text-success">{displayPrice.discount}% OFF</sup>
+                            </h6>
+                          </>
+                        );
+                      })()} 
                     </div>
                   </div>
                 </div>

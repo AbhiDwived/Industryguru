@@ -105,12 +105,17 @@ export default function Login() {
                     <Link to="/forget-password-1">Reset</Link>
                   </p>
 
-                  {/* 👇 Add this section for Vendor Login */}
-                  <h3 className="form__desc text-center mt-4">
-                    <strong>
-                      <Link to="/vendor-login">Vendor Login</Link>
-                    </strong>
-                  </h3>
+                  <div className="text-center mt-4">
+                    <p className="form__desc">
+                      Want to become a seller?{" "}
+                      <Link to="/vendor_registation">Register as Vendor</Link>
+                    </p>
+                    <p className="form__desc">
+                      <strong>
+                        <Link to="/vendor-login">Vendor Login</Link>
+                      </strong>
+                    </p>
+                  </div>
                 </Form>
               );
             }}

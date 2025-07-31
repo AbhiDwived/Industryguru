@@ -178,7 +178,7 @@ export default function BecomeSeller() {
 
       if (result.result === "Done") {
         showToast.success("Registration successful! Please login.");
-        navigate("/vendor/login");
+        navigate("/vendor-login");
       } else {
         showToast.error(result.message);
       }
@@ -513,7 +513,7 @@ export default function BecomeSeller() {
                   
                   <p className="form__info">
                     Already have a vendor account?{" "}
-                    <Link to="/vendor/login">Login</Link>
+                    <Link to="/vendor-login">Login</Link>
                   </p>
                   
                   <p className="form__desc">

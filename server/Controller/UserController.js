@@ -90,36 +90,76 @@ async function verifyOtp(req, res) {
   const { email, otp } = req.body;
 
   try {
+    console.log(`\n=== OTP Verification Request ===`);
+    console.log(`Email: ${email}`);
+    console.log(`OTP: ${otp}`);
+
     const user = await User.findOne({ email });
 
     if (!user) {
+      console.log(`User not found for email: ${email}`);
       return res.send({ result: "Fail", message: "User not found" });
     }
 
-    // Check if phone is already verified
-    if (user.isPhoneVerified) {
-      return res.send({ result: "Fail", message: "Phone number is already verified." });
+    console.log(`User found:`);
+    console.log(`- ID: ${user._id}`);
+    console.log(`- Name: ${user.name}`);
+    console.log(`- isPhoneVerified: ${user.isPhoneVerified}`);
+    console.log(`- OTP in DB: ${user.otp}`);
+    console.log(`- OTP Generated At: ${user.otpGeneratedAt}`);
+
+    // Force check the actual boolean value
+    const isVerified = user.isPhoneVerified;
+    console.log(`Strict verification check: ${isVerified} (type: ${typeof isVerified})`);
+
+    // Only return "already verified" if explicitly true
+    if (isVerified === true) {
+      console.log(`Phone already verified, redirecting to login`);
+      return res.send({ result: "Done", message: "Phone number is already verified. You can login now." });
     }
 
-    // If OTP doesn't match or is expired
-    const now = new Date();
-    const expiry = new Date(user.otpGeneratedAt);
-    expiry.setMinutes(expiry.getMinutes() + 30);
+    // Check if OTP exists
+    if (!user.otp) {
+      console.log(`No OTP found in database`);
+      return res.send({ result: "Fail", message: "No OTP found. Please request a new OTP." });
+    }
 
-    if (
-      !user.otp ||
-      String(user.otp) !== String(otp) ||
-      now > expiry
-    ) {
-      return res.send({ result: "Fail", message: "Invalid or expired OTP" });
+    // Check OTP expiry (30 minutes)
+    const now = new Date();
+    const otpGeneratedTime = new Date(user.otpGeneratedAt);
+    const expiry = new Date(otpGeneratedTime.getTime() + 30 * 60 * 1000);
+    
+    console.log(`Time check:`);
+    console.log(`- Now: ${now}`);
+    console.log(`- OTP Generated: ${otpGeneratedTime}`);
+    console.log(`- Expiry: ${expiry}`);
+    console.log(`- Is Expired: ${now > expiry}`);
+
+    if (now > expiry) {
+      console.log(`OTP expired`);
+      return res.send({ result: "Fail", message: "OTP has expired. Please request a new OTP." });
+    }
+
+    // Check if OTP matches
+    const dbOtp = String(user.otp);
+    const inputOtp = String(otp);
+    console.log(`OTP comparison: DB='${dbOtp}' vs Input='${inputOtp}'`);
+    
+    if (dbOtp !== inputOtp) {
+      console.log(`OTP mismatch`);
+      return res.send({ result: "Fail", message: "Invalid OTP. Please try again." });
     }
 
     // Clear OTP and verify phone
+    console.log(`OTP verified successfully, updating user...`);
     user.otp = null;
-    user.otpGeneratedAt = null; // ✅ Use correct field
+    user.otpGeneratedAt = null;
     user.isPhoneVerified = true;
     await user.save();
 
+    console.log(`User updated successfully`);
+    console.log(`=== OTP Verification Complete ===\n`);
+    
     res.send({ result: "Done", message: "Phone verified successfully!" });
 
   } catch (error) {

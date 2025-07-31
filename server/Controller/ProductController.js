@@ -372,56 +372,102 @@ async function getProductByBrand(req, res) {
 }
 async function updateProduct(req, res) {
   try {
+    console.log("Update request body:", req.body);
+    console.log("Update request files:", req.files);
+    
     var data = await Product.findOne({ _id: req.params._id });
     if (data) {
-      data.name = req.body.name ?? data.name;
-      data.maincategory = req.body.maincategory ?? data.maincategory;
-      data.subcategory = req.body.subcategory ?? data.subcategory;
-      data.brand = req.body.brand ?? data.brand;
-      data.color = req.body.color ?? data.color;
-      data.size = req.body.size ?? data.size;
-      data.baseprice = req.body.baseprice ?? data.baseprice;
-      data.discount = req.body.discount ?? data.discount;
-      data.finalprice = req.body.finalprice ?? data.finalprice;
-      data.stock = req.body.stock ?? data.stock;
-      data.description = req.body.description ?? data.description;
-      data.specification = req.body.specification ?? data.specification;
+      // Update basic fields
+      if (req.body.name) data.name = req.body.name;
+      if (req.body.maincategory) data.maincategory = req.body.maincategory;
+      if (req.body.subcategory) data.subcategory = req.body.subcategory;
+      if (req.body.brand) data.brand = req.body.brand;
+      if (req.body.slug) data.slug = req.body.slug;
+      if (req.body.subSlug) data.subSlug = req.body.subSlug;
+      if (req.body.color !== undefined) data.color = req.body.color;
+      if (req.body.size !== undefined) data.size = req.body.size;
+      if (req.body.baseprice !== undefined) data.baseprice = Number(req.body.baseprice);
+      if (req.body.discount !== undefined) data.discount = Number(req.body.discount);
+      if (req.body.finalprice !== undefined) data.finalprice = Number(req.body.finalprice);
+      if (req.body.stock !== undefined) data.stock = Number(req.body.stock);
+      if (req.body.description !== undefined) data.description = req.body.description;
+      
+      // Handle specification
+      if (req.body.specification) {
+        try {
+          data.specification = JSON.parse(req.body.specification);
+        } catch (parseError) {
+          console.error("Error parsing specification:", parseError);
+        }
+      }
+      
+      // Handle variants
+      if (req.body.variants) {
+        try {
+          data.variants = JSON.parse(req.body.variants);
+        } catch (parseError) {
+          console.error("Error parsing variants:", parseError);
+        }
+      }
 
+      // Handle file uploads
       try {
-        if (req.files.pic1[0] && data.pic1) {
-          fs.unlinkSync("public/products/" + data.pic1);
+        if (req.files?.pic1?.[0]) {
+          if (data.pic1) {
+            try {
+              fs.unlinkSync("public/products/" + data.pic1);
+            } catch (unlinkError) {}
+          }
+          data.pic1 = req.files.pic1[0].filename;
         }
-        data.pic1 = req.files.pic1[0].filename;
       } catch (error) {}
       try {
-        if (req.files.pic2[0] && data.pic2) {
-          fs.unlinkSync("public/products/" + data.pic2);
+        if (req.files?.pic2?.[0]) {
+          if (data.pic2) {
+            try {
+              fs.unlinkSync("public/products/" + data.pic2);
+            } catch (unlinkError) {}
+          }
+          data.pic2 = req.files.pic2[0].filename;
         }
-        data.pic2 = req.files.pic2[0].filename;
       } catch (error) {}
       try {
-        if (req.files.pic3[0] && data.pic3) {
-          fs.unlinkSync("public/products/" + data.pic3);
+        if (req.files?.pic3?.[0]) {
+          if (data.pic3) {
+            try {
+              fs.unlinkSync("public/products/" + data.pic3);
+            } catch (unlinkError) {}
+          }
+          data.pic3 = req.files.pic3[0].filename;
         }
-        data.pic3 = req.files.pic3[0].filename;
       } catch (error) {}
       try {
-        if (req.files.pic4[0] && data.pic4) {
-          fs.unlinkSync("public/products/" + data.pic4);
+        if (req.files?.pic4?.[0]) {
+          if (data.pic4) {
+            try {
+              fs.unlinkSync("public/products/" + data.pic4);
+            } catch (unlinkError) {}
+          }
+          data.pic4 = req.files.pic4[0].filename;
         }
-        data.pic4 = req.files.pic4[0].filename;
       } catch (error) {}
 
       await data.save();
+      console.log("Product updated successfully:", data._id);
       res.send({ result: "Done", message: "Record is Updated!!!" });
-    } else res.send({ result: "Fail", message: "Invalid Id!!!" });
+    } else {
+      res.status(404).send({ result: "Fail", message: "Product not found!!!" });
+    }
   } catch (error) {
-    if (error.keyValue)
-      res.send({ result: "Fail", message: "Name Must Be Unique!!!" });
-    else
-      res
-        .status(500)
-        .send({ result: "Fail", message: "Internal Server Error!!!" });
+    console.error("Update product error:", error);
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      res.status(400).send({ result: "Fail", message: validationErrors.join(', ') });
+    } else if (error.keyValue) {
+      res.status(400).send({ result: "Fail", message: "Name Must Be Unique!!!" });
+    } else {
+      res.status(500).send({ result: "Fail", message: "Internal Server Error!!!", error: error.message });
+    }
   }
 }
 async function updateProductByVendor(req, res) {

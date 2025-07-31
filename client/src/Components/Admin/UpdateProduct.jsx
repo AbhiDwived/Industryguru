@@ -9,8 +9,10 @@ import {
   getProduct,
 } from "../../Store/ActionCreators/ProductActionCreators";
 import { getMaincategory } from "../../Store/ActionCreators/MaincategoryActionCreators";
-import { getSubcategory } from "../../Store/ActionCreators/SubcategoryActionCreators";
-import { getBrand } from "../../Store/ActionCreators/BrandActionCreators";
+import { getSubcategory, getSubcategoryByMainId } from "../../Store/ActionCreators/SubcategoryActionCreators";
+import { getBrand, getBrandBySubCategoryId } from "../../Store/ActionCreators/BrandActionCreators";
+import { getAdminSlug } from "../../Store/ActionCreators/AdminSlugActionCreators";
+import { getAdminSubSlugByParent, getAdminSubSlug } from "../../Store/ActionCreators/AdminSlugActionCreators";
 import { showToast } from "../../utils/toast";
 
 export default function UpdateProduct() {
@@ -24,7 +26,20 @@ export default function UpdateProduct() {
     pic1: "",
   });
   let [show, setShow] = useState(false);
-  let [data, setData] = useState({});
+  let [data, setData] = useState({
+    name: "",
+    maincategory: "",
+    subcategory: "",
+    brand: "",
+    slug: "",
+    subSlug: "",
+    color: "",
+    size: "",
+    baseprice: "",
+    discount: "",
+    stock: "",
+    description: ""
+  });
   let navigate = useNavigate();
   let dispatch = useDispatch();
   let { _id } = useParams();
@@ -36,8 +51,11 @@ export default function UpdateProduct() {
   let allsubcategories = useSelector((state) => state.SubcategoryStateData);
   let allbrands = useSelector((state) => state.BrandStateData);
   let allproducts = useSelector((state) => state.ProductStateData);
+  let allSlugs = useSelector((state) => state.AdminSlugStateData);
+  let allSubSlugs = useSelector((state) => state.AdminSubSlugStateData);
 
   const [specsData, setSpecsData] = useState([{ key: "", value: "" }]);
+  const [variants, setVariants] = useState([]);
   const handleInputChange = (index, keyOrValue, newValue) => {
     const updatedFormData = [...specsData];
     updatedFormData[index][keyOrValue] = newValue;
@@ -69,6 +87,42 @@ export default function UpdateProduct() {
       };
     });
   }
+
+  // Handle maincategory change
+  const handleMainCategoryChange = (e) => {
+    const { name, value } = e.target;
+    setData((old) => ({
+      ...old,
+      [name]: value,
+      subcategory: "", // Reset subcategory when maincategory changes
+      brand: "" // Reset brand when maincategory changes
+    }));
+    if (value) {
+      dispatch(getSubcategoryByMainId(value));
+    }
+  };
+
+  // Handle subcategory change
+  const handleSubCategoryChange = (e) => {
+    const { name, value } = e.target;
+    setData((old) => ({
+      ...old,
+      [name]: value,
+      brand: "" // Reset brand when subcategory changes
+    }));
+    if (value) {
+      dispatch(getBrandBySubCategoryId(value));
+    }
+  };
+
+  // Handle slug change
+  const handleSlugChange = (e) => {
+    getInputData(e);
+    const selectedSlugId = e.target.value;
+    if (selectedSlugId) {
+      dispatch(getAdminSubSlugByParent(selectedSlugId));
+    }
+  };
   function getInputFile(e) {
     let { name, files } = e.target;
     setData((old) => {
@@ -90,22 +144,27 @@ export default function UpdateProduct() {
       );
       var item = new FormData();
       item.append("_id", _id);
-      item.append("name", data.name);
-      item.append("maincategory", data.maincategory || maincategory[0].name);
-      item.append("subcategory", data.subcategory || subcategory[0].name);
-      item.append("brand", data.brand || brand[0].name);
-      item.append("color", data.color);
-      item.append("size", data.size);
-      item.append("baseprice", parseInt(data.baseprice));
-      item.append("discount", parseInt(data.discount));
+      item.append("name", data.name || "");
+      item.append("maincategory", data.maincategory || "");
+      item.append("subcategory", data.subcategory || "");
+      item.append("brand", data.brand || "");
+      item.append("slug", data.slug || "");
+      item.append("subSlug", data.subSlug || "");
+      item.append("color", data.color || "");
+      item.append("size", data.size || "");
+      item.append("baseprice", parseInt(data.baseprice || 0));
+      item.append("discount", parseInt(data.discount || 0));
       item.append("finalprice", fp);
-      item.append("stock", data.stock);
-      item.append("description", data.description);
+      item.append("stock", data.stock || "");
+      item.append("description", data.description || "");
       item.append("specification", JSON.stringify(specsData));
-      item.append("pic0", data.pic1);
-      item.append("pic1", data.pic2);
-      item.append("pic2", data.pic3);
-      item.append("pic3", data.pic4);
+      if (variants.length > 0) {
+        item.append("variants", JSON.stringify(variants));
+      }
+      if (data.pic1) item.append("pic1", data.pic1);
+      if (data.pic2) item.append("pic2", data.pic2);
+      if (data.pic3) item.append("pic3", data.pic3);
+      if (data.pic4) item.append("pic4", data.pic4);
       const loadingToast = showToast.loading('Updating product...');
       dispatch(updateProduct(item));
       showToast.success('Product updated successfully!');
@@ -116,40 +175,54 @@ export default function UpdateProduct() {
     }
   }
 
-  function getAPIData() {
-    dispatch(getMaincategory());
-    dispatch(getSubcategory());
-    dispatch(getBrand());
+
+  useEffect(() => {
+    if (!allproducts.length || !allmaincategories.length) {
+      dispatch(getMaincategory());
+      dispatch(getProduct());
+    }
+    if (!allSlugs.length) {
+      dispatch(getAdminSlug());
+    }
+    if (!allSubSlugs.length) {
+      dispatch(getAdminSubSlug());
+    }
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
     if (allmaincategories.length) setMaincategory(allmaincategories);
     if (allsubcategories.length) setSubcategory(allsubcategories);
     if (allbrands.length) setBrand(allbrands);
 
-    dispatch(getProduct());
-
-    if (allproducts.length) {
+    if (allproducts.length && _id) {
       let item = allproducts.find((x) => x._id === _id);
-      if (item) {
-        setData({ ...item, brand: item?.brand?._id });
-        setSpecsData(item.specification);
+      if (item && !data.name) {
+        setData({ 
+          ...item, 
+          brand: item?.brand?._id || item?.brand,
+          maincategory: item?.maincategory?._id || item?.maincategory,
+          subcategory: item?.subcategory?._id || item?.subcategory,
+          slug: item?.slug?._id || item?.slug,
+          subSlug: item?.subSlug?._id || item?.subSlug
+        });
+        setSpecsData(item.specification || [{ key: "", value: "" }]);
+        setVariants(item.variants || []);
+        
+        // Load related data for the current product
+        if (item?.maincategory?._id || item?.maincategory) {
+          dispatch(getSubcategoryByMainId(item?.maincategory?._id || item?.maincategory));
+        }
+        if (item?.subcategory?._id || item?.subcategory) {
+          dispatch(getBrandBySubCategoryId(item?.subcategory?._id || item?.subcategory));
+        }
+        if (item?.slug?._id || item?.slug) {
+          dispatch(getAdminSubSlugByParent(item?.slug?._id || item?.slug));
+        }
       }
     }
-  }
-  useEffect(() => {
-    getAPIData();
     // eslint-disable-next-line
-  }, [allproducts.length]);
-  useEffect(() => {
-    getAPIData();
-    // eslint-disable-next-line
-  }, [allmaincategories.length]);
-  useEffect(() => {
-    getAPIData();
-    // eslint-disable-next-line
-  }, [allsubcategories.length]);
-  useEffect(() => {
-    getAPIData();
-    // eslint-disable-next-line
-  }, [allbrands.length]);
+  }, [allproducts.length, allmaincategories.length, allsubcategories.length, allbrands.length, allSlugs.length, allSubSlugs.length]);
   return (
     <div className="page_section">
       <div className="container-fluid my-3">
@@ -158,277 +231,406 @@ export default function UpdateProduct() {
             <SideNavbar />
           </div>
           <div className="col-md-9">
-            <h5 className="header-color text-light p-2 text-center">Product</h5>
-            <form onSubmit={postData} encType="multipart/form-data">
-              <div className="mb-3">
-                <label>Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={data.name}
-                  onChange={getInputData}
-                  className="form-control"
-                  placeholder="Name"
-                />
-                {show ? <p className="text-danger">{errorMessage.name}</p> : ""}
-              </div>
-              <div className="row">
-                <div className="col-md-3 mb-3">
-                  <label>Maincategory</label>
-                  <select
-                    name="maincategory"
-                    value={data.maincategory}
-                    onChange={getInputData}
-                    className="form-control"
-                  >
-                    {maincategory.map((item, index) => {
-                      return (
-                        <option key={index} value={item._id}>
-                          {item.name}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-                <div className="col-md-3 mb-3">
-                  <label>Subcategory</label>
-                  <select
-                    name="subcategory"
-                    value={data.subcategory}
-                    onChange={getInputData}
-                    className="form-control"
-                  >
-                    {subcategory.map((item, index) => {
-                      return (
-                        <option key={index} value={item._id}>
-                          {item.name}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-                <div className="col-md-3 mb-3">
-                  <label>Brand</label>
-                  <select
-                    name="brand"
-                    value={data.brand}
-                    onChange={getInputData}
-                    className="form-control"
-                  >
-                    {brand.map((item, index) => {
-                      return (
-                        <option key={index} value={item._id}>
-                          {item.name}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-                <div className="col-md-3 mb-3">
-                  <label>Stock</label>
-                  <select
-                    name="stock"
-                    value={data.stock}
-                    onChange={getInputData}
-                    className="form-control"
-                  >
-                    <option value="In Stock">In Stock</option>
-                    <option value="Out Of Stock">Out Of Stock</option>
-                  </select>
+            <div className="box__layout">
+              <div className="header__layout">
+                <div className="row">
+                  <h3 className="flex-1">Update Product</h3>
                 </div>
               </div>
-              <div className="row">
-                <div className="col-md-6 mb-3">
-                  <label>Color</label>
-                  <input
-                    type="text"
-                    name="color"
-                    value={data.color}
-                    placeholder="color"
-                    onChange={getInputData}
-                    className="form-control"
-                  />
-                  {show ? (
-                    <p className="text-danger">{errorMessage.color}</p>
-                  ) : (
-                    ""
-                  )}
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label>Size</label>
-                  <input
-                    type="text"
-                    name="size"
-                    value={data.size}
-                    placeholder="size"
-                    onChange={getInputData}
-                    className="form-control"
-                  />
-                  {show ? (
-                    <p className="text-danger">{errorMessage.size}</p>
-                  ) : (
-                    ""
-                  )}
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6 mb-3">
-                  <label>Base Price</label>
-                  <input
-                    type="number"
-                    name="baseprice"
-                    value={data.baseprice}
-                    placeholder="Base Price"
-                    onChange={getInputData}
-                    className="form-control"
-                  />
-                  {show ? (
-                    <p className="text-danger">{errorMessage.baseprice}</p>
-                  ) : (
-                    ""
-                  )}
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label>Discount</label>
-                  <input
-                    type="number"
-                    name="discount"
-                    value={data.discount}
-                    placeholder="Discount"
-                    min={0}
-                    onChange={getInputData}
-                    className="form-control"
-                  />
-                  {show ? (
-                    <p className="text-danger">{errorMessage.discount}</p>
-                  ) : (
-                    ""
-                  )}
-                </div>
-              </div>
-              <div className="inputField">
-                <label>Specification</label>
-                <div>
-                  {specsData?.map((pair, index) => (
-                    <div className="row mb-2" key={index}>
-                      <div className="col-md-4">
-                        <input
-                          type="text"
-                          name="skey"
-                          onChange={(e) =>
-                            handleInputChange(index, "key", e.target.value)
-                          }
-                          value={pair?.key}
-                          className="form-control"
-                          placeholder="Enter Specification Key :"
+              <div>
+                <form onSubmit={postData}>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <div className="ui__form">
+                        <label className="ui__form__label">Product Name</label>
+                        <input 
+                          name="name" 
+                          value={data.name || ""} 
+                          onChange={getInputData} 
+                          placeholder="Product Name" 
+                          required 
+                          className="ui__form__field"
                         />
-                        {show ? (
-                          <p className="text-danger">
-                            {errorMessage.specification}
-                          </p>
-                        ) : (
-                          ""
-                        )}
+                        {show ? <p className="text-danger">{errorMessage.name}</p> : ""}
                       </div>
-                      <div className="col-md-4">
-                        <input
-                          type="text"
-                          name="sval"
-                          onChange={(e) =>
-                            handleInputChange(index, "value", e.target.value)
-                          }
-                          value={pair?.value}
-                          className="form-control"
-                          placeholder="Enter Specification Value :"
+                      <div className="ui__form">
+                        <label className="ui__form__label">Description</label>
+                        <textarea 
+                          name="description" 
+                          value={data.description || ""} 
+                          onChange={getInputData} 
+                          placeholder="Product description" 
+                          rows="4"
+                          className="ui__form__field"
                         />
                       </div>
-                      <div className="col-md-3">
-                        <button
-                          type="button"
-                          className="btn main-color w-100"
-                          onClick={() => handleRemovePair(index)}
-                        >
-                          Delete
-                        </button>
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Main Category</label>
+                            <select 
+                              name="maincategory" 
+                              value={data.maincategory || ""} 
+                              onChange={handleMainCategoryChange} 
+                              className="ui__form__field"
+                              required
+                            >
+                              <option value="">Select Category</option>
+                              {maincategory.map((item, index) => (
+                                <option key={index} value={item._id}>{item.name}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Sub Category</label>
+                            <select 
+                              name="subcategory" 
+                              value={data.subcategory || ""} 
+                              onChange={handleSubCategoryChange} 
+                              className="ui__form__field"
+                              required
+                            >
+                              <option value="">Select Sub Category</option>
+                              {subcategory.map((item, index) => (
+                                <option key={index} value={item._id}>{item.name}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Brand</label>
+                            <select 
+                              name="brand" 
+                              value={data.brand || ""} 
+                              onChange={getInputData} 
+                              className="ui__form__field"
+                              required
+                            >
+                              <option value="">Select Brand</option>
+                              {brand.map((item, index) => (
+                                <option key={index} value={item._id}>{item.name}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Slug</label>
+                            <select
+                              name="slug" 
+                              value={data.slug || ""} 
+                              onChange={handleSlugChange} 
+                              className="ui__form__field"
+                            >
+                              <option value="">Select Slug</option>
+                              {allSlugs.map((item, index) => (
+                                <option key={index} value={item._id}>{item.slug}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Sub Slug</label>
+                            <select
+                              name="subSlug"
+                              value={data.subSlug || ""}
+                              onChange={getInputData}
+                              className="ui__form__field"
+                              disabled={!data.slug}
+                            >
+                              <option value="">Select Sub Slug</option>
+                              {allSubSlugs.map((item, index) => (
+                                <option key={index} value={item._id}>{item.slug}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  ))}
-
-                  <div className="row">
-                    <div className="col-md-3">
-                      <button
-                        type="button"
-                        className="btn bg-success text-white w-100"
-                        onClick={handleAddPair}
-                      >
-                        Add
-                      </button>
+                    <div className="col-md-6">
+                      <h5>Product Images</h5>
+                      <div className="row">
+                        <div className="col-md-6 mb-3">
+                          <div className="profile__photo profile__photo__rouned">
+                            <div className="profile__photo__inner profile__photo__rouned">
+                              <input type="file" name="pic1" onChange={getInputFile} className="form-control" />
+                              <div className="overlay text-center profile__photo__rouned">
+                                <p>
+                                  <i className="fa fa-image"></i>
+                                  <br />
+                                  Upload Image 1
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-6 mb-3">
+                          <div className="profile__photo profile__photo__rouned">
+                            <div className="profile__photo__inner profile__photo__rouned">
+                              <input type="file" name="pic2" onChange={getInputFile} className="form-control" />
+                              <div className="overlay text-center profile__photo__rouned">
+                                <p>
+                                  <i className="fa fa-image"></i>
+                                  <br />
+                                  Upload Image 2
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-6 mb-3">
+                          <div className="profile__photo profile__photo__rouned">
+                            <div className="profile__photo__inner profile__photo__rouned">
+                              <input type="file" name="pic3" onChange={getInputFile} className="form-control" />
+                              <div className="overlay text-center profile__photo__rouned">
+                                <p>
+                                  <i className="fa fa-image"></i>
+                                  <br />
+                                  Upload Image 3
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-6 mb-3">
+                          <div className="profile__photo profile__photo__rouned">
+                            <div className="profile__photo__inner profile__photo__rouned">
+                              <input type="file" name="pic4" onChange={getInputFile} className="form-control" />
+                              <div className="overlay text-center profile__photo__rouned">
+                                <p>
+                                  <i className="fa fa-image"></i>
+                                  <br />
+                                  Upload Image 4
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                  {/* VARIANTS SECTION */}
+                  {variants && variants.length > 0 ? (
+                    <div className="card mt-4 mb-4">
+                      <div className="card-header bg-light">
+                        <h5 className="mb-0">Product Variants ({variants.length})</h5>
+                      </div>
+                      <div className="card-body">
+                        {variants.map((variant, idx) => (
+                          <div key={idx} className="border p-3 mb-3 rounded">
+                            <h6>Variant {idx + 1}</h6>
+                            <div className="row">
+                              <div className="col-md-6">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Color</label>
+                                  <input
+                                    value={variant.color}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].color = e.target.value;
+                                      setVariants(newVariants);
+                                    }}
+                                    className="ui__form__field"
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Size</label>
+                                  <input
+                                    value={variant.size}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].size = e.target.value;
+                                      setVariants(newVariants);
+                                    }}
+                                    className="ui__form__field"
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Base Price</label>
+                                  <input
+                                    type="number"
+                                    value={variant.baseprice}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].baseprice = Number(e.target.value);
+                                      newVariants[idx].finalprice = Math.round(newVariants[idx].baseprice - (newVariants[idx].baseprice * newVariants[idx].discount) / 100);
+                                      setVariants(newVariants);
+                                    }}
+                                    className="ui__form__field"
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Discount (%)</label>
+                                  <input
+                                    type="number"
+                                    value={variant.discount}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].discount = Number(e.target.value);
+                                      newVariants[idx].finalprice = Math.round(newVariants[idx].baseprice - (newVariants[idx].baseprice * newVariants[idx].discount) / 100);
+                                      setVariants(newVariants);
+                                    }}
+                                    className="ui__form__field"
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Stock</label>
+                                  <input
+                                    type="number"
+                                    value={variant.stock}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].stock = Number(e.target.value);
+                                      setVariants(newVariants);
+                                    }}
+                                    className="ui__form__field"
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Final Price (Auto-calculated)</label>
+                                  <input
+                                    value={variant.finalprice}
+                                    readOnly
+                                    className="ui__form__field"
+                                    style={{ backgroundColor: '#f8f9fa' }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="card mt-4 mb-4">
+                      <div className="card-header bg-light">
+                        <h5 className="mb-0">Product Details</h5>
+                      </div>
+                      <div className="card-body">
+                        <div className="row">
+                          <div className="col-md-6">
+                            <div className="ui__form">
+                              <label className="ui__form__label">Color</label>
+                              <input
+                                name="color"
+                                value={data.color || ""}
+                                onChange={getInputData}
+                                placeholder="Color"
+                                className="ui__form__field"
+                              />
+                              {show ? <p className="text-danger">{errorMessage.color}</p> : ""}
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="ui__form">
+                              <label className="ui__form__label">Size</label>
+                              <input
+                                name="size"
+                                value={data.size || ""}
+                                onChange={getInputData}
+                                placeholder="Size"
+                                className="ui__form__field"
+                              />
+                              {show ? <p className="text-danger">{errorMessage.size}</p> : ""}
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="ui__form">
+                              <label className="ui__form__label">Base Price</label>
+                              <input
+                                name="baseprice"
+                                value={data.baseprice || ""}
+                                onChange={getInputData}
+                                placeholder="Base Price"
+                                type="number"
+                                className="ui__form__field"
+                              />
+                              {show ? <p className="text-danger">{errorMessage.baseprice}</p> : ""}
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="ui__form">
+                              <label className="ui__form__label">Discount (%)</label>
+                              <input
+                                name="discount"
+                                value={data.discount || ""}
+                                onChange={getInputData}
+                                placeholder="Discount (%)"
+                                type="number"
+                                className="ui__form__field"
+                              />
+                              {show ? <p className="text-danger">{errorMessage.discount}</p> : ""}
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="ui__form">
+                              <label className="ui__form__label">Stock</label>
+                              <input
+                                name="stock"
+                                value={data.stock || ""}
+                                onChange={getInputData}
+                                placeholder="Stock"
+                                type="number"
+                                className="ui__form__field"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="ui__form">
+                          <label className="ui__form__label">Specifications</label>
+                          {specsData?.map((spec, idx) => (
+                            <div key={idx} className="d-flex mb-2">
+                              <input
+                                value={spec.key}
+                                onChange={e => handleInputChange(idx, 'key', e.target.value)}
+                                placeholder="Key"
+                                className="ui__form__field me-2"
+                              />
+                              <input
+                                value={spec.value}
+                                onChange={e => handleInputChange(idx, 'value', e.target.value)}
+                                placeholder="Value"
+                                className="ui__form__field me-2"
+                              />
+                            </div>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={handleAddPair}
+                            className="btn btn-outline-primary btn-sm"
+                          >
+                            + Add Spec
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {/* Only one submit button at the end of the form */}
+                  <div className="ui__form mt-4">
+                    <button
+                      type="submit"
+                      className="ui__form__button w-100"
+                    >
+                      Update Product
+                    </button>
+                  </div>
+                </form>
               </div>
-              <div className="mb-3">
-                <label>Description</label>
-                <textarea
-                  name="description"
-                  rows="5"
-                  value={data.description}
-                  className="form-control"
-                  placeholder="Description..."
-                  onChange={getInputData}
-                ></textarea>
-              </div>
-              <div className="row">
-                <div className="col-md-6 mb-3">
-                  <label>Pic1</label>
-                  <input
-                    type="file"
-                    name="pic1"
-                    onChange={getInputFile}
-                    className="form-control"
-                  />
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label>Pic2</label>
-                  <input
-                    type="file"
-                    name="pic2"
-                    onChange={getInputFile}
-                    className="form-control"
-                  />
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label>Pic3</label>
-                  <input
-                    type="file"
-                    name="pic3"
-                    onChange={getInputFile}
-                    className="form-control"
-                  />
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label>Pic4</label>
-                  <input
-                    type="file"
-                    name="pic4"
-                    onChange={getInputFile}
-                    className="form-control"
-                  />
-                </div>
-              </div>
-              <div className="mb-3">
-                <button
-                  type="button"
-                  className="btn btn-success w-50"
-                  onClick={() => window.history.back()}
-                >
-                  Back
-                </button>
-                <button type="submit" className="btn header-color w-50">
-                  Update
-                </button>
-              </div>
-            </form>
+            </div>
           </div>
         </div>
       </div>

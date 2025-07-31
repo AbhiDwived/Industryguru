@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiLink } from '../utils/utils';
 import { showToast } from '../utils/toast';
@@ -6,6 +6,14 @@ import { showToast } from '../utils/toast';
 export default function Verify() {
   const [otp, setOtp] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const email = localStorage.getItem('signup-user');
+    if (!email) {
+      showToast.error('No verification session found. Please sign up again.');
+      navigate('/signup');
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +35,7 @@ export default function Verify() {
       const data = await response.json();
 
       if (data.result === 'Done') {
-        showToast.success('Account verified successfully! You can now log in.');
+        showToast.success(data.message || 'Account verified successfully! You can now log in.');
         localStorage.removeItem('signup-user');
         navigate('/login');
       } else {

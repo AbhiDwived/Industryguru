@@ -424,7 +424,7 @@ export default function Navbar({ product }) {
                     </div>
                   </div>
                 ) : (
-                  <button className="Login" onClick={logout}>
+                  <button className="Login" onClick={() => navigate('/login')}>
                     <div className="sm mr-1">
                       <FontAwesomeIcon
                         icon={faUser}
@@ -601,7 +601,7 @@ export default function Navbar({ product }) {
                     <button
                       className="Login"
                       onClick={() => {
-                        logout();
+                        navigate('/login');
                         toggleSidebar();
                       }}
                     >

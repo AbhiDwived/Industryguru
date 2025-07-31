@@ -322,7 +322,12 @@ router.get("/productByMainCategory/:_id", getProductByMainCategory);
 router.get("/productBySubCategory/:_id", getProductBySubCategory);
 router.get("/productByBrand/:_id", getProductByBrand);
 router.get("/productBySlug", getProductBySlugCombination);
-router.put("/product/:_id", upload.array("pic", 4), verifyAdmin, updateProduct);
+router.put("/product/:_id", upload.fields([
+  { name: "pic1", maxCount: 1 },
+  { name: "pic2", maxCount: 1 },
+  { name: "pic3", maxCount: 1 },
+  { name: "pic4", maxCount: 1 },
+]), verifyAdmin, updateProduct);
 router.delete("/product/:_id", verifyAdmin, deleteProduct);
 
 router.post(
@@ -462,6 +467,23 @@ router.post("/user/login", login);
 router.post("/user/forget-password-1", forgetPassword1);
 router.post("/user/forget-password-2", forgetPassword2);
 router.post("/user/forget-password-3", forgetPassword3);
+
+// Temporary route to reset phone verification for testing
+router.post("/user/reset-verification", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (user) {
+      user.isPhoneVerified = false;
+      await user.save();
+      res.send({ result: "Done", message: "Phone verification reset successfully" });
+    } else {
+      res.send({ result: "Fail", message: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).send({ result: "Fail", message: "Error resetting verification" });
+  }
+});
 
 router.post("/cart", verifyUser, createCart);
 router.get("/cart/:userid", verifyUser, getAllCart);
