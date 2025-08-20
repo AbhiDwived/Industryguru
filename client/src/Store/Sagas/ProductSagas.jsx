@@ -33,7 +33,8 @@ function* addProductSaga(action) {
   var response = yield addProductAPI(action.payload);
   yield put({ type: ADD_PRODUCT_RED, payload: response.data });
 }
-function* getProductSaga(action) {
+  function* getProductSaga(action) {
+    console.log("Fetching products from API...");
   //executer
   var response = yield getProductAPI();
   yield put({ type: GET_PRODUCT_RED, payload: response.data });

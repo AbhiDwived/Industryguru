@@ -11,17 +11,22 @@ export async function addProductAPI(data) {
   });
   return await response.json();
 }
-export async function getProductAPI(data) {
-  const link = `${apiLink}/api/product`;
-  var response = await fetch(link, {
-    method: "get",
-    headers: {
-      authorization: localStorage.getItem("token"),
-      "content-type": "application/json",
-    },
-  });
-  return await response.json();
+
+export async function getProductAPI() {
+    console.log("Fetching products from API...");
+    const link = `${apiLink}/api/product`;
+    var response = await fetch(link, {
+        method: "get",
+        headers: {
+            authorization: localStorage.getItem("token"),
+            "content-type": "application/json",
+        },
+    });
+    const productData = await response.json();
+    console.log("Products fetched:", productData);
+    return productData;
 }
+
 export async function getVendorProductAPI(page, search) {
   const link = `${apiLink}/api/vendor-product?page=${page}&search=${search}`;
   var response = await fetch(link, {
@@ -33,6 +38,7 @@ export async function getVendorProductAPI(page, search) {
   });
   return await response.json();
 }
+
 export async function getVendorOrdersAPI(page, search, paymentstatus, orderStatus) {
   const link = `${apiLink}/api/vendor-checkout?page=${page}&search=${search}&paymentstatus=${paymentstatus}&orderStatus=${orderStatus}`;
   var response = await fetch(link, {
@@ -103,6 +109,7 @@ export async function getProductByMainCategoryAPI(id) {
   });
   return await response.json();
 }
+
 export async function getProductBySubCategoryAPI(id) {
   var response = await fetch(`${apiLink}/api/productBySubCategory/${id}`, {
     method: "get",
@@ -112,6 +119,7 @@ export async function getProductBySubCategoryAPI(id) {
   });
   return await response.json();
 }
+
 export async function getProductByBrandAPI(id) {
   var response = await fetch(`${apiLink}/api/productByBrand/${id}`, {
     method: "get",
@@ -121,6 +129,7 @@ export async function getProductByBrandAPI(id) {
   });
   return await response.json();
 }
+
 export async function deleteProductAPI(data) {
   var response = await fetch(`${apiLink}/api/product/` + data._id, {
     method: "delete",
@@ -143,7 +152,6 @@ export async function updateProductAPI(data) {
   });
   return await response.json();
 }
-
 
 export async function updateVendorProductAPI(id, data) {
   const link = `${apiLink}/api/vendor-product/`;
@@ -200,4 +208,3 @@ export async function getProductAPIById(id) {
     },
   });
 }
-

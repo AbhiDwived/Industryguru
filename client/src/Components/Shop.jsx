@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Link, useLocation,useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getProduct,
@@ -29,6 +29,7 @@ export default function Shop() {
   var [mc, setMc] = useState("All");
   var [sc, setSc] = useState("All");
   var [br, setBr] = useState("All");
+
   function useQuery() {
     const { search } = useLocation();
     return useMemo(() => new URLSearchParams(search), [search]);
@@ -84,23 +85,30 @@ export default function Shop() {
       setProduct(filteredProducts);
     }
   }
+
   function postSearch(e) {
     e.preventDefault();
+    if (!search.trim()) return;
+    
     setProduct(
       allProducts.filter((x) => {
-        const brand = typeof x.brand === "string" ? x.brand.toLowerCase() : "";
+        const brandName = allBrands.find(b => b._id === x.brand)?.name?.toLowerCase() || "";
+        const subcategoryName = allSubcategories.find(s => s._id === x.subcategory)?.name?.toLowerCase() || "";
+        const maincategoryName = allMaincategories.find(m => m._id === x.maincategory)?.name?.toLowerCase() || "";
+        
         return (
-          x.name.toLowerCase().includes(search) ||
-          x.maincategory.toLowerCase() === search ||
-          x.subcategory.toLowerCase() === search ||
-          brand === search ||
-          x.color.toLowerCase() === search ||
-          x.size.toLowerCase() === search ||
-          x.description.toLowerCase().includes(search)
+          x.name?.toLowerCase().includes(search) ||
+          brandName.includes(search) ||
+          subcategoryName.includes(search) ||
+          maincategoryName.includes(search) ||
+          x.color?.toLowerCase().includes(search) ||
+          x.size?.toLowerCase().includes(search) ||
+          x.description?.toLowerCase().includes(search)
         );
       })
     );
   }
+
   function getPriceFilter(e) {
     const { name, value } = e.target;
     if (name === "min") {
@@ -109,6 +117,7 @@ export default function Shop() {
       setMax(value);
     }
   }
+
   function applyPriceFilter() {
     filterData(mc, sc, br, min, max, priceFilter);
   }
@@ -121,7 +130,9 @@ export default function Shop() {
     } else if (brnd && brnd !== "All") {
       dispatch(getProductByBrand(brnd));
     } else {
-      dispatch(getProduct());
+      dispatch(getProduct()).then((response) => {
+        console.log("Fetched products:", response);
+      });
     }
     dispatch(getMaincategory());
     dispatch(getSubcategory());
@@ -134,34 +145,40 @@ export default function Shop() {
   }
 
   function searchPage() {
-    var search = query.get("search").toLocaleLowerCase();
+    var search = query.get("search")?.toLowerCase() || "";
+    if (!search) return;
+    
     var p = allProducts.filter(x => {
-      const brand = typeof x.brand === 'string' ? x.brand.toLowerCase() : '';
+      const brandName = allBrands.find(b => b._id === x.brand)?.name?.toLowerCase() || "";
+      const subcategoryName = allSubcategories.find(s => s._id === x.subcategory)?.name?.toLowerCase() || "";
+      const maincategoryName = allMaincategories.find(m => m._id === x.maincategory)?.name?.toLowerCase() || "";
+      
       return (
-        x.name.toLowerCase().search(search) !== -1 ||
-        x.maincategory.toLowerCase() === search ||
-        x.subcategory.toLowerCase() === search ||
-        brand === search ||
-        x.color.toLowerCase() === search ||
-        x.size.toLowerCase() === search ||
-        x.description.toLowerCase().search(search) !== -1
+        x.name?.toLowerCase().includes(search) ||
+        brandName.includes(search) ||
+        subcategoryName.includes(search) ||
+        maincategoryName.includes(search) ||
+        x.color?.toLowerCase().includes(search) ||
+        x.size?.toLowerCase().includes(search) ||
+        x.description?.toLowerCase().includes(search)
       );
     });
     setProduct(p);
   }
   
-
   const handleChange = (_id) => {
     setMc("All");
     setSc("All");
     setBr("All");
     filterData(_id, "All", "All", min, max, priceFilter);
   };
+
   const handleChangeSub = (_id) => {
     setSc("All");
     setBr("All");
     filterData(mc, _id, "All", min, max, priceFilter);
   };
+
   const handleChangeBrand = (_id) => {
     setBr(_id);
     setMc("All");
@@ -195,6 +212,7 @@ export default function Shop() {
       })}
     </div>
   );
+
   const AllSubCategory = () => (
     <div className="list-group" style={{ height: "24rem", overflow: "auto" }}>
       <button
@@ -238,9 +256,11 @@ export default function Shop() {
       })}
     </div>
   );
+
   const handleButtonClick = (button) => {
     setActiveButton(button);
   };
+
   function getSortFilter(e) {
     const { value } = e.target;
     if (value === "1") {
@@ -251,8 +271,8 @@ export default function Shop() {
       setProduct([...product].sort((x, y) => x.finalprice - y.finalprice));
     }
   }
-  return (
 
+  return (
     <div className="page_section">
       <div className="container-fluid my-3">
         <div className="row">

@@ -45,10 +45,12 @@ export default function Navbar({ product }) {
   var navigate = useNavigate();
   function postSearch(e) {
     e.preventDefault();
-    navigate({
-      pathname: "/shop/All/All/All",
-      search: "?search=" + search,
-    });
+    if (search.trim()) {
+      navigate({
+        pathname: "/shop/All/All/All",
+        search: "?search=" + encodeURIComponent(search.trim()),
+      });
+    }
   }
 
   function logout() {
@@ -77,14 +79,6 @@ export default function Navbar({ product }) {
     else if (allProducts.length)
       if (response.result === "Done") setUser(response.data);
       else navigate("/login");
-  }
-
-  function postSearch(e) {
-    e.preventDefault();
-    navigate({
-      pathname: "/shop/All/All/All",
-      search: "?search=" + search,
-    });
   }
 
   function useQuery() {
@@ -159,17 +153,22 @@ export default function Navbar({ product }) {
   }
 
   function searchPage() {
-    var search = query.get("search").toLocaleLowerCase();
+    var search = query.get("search")?.toLowerCase() || "";
+    if (!search) return;
+    
     var p = allProducts.filter((x) => {
-      const brand = typeof x.brand === "string" ? x.brand.toLowerCase() : "";
+      const brandName = allBrands.find(b => b._id === x.brand)?.name?.toLowerCase() || "";
+      const subcategoryName = allSubcategories.find(s => s._id === x.subcategory)?.name?.toLowerCase() || "";
+      const maincategoryName = allMaincategories.find(m => m._id === x.maincategory)?.name?.toLowerCase() || "";
+      
       return (
-        x.name.toLowerCase().search(search) !== -1 ||
-        x.maincategory.toLowerCase() === search ||
-        x.subcategory.toLowerCase() === search ||
-        brand === search ||
-        x.color.toLowerCase() === search ||
-        x.size.toLowerCase() === search ||
-        x.description.toLowerCase().search(search) !== -1
+        x.name?.toLowerCase().includes(search) ||
+        brandName.includes(search) ||
+        subcategoryName.includes(search) ||
+        maincategoryName.includes(search) ||
+        x.color?.toLowerCase().includes(search) ||
+        x.size?.toLowerCase().includes(search) ||
+        x.description?.toLowerCase().includes(search)
       );
     });
     setProduct(p);
