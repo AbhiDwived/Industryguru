@@ -2,22 +2,19 @@ import React, { useEffect, useRef, useState } from "react";
 import SideNavbar from "./SideNavbar";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Box, Typography, Paper, TextField, Button, MenuItem, FormControl, Select, FormHelperText, Chip } from "@mui/material";
+import { Box, Typography, Paper, TextField, Button } from "@mui/material";
 
 import formValidation from "../CustomValidation/formValidation";
 import {
   addBrand,
   getBrand,
 } from "../../Store/ActionCreators/BrandActionCreators";
-import { getSubcategory } from "../../Store/ActionCreators/SubcategoryActionCreators";
 
 export default function AddBrand() {
   let name = useRef("");
 
-  const [selectedSubcategories, setSelectedSubcategories] = useState([]);
   let [message, setMessage] = useState("Brand Name must Required");
   let [show, setShow] = useState(false);
-  var allSubcategories = useSelector((state) => state.SubcategoryStateData);
 
   let navigate = useNavigate();
   let dispatch = useDispatch();
@@ -30,29 +27,22 @@ export default function AddBrand() {
   
   async function postData(e) {
     e.preventDefault();
-    if (message.length === 0 && selectedSubcategories.length > 0) {
-      // Create brand entries for each selected subcategory
-      for (let subcategoryId of selectedSubcategories) {
-        dispatch(addBrand({ name: name.current, subcategory: subcategoryId }));
-      }
+    if (message.length === 0) {
+      dispatch(addBrand({ name: name.current }));
       setTimeout(() => navigate("/admin-brands"), 1000);
     } else {
       setShow(true);
-      if (selectedSubcategories.length === 0) {
-        setMessage("Please select at least one sub-category");
-      }
     }
   }
   
   function getAPIData() {
     dispatch(getBrand());
-    dispatch(getSubcategory());
   }
   
   useEffect(() => {
     getAPIData();
     // eslint-disable-next-line
-  }, [allbrands.length, allSubcategories.length]);
+  }, [allbrands.length]);
   
   return (
     <div className="page_section">
@@ -86,65 +76,8 @@ export default function AddBrand() {
               
               <Box sx={{ p: 3 }}>
                 <form onSubmit={postData}>
-                  <div className="row">
-                    <div className="col-md-6">
-                      <Box sx={{ mb: 3 }}>
-                        <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 500 }}>
-                          Select Sub-Categories
-                        </Typography>
-                        <FormControl 
-                          fullWidth
-                          variant="outlined"
-                          error={selectedSubcategories.length === 0}
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              borderRadius: '8px',
-                              '&.Mui-focused fieldset': {
-                                borderColor: '#6068bf',
-                              },
-                            },
-                          }}
-                        >
-                          <Select
-                            multiple
-                            value={selectedSubcategories}
-                            onChange={(e) => setSelectedSubcategories(e.target.value)}
-                            displayEmpty
-                            renderValue={(selected) => (
-                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                {selected.map((value) => {
-                                  const category = allSubcategories.find(cat => cat._id === value);
-                                  return (
-                                    <Chip
-                                      key={value}
-                                      label={category?.name}
-                                      size="small"
-                                      sx={{ bgcolor: '#6068bf', color: 'white' }}
-                                    />
-                                  );
-                                })}
-                              </Box>
-                            )}
-                            startAdornment={
-                              <i className="fa fa-sitemap me-2" style={{ color: '#6068bf' }}></i>
-                            }
-                          >
-                            <MenuItem value="" disabled>
-                              <em>Select sub-categories</em>
-                            </MenuItem>
-                            {allSubcategories.map((category, i) => (
-                              <MenuItem key={i} value={category._id}>
-                                {category.name}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                          {selectedSubcategories.length === 0 && (
-                            <FormHelperText>Please select at least one sub-category</FormHelperText>
-                          )}
-                        </FormControl>
-                      </Box>
-                    </div>
-                    <div className="col-md-6">
+                  <div className="row justify-content-center">
+                    <div className="col-md-8">
                       <Box sx={{ mb: 3 }}>
                         <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 500 }}>
                           Brand Name
@@ -168,7 +101,7 @@ export default function AddBrand() {
                           }}
                           InputProps={{
                             startAdornment: (
-                              <i className=" me-2" style={{ color: '#6068bf' }}></i>
+                              <i className="fa fa-tag me-2" style={{ color: '#6068bf' }}></i>
                             ),
                           }}
                         />

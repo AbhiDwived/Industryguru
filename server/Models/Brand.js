@@ -4,11 +4,7 @@ const BrandShema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Name Must Required!!!"],
-  },
-  subcategory: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Subcategory",
-    required: true,
+    unique: true,
   },
 });
 

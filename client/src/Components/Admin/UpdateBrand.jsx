@@ -2,21 +2,19 @@ import React, { useEffect, useState } from "react";
 import SideNavbar from "./SideNavbar";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { Box, Typography, Paper, TextField, Button } from "@mui/material";
 
 import formValidation from "../CustomValidation/formValidation";
-import { getSubcategory } from "../../Store/ActionCreators/SubcategoryActionCreators";
 import {
   updateBrand,
   getBrand,
 } from "../../Store/ActionCreators/BrandActionCreators";
 
 export default function UpdateBrand() {
-  const [selectedOption, setSelectedOption] = useState("");
   let [name, setName] = useState("");
 
   let [message, setMessage] = useState("");
   let [show, setShow] = useState(false);
-  var allSubcategories = useSelector((state) => state.SubcategoryStateData);
 
   let navigate = useNavigate();
   let dispatch = useDispatch();
@@ -24,10 +22,6 @@ export default function UpdateBrand() {
   let allbrands = useSelector((state) => state.BrandStateData);
 
   const brandData = allbrands.find((brand) => brand._id === _id);
-
-  const subCategoryData = allSubcategories.find(
-    (subCat) => subCat._id === brandData?.subcategory
-  );
   function getInputData(e) {
     setMessage(formValidation(e));
     setName(e.target.value);
@@ -35,19 +29,15 @@ export default function UpdateBrand() {
   async function postData(e) {
     e.preventDefault();
     if (message.length === 0) {
-      let item =
-        allSubcategories.length &&
-        allSubcategories.find((x) => x.name === name);
-      allbrands.length && allbrands.find((x) => x.name === name);
-      if (item) {
+      let existingBrand = allbrands.find((x) => x.name === name && x._id !== _id);
+      if (existingBrand) {
         setShow(true);
         setMessage("Brand Name Already Exist");
       } else {
         dispatch(
           updateBrand({
              _id: _id,
-             name: name, 
-             subcategory: selectedOption 
+             name: name
             })
         );
         navigate("/admin-brands");
@@ -60,19 +50,11 @@ export default function UpdateBrand() {
       let item = allbrands.find((x) => x._id === _id);
       if (item) setName(item.name);
     }
-    dispatch(getSubcategory());
-    // if (allSubcategories.length) {
-    //   let item = allSubcategories.find((x) => x._id === _id);
-    //   if (item) setName(item.name);
-    // }
   }
   useEffect(() => {
     getAPIData();
     // eslint-disable-next-line
   }, [allbrands.length]);
-  useEffect(() => {
-    setSelectedOption(subCategoryData?._id);
-  }, [subCategoryData]);
 
   return (
     <div className="page_section">
@@ -82,64 +64,107 @@ export default function UpdateBrand() {
             <SideNavbar />
           </div>
           <div className="col-md-9">
-            <h5 className="header-color p-2 text-center">Brand</h5>
-            <form onSubmit={postData}>
-              <div className="row">
-                <div className="col-md-6">
-                  <div className="mb-3">
-                    <label> Select Sub Category</label>
-                    <select
-                      name="subcategory"
-                      onChange={(e) => setSelectedOption(e.target.value)}
-                      value={selectedOption}
-                      className="form-control"
+            <Paper 
+              elevation={0} 
+              sx={{ 
+                borderRadius: '16px', 
+                overflow: 'hidden',
+                border: '1px solid #e0e0e0',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
+              }}
+            >
+              <Box sx={{ 
+                bgcolor: '#6068bf', 
+                p: 2, 
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2
+              }}>
+                <i className="fa fa-edit" style={{ color: 'white', fontSize: '1.5rem' }}></i>
+                <Typography variant="h5" sx={{ color: 'white', fontWeight: 500 }}>
+                  Update Brand
+                </Typography>
+              </Box>
+              
+              <Box sx={{ p: 3 }}>
+                <form onSubmit={postData}>
+                  <div className="row justify-content-center">
+                    <div className="col-md-8">
+                      <Box sx={{ mb: 3 }}>
+                        <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 500 }}>
+                          Brand Name
+                        </Typography>
+                        <TextField
+                          fullWidth
+                          name="name"
+                          value={name}
+                          onChange={getInputData}
+                          placeholder="Enter brand name"
+                          variant="outlined"
+                          size="medium"
+                          error={show}
+                          helperText={show ? message : ""}
+                          sx={{
+                            '& .MuiOutlinedInput-root': {
+                              borderRadius: '8px',
+                              '&.Mui-focused fieldset': {
+                                borderColor: '#6068bf',
+                              },
+                            },
+                          }}
+                          InputProps={{
+                            startAdornment: (
+                              <i className="fa fa-tag me-2" style={{ color: '#6068bf' }}></i>
+                            ),
+                          }}
+                        />
+                      </Box>
+                    </div>
+                  </div>
+                  
+                  <Box sx={{ 
+                    display: 'flex', 
+                    gap: 2, 
+                    mt: 4
+                  }}>
+                    <Button
+                      variant="outlined"
+                      onClick={() => window.history.back()}
+                      sx={{ 
+                        flex: 1,
+                        py: 1.2,
+                        borderRadius: '8px',
+                        borderColor: '#6c757d',
+                        color: '#6c757d',
+                        '&:hover': {
+                          borderColor: '#5a6268',
+                          backgroundColor: '#f8f9fa',
+                        }
+                      }}
+                      startIcon={<i className="fa fa-arrow-left"></i>}
                     >
-                      <option>Select an option</option>
-                      {allSubcategories.map((category, i) => (
-                        <option
-                          key={i}
-                          value={category._id}
-                          selected={category._id === selectedOption}
-                        >
-                          {category.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div className="col-md-6">
-                  <div className="mb-3">
-                    <label>Name</label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={name}
-                      onChange={getInputData}
-                      className="form-control"
-                      placeholder="Name"
-                    />
-                    {show ? (
-                      <p className="text-danger text-capitalize">{message}</p>
-                    ) : (
-                      ""
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="mb-3">
-                <button
-                  type="button"
-                  className="btn btn-success w-50"
-                  onClick={() => window.history.back()}
-                >
-                  Back
-                </button>
-                <button type="submit" className="btn main-color w-50">
-                  Update
-                </button>
-              </div>
-            </form>
+                      Back
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      sx={{ 
+                        flex: 1,
+                        py: 1.2,
+                        borderRadius: '8px',
+                        backgroundColor: '#6068bf',
+                        '&:hover': {
+                          backgroundColor: '#4c53a9',
+                        }
+                      }}
+                      startIcon={<i className="fa fa-save"></i>}
+                    >
+                      Update
+                    </Button>
+                  </Box>
+                </form>
+              </Box>
+            </Paper>
           </div>
         </div>
       </div>

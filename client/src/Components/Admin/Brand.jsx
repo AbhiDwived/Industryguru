@@ -5,13 +5,11 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Button, Box, Typography, Paper, Avatar, Chip } from '@mui/material';
 
 import { getBrand, deleteBrand } from "../../Store/ActionCreators/BrandActionCreators"
-import { getSubcategory } from "../../Store/ActionCreators/SubcategoryActionCreators"
 import { useDispatch, useSelector } from 'react-redux';
 
 export default function Brand() {
     var dispatch = useDispatch()
     var allbrands = useSelector((state) => state.BrandStateData || [])
-    var allSubcategories = useSelector((state) => state.SubcategoryStateData || [])
     var navigate = useNavigate()
     
     const columns = [
@@ -27,8 +25,8 @@ export default function Brand() {
         },
         { 
             field: 'name', 
-            headerName: 'Name', 
-            width: 180,
+            headerName: 'Brand Name', 
+            width: 300,
             renderCell: (params) => (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Avatar 
@@ -45,38 +43,7 @@ export default function Brand() {
                 </Box>
             )
         },
-        { 
-            field: 'subcategory', 
-            headerName: 'Sub-Category', 
-            width: 150,
-            renderCell: (params) => {
-                if (!params.value || !allSubcategories.length) {
-                    return (
-                        <Chip
-                            label="Unknown"
-                            size="small"
-                            sx={{ 
-                                bgcolor: '#e8eaff', 
-                                color: '#6068bf',
-                                fontWeight: 500
-                            }}
-                        />
-                    );
-                }
-                const subcategory = allSubcategories.find(sub => sub._id === params.value);
-                return (
-                    <Chip
-                        label={subcategory?.name || 'Unknown'}
-                        size="small"
-                        sx={{ 
-                            bgcolor: '#e8eaff', 
-                            color: '#6068bf',
-                            fontWeight: 500
-                        }}
-                    />
-                );
-            }
-        },
+
         {
             field: "edit",
             headerName: "Edit",
@@ -148,7 +115,6 @@ export default function Brand() {
     
     function getAPIData() {
         dispatch(getBrand())
-        dispatch(getSubcategory())
     }
     
     useEffect(() => {

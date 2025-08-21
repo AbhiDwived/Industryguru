@@ -26,9 +26,9 @@ export default function Shop() {
   var allBrands = useSelector((state) => state.BrandStateData);
   var { maincat, subcat, brnd } = useParams();
 
-  var [mc, setMc] = useState("All");
-  var [sc, setSc] = useState("All");
-  var [br, setBr] = useState("All");
+  var [mc, setMc] = useState(maincat || "All");
+  var [sc, setSc] = useState(subcat || "All");
+  var [br, setBr] = useState(brnd || "All");
 
   function useQuery() {
     const { search } = useLocation();
@@ -130,9 +130,7 @@ export default function Shop() {
     } else if (brnd && brnd !== "All") {
       dispatch(getProductByBrand(brnd));
     } else {
-      dispatch(getProduct()).then((response) => {
-        console.log("Fetched products:", response);
-      });
+      dispatch(getProduct());
     }
     dispatch(getMaincategory());
     dispatch(getSubcategory());
@@ -140,7 +138,9 @@ export default function Shop() {
     if (query.get("search")) {
       searchPage();
     } else {
-      filterData(maincat, subcat, brnd, min, max, priceFilter);
+      setMc(maincat || "All");
+      setSc(subcat || "All");
+      setBr(brnd || "All");
     }
   }
 
@@ -167,14 +167,14 @@ export default function Shop() {
   }
   
   const handleChange = (_id) => {
-    setMc("All");
+    setMc(_id);
     setSc("All");
     setBr("All");
     filterData(_id, "All", "All", min, max, priceFilter);
   };
 
   const handleChangeSub = (_id) => {
-    setSc("All");
+    setSc(_id);
     setBr("All");
     filterData(mc, _id, "All", min, max, priceFilter);
   };
@@ -191,11 +191,21 @@ export default function Shop() {
     // eslint-disable-next-line
   }, []);
 
+  useEffect(() => {
+    if (allProducts.length > 0) {
+      filterData(mc, sc, br, min, max, priceFilter);
+    }
+    // eslint-disable-next-line
+  }, [allProducts, mc, sc, br]);
+
   const AllCategory = () => (
     <div className="list-group" style={{ height: "24rem", overflow: "auto" }}>
       <button
         className="list-group-item list-group-item-action"
-        onClick={() => filterData("All", sc, br)}
+        onClick={() => {
+          setMc("All");
+          filterData("All", sc, br, min, max, priceFilter);
+        }}
       >
         All
       </button>
@@ -217,7 +227,10 @@ export default function Shop() {
     <div className="list-group" style={{ height: "24rem", overflow: "auto" }}>
       <button
         className="list-group-item list-group-item-action"
-        onClick={() => filterData(mc, "All", br)}
+        onClick={() => {
+          setSc("All");
+          filterData(mc, "All", br, min, max, priceFilter);
+        }}
       >
         All
       </button>
@@ -239,7 +252,10 @@ export default function Shop() {
     <div className="list-group" style={{ height: "24rem", overflow: "auto" }}>
       <button
         className="list-group-item list-group-item-action"
-        onClick={() => filterData(mc, sc, "All")}
+        onClick={() => {
+          setBr("All");
+          filterData(mc, sc, "All", min, max, priceFilter);
+        }}
       >
         All
       </button>

@@ -33,12 +33,16 @@ export default function UpdateProduct() {
     brand: "",
     slug: "",
     subSlug: "",
+    innerSlug: "",
+    innerSubSlug: "",
     color: "",
     size: "",
     baseprice: "",
     discount: "",
     stock: "",
-    description: ""
+    description: "",
+    defaultDescription: "",
+    variantDescription: ""
   });
   let navigate = useNavigate();
   let dispatch = useDispatch();
@@ -157,6 +161,10 @@ export default function UpdateProduct() {
       item.append("finalprice", fp);
       item.append("stock", data.stock || "");
       item.append("description", data.description || "");
+      item.append("defaultDescription", data.defaultDescription || "");
+      item.append("variantDescription", data.variantDescription || "");
+      item.append("innerSlug", data.innerSlug || "");
+      item.append("innerSubSlug", data.innerSubSlug || "");
       item.append("specification", JSON.stringify(specsData));
       if (variants.length > 0) {
         item.append("variants", JSON.stringify(variants));
@@ -204,10 +212,22 @@ export default function UpdateProduct() {
           maincategory: item?.maincategory?._id || item?.maincategory,
           subcategory: item?.subcategory?._id || item?.subcategory,
           slug: item?.slug?._id || item?.slug,
-          subSlug: item?.subSlug?._id || item?.subSlug
+          subSlug: item?.subSlug?._id || item?.subSlug,
+          innerSlug: item?.innerSlug?._id || item?.innerSlug || "",
+          innerSubSlug: item?.innerSubSlug?._id || item?.innerSubSlug || "",
+          defaultDescription: item.defaultDescription || "",
+          variantDescription: item.variantDescription || ""
         });
-        setSpecsData(item.specification || [{ key: "", value: "" }]);
-        setVariants(item.variants || []);
+        setSpecsData(item.specification && item.specification.length > 0 ? item.specification : [{ key: "", value: "" }]);
+        const updatedVariants = (item.variants || []).map(variant => ({
+          ...variant,
+          innerSlug: variant.innerSlug || "",
+          innerSubSlug: variant.innerSubSlug || "",
+          defaultDescription: variant.description || "",
+          variantDescription: variant.variantDescription || "",
+          specifications: variant.specification && variant.specification.length > 0 ? variant.specification : [{ key: "", value: "" }]
+        }));
+        setVariants(updatedVariants);
         
         // Load related data for the current product
         if (item?.maincategory?._id || item?.maincategory) {
@@ -349,6 +369,38 @@ export default function UpdateProduct() {
                             </select>
                           </div>
                         </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Inner Slug</label>
+                            <select
+                              name="innerSlug"
+                              value={data.innerSlug || ""}
+                              onChange={getInputData}
+                              className="ui__form__field"
+                            >
+                              <option value="">Select Inner Slug</option>
+                              {allSlugs.map((item, index) => (
+                                <option key={index} value={item._id}>{item.slug}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Inner Sub Slug</label>
+                            <select
+                              name="innerSubSlug"
+                              value={data.innerSubSlug || ""}
+                              onChange={getInputData}
+                              className="ui__form__field"
+                            >
+                              <option value="">Select Inner Sub Slug</option>
+                              {allSubSlugs.map((item, index) => (
+                                <option key={index} value={item._id}>{item.slug}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="col-md-6">
@@ -426,6 +478,44 @@ export default function UpdateProduct() {
                             <div className="row">
                               <div className="col-md-6">
                                 <div className="ui__form">
+                                  <label className="ui__form__label">Inner Slug</label>
+                                  <select
+                                    value={variant.innerSlug || ""}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].innerSlug = e.target.value;
+                                      setVariants(newVariants);
+                                    }}
+                                    className="ui__form__field"
+                                  >
+                                    <option value="">Select Inner Slug</option>
+                                    {allSlugs.map((item, index) => (
+                                      <option key={index} value={item._id}>{item.slug}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="col-md-6">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Inner Sub Slug</label>
+                                  <select
+                                    value={variant.innerSubSlug || ""}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].innerSubSlug = e.target.value;
+                                      setVariants(newVariants);
+                                    }}
+                                    className="ui__form__field"
+                                  >
+                                    <option value="">Select Inner Sub Slug</option>
+                                    {allSubSlugs.map((item, index) => (
+                                      <option key={index} value={item._id}>{item.slug}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="col-md-6">
+                                <div className="ui__form">
                                   <label className="ui__form__label">Color</label>
                                   <input
                                     value={variant.color}
@@ -484,7 +574,7 @@ export default function UpdateProduct() {
                                   />
                                 </div>
                               </div>
-                              <div className="col-md-6">
+                              <div className="col-md-4">
                                 <div className="ui__form">
                                   <label className="ui__form__label">Stock</label>
                                   <input
@@ -499,15 +589,104 @@ export default function UpdateProduct() {
                                   />
                                 </div>
                               </div>
-                              <div className="col-md-6">
+                              <div className="col-md-4">
                                 <div className="ui__form">
                                   <label className="ui__form__label">Final Price (Auto-calculated)</label>
                                   <input
-                                    value={variant.finalprice}
+                                    value={Math.round(variant.baseprice - (variant.baseprice * variant.discount) / 100) || 0}
                                     readOnly
                                     className="ui__form__field"
                                     style={{ backgroundColor: '#f8f9fa' }}
                                   />
+                                </div>
+                              </div>
+                              <div className="col-md-12">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Default Description (Will appear as first bullet point)</label>
+                                  <textarea
+                                    value={variant.defaultDescription || variant.description || ""}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].defaultDescription = e.target.value;
+                                      newVariants[idx].description = e.target.value;
+                                      setVariants(newVariants);
+                                    }}
+                                    placeholder="• This is a sample Product"
+                                    rows="3"
+                                    className="ui__form__field"
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-12">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Additional Variant Description</label>
+                                  <textarea
+                                    value={variant.variantDescription || ""}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].variantDescription = e.target.value;
+                                      setVariants(newVariants);
+                                    }}
+                                    placeholder="variant specific description"
+                                    rows="3"
+                                    className="ui__form__field"
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-12">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Specifications</label>
+                                  {(variant.specifications || variant.specification || [{ key: "", value: "" }]).map((spec, specIdx) => (
+                                    <div key={specIdx} className="d-flex mb-2">
+                                      <input
+                                        value={spec.key}
+                                        onChange={(e) => {
+                                          const newVariants = [...variants];
+                                          if (!newVariants[idx].specifications) newVariants[idx].specifications = [];
+                                          newVariants[idx].specifications[specIdx] = { ...spec, key: e.target.value };
+                                          setVariants(newVariants);
+                                        }}
+                                        placeholder="Key"
+                                        className="ui__form__field me-2"
+                                      />
+                                      <input
+                                        value={spec.value}
+                                        onChange={(e) => {
+                                          const newVariants = [...variants];
+                                          if (!newVariants[idx].specifications) newVariants[idx].specifications = [];
+                                          newVariants[idx].specifications[specIdx] = { ...spec, value: e.target.value };
+                                          setVariants(newVariants);
+                                        }}
+                                        placeholder="Value"
+                                        className="ui__form__field me-2"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const newVariants = [...variants];
+                                          if (newVariants[idx].specifications && newVariants[idx].specifications.length > 1) {
+                                            newVariants[idx].specifications.splice(specIdx, 1);
+                                            setVariants(newVariants);
+                                          }
+                                        }}
+                                        className="btn btn-outline-danger btn-sm"
+                                      >
+                                        ×
+                                      </button>
+                                    </div>
+                                  ))}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newVariants = [...variants];
+                                      if (!newVariants[idx].specifications) newVariants[idx].specifications = [];
+                                      newVariants[idx].specifications.push({ key: "", value: "" });
+                                      setVariants(newVariants);
+                                    }}
+                                    className="btn btn-outline-primary btn-sm"
+                                  >
+                                    + Add Spec
+                                  </button>
                                 </div>
                               </div>
                             </div>
@@ -585,6 +764,43 @@ export default function UpdateProduct() {
                                 onChange={getInputData}
                                 placeholder="Stock"
                                 type="number"
+                                className="ui__form__field"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="ui__form">
+                              <label className="ui__form__label">Final Price (Auto-calculated)</label>
+                              <input
+                                value={Math.round(data.baseprice - (data.baseprice * data.discount) / 100) || 0}
+                                readOnly
+                                className="ui__form__field"
+                                style={{ backgroundColor: '#f8f9fa' }}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-12">
+                            <div className="ui__form">
+                              <label className="ui__form__label">Default Description (Will appear as first bullet point)</label>
+                              <textarea
+                                name="defaultDescription"
+                                value={data.defaultDescription || ""}
+                                onChange={getInputData}
+                                placeholder="• This is a sample Product"
+                                rows="3"
+                                className="ui__form__field"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-12">
+                            <div className="ui__form">
+                              <label className="ui__form__label">Additional Variant Description</label>
+                              <textarea
+                                name="variantDescription"
+                                value={data.variantDescription || ""}
+                                onChange={getInputData}
+                                placeholder="variant specific description"
+                                rows="3"
                                 className="ui__form__field"
                               />
                             </div>

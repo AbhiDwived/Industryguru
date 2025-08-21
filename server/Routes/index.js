@@ -29,7 +29,6 @@ const [
   createBrand,
   getAllBrand,
   getSingleBrand,
-  getBrandBySubCategory,
   updateBrand,
   deleteBrand,
 ] = require("../Controller/BrandController");
@@ -301,7 +300,6 @@ router.delete("/subcategory/:_id", verifyAdmin, deleteSubcategory);
 router.post("/brand", verifyAdmin, createBrand);
 router.get("/brand", getAllBrand);
 router.get("/brand/:_id", getSingleBrand);
-router.get("/brandBySubCategoryId/:id", getBrandBySubCategory);
 router.put("/brand/:_id", verifyAdmin, updateBrand);
 router.delete("/brand/:_id", verifyAdmin, deleteBrand);
 
