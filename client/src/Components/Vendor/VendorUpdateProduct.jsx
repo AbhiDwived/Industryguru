@@ -1,963 +1,871 @@
-/* eslint-disable react/prop-types */
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import * as Yup from "yup";
-import { Form, Formik, Field } from "formik";
-import { getMaincategory } from "../../Store/ActionCreators/MaincategoryActionCreators";
-import { getSubcategory } from "../../Store/ActionCreators/SubcategoryActionCreators";
-import { getBrand } from "../../Store/ActionCreators/BrandActionCreators";
-import { getVendorSlug } from "../../Store/ActionCreators/VendorSlugActionCreators";
-import { getVendorSubSlug, getVendorSubSlugByParent } from "../../Store/ActionCreators/VendorSubSlugActionCreators";
 import Wrapper from "./Wrapper";
-import { apiLink } from "../../utils/utils";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
+import formValidation from "../CustomValidation/formValidation";
 import {
-  addVendorProductAPI,
-  getProductAPIById,
-  updateVendorProductAPI,
-} from "../../Store/Services/ProductService";
+  getProduct,
+} from "../../Store/ActionCreators/ProductActionCreators";
+import { updateVendorProductAPI } from "../../Store/Services/ProductService";
+import { apiLink } from "../../utils/utils";
+import { getMaincategory } from "../../Store/ActionCreators/MaincategoryActionCreators";
+import { getSubcategory, getSubcategoryByMainId } from "../../Store/ActionCreators/SubcategoryActionCreators";
+import { getBrand } from "../../Store/ActionCreators/BrandActionCreators";
+import { getSlug } from "../../Store/ActionCreators/SlugActionCreators";
+import { getSubSlugByParent, getSubSlug } from "../../Store/ActionCreators/SubSlugActionCreators";
+import { showToast } from "../../utils/toast";
 
-const getImage = (img) => {
-  if (img && img.startsWith("data:image")) {
-    return img
-  }
-  return `${apiLink}/public/products/${img}`
-}
+export default function VendorUpdateProduct() {
 
-export default function VendorUpdateProduct({ isAdd = false }) {
-  let [data, setData] = useState({
+  let [errorMessage, setErrorMessage] = useState({
     name: "",
-    addedBy: "",
-    maincategory: "",
-    subcategory: "",
-    brand: "",
     color: "",
     size: "",
     baseprice: "",
     discount: "",
-    finalprice: "",
-    stock: "In Stock",
-    specification: [],
-    description: "",
     pic1: "",
-    pic2: "",
-    pic3: "",
-    pic4: "",
+  });
+  let [show, setShow] = useState(false);
+  let [data, setData] = useState({
+    name: "",
+    maincategory: "",
+    subcategory: "",
+    brand: "",
     slug: "",
-    innerSlug: "",
     subSlug: "",
-    innerSubSlug: ""
+    innerSlug: "",
+    innerSubSlug: "",
+    color: "",
+    size: "",
+    baseprice: "",
+    discount: "",
+    stock: "",
+    description: "",
+    defaultDescription: "",
+    variantDescription: ""
   });
   let navigate = useNavigate();
   let dispatch = useDispatch();
-  let params = useParams();
-  let productId = params._id;
-  
+  let { _id } = useParams();
   let [maincategory, setMaincategory] = useState([]);
   let [subcategory, setSubcategory] = useState([]);
   let [brand, setBrand] = useState([]);
-  let [slugs, setSlugs] = useState([]);
-  let [innerSlugs, setInnerSlugs] = useState([]);
-  let [subSlugs, setSubSlugs] = useState([]);
-  let [innerSubSlugs, setInnerSubSlugs] = useState([]);
-  let [dataFetched, setDataFetched] = useState(false);
-  let [productFetched, setProductFetched] = useState(false);
 
   let allmaincategories = useSelector((state) => state.MaincategoryStateData);
   let allsubcategories = useSelector((state) => state.SubcategoryStateData);
   let allbrands = useSelector((state) => state.BrandStateData);
-  let allSlugs = useSelector((state) => state.VendorSlugStateData);
-  let allSubSlugs = useSelector((state) => state.VendorSubSlugStateData);
+  let allproducts = useSelector((state) => state.ProductStateData);
+  let allSlugs = useSelector((state) => state.SlugStateData);
+  let allSubSlugs = useSelector((state) => state.SubSlugStateData);
 
-  // Fetch all required data only once when component mounts
-  useEffect(() => {
-    if (!dataFetched) {
-      dispatch(getMaincategory());
-      dispatch(getSubcategory());
-      dispatch(getBrand());
-      dispatch(getVendorSlug());
-      dispatch(getVendorSubSlug());
-      setDataFetched(true);
+  const [specsData, setSpecsData] = useState([{ key: "", value: "" }]);
+  const [variants, setVariants] = useState([]);
+  const handleInputChange = (index, keyOrValue, newValue) => {
+    const updatedFormData = [...specsData];
+    updatedFormData[index][keyOrValue] = newValue;
+    setSpecsData(updatedFormData);
+  };
+
+  const handleAddPair = () => {
+    setSpecsData([...specsData, { key: "", value: "" }]);
+  };
+
+  const handleRemovePair = (index) => {
+    const updatedFormData = [...specsData];
+    updatedFormData.splice(index, 1);
+    setSpecsData(updatedFormData);
+  };
+
+  function getInputData(e) {
+    let { name, value } = e.target;
+    setErrorMessage((old) => {
+      return {
+        ...old,
+        [name]: formValidation(e),
+      };
+    });
+    setData((old) => {
+      return {
+        ...old,
+        [name]: value,
+      };
+    });
+  }
+
+  // Handle maincategory change
+  const handleMainCategoryChange = (e) => {
+    const { name, value } = e.target;
+    setData((old) => ({
+      ...old,
+      [name]: value,
+      subcategory: "", // Reset subcategory when maincategory changes
+      brand: "" // Reset brand when maincategory changes
+    }));
+    if (value) {
+      dispatch(getSubcategoryByMainId(value));
     }
-  }, [dispatch, dataFetched]);
+  };
 
-  // Update local state when Redux store updates
+  // Handle slug change
+  const handleSlugChange = (e) => {
+    getInputData(e);
+    const selectedSlugId = e.target.value;
+    if (selectedSlugId) {
+      dispatch(getSubSlugByParent({ parentSlugId: selectedSlugId }));
+    }
+  };
+  function getInputFile(e) {
+    let { name, files } = e.target;
+    setData((old) => {
+      return {
+        ...old,
+        [name]: files[0],
+      };
+    });
+  }
+  async function postData(e) {
+    e.preventDefault();
+    console.log("Data:", data);
+    let error = Object.keys(errorMessage).find(
+      (x) => errorMessage[x] && errorMessage[x].length !== 0
+    );
+    if (!error) {
+      let fp = Math.round(
+        data.baseprice - (data.baseprice * data.discount) / 100
+      );
+      var item = new FormData();
+      item.append("_id", _id);
+      item.append("name", data.name || "");
+      item.append("maincategory", data.maincategory || "");
+      item.append("subcategory", data.subcategory || "");
+      item.append("brand", data.brand || "");
+      item.append("slug", data.slug || "");
+      item.append("subSlug", data.subSlug || "");
+      item.append("innerSlug", data.innerSlug || "");
+      item.append("innerSubSlug", data.innerSubSlug || "");
+      item.append("color", data.color || "");
+      item.append("size", data.size || "");
+      item.append("baseprice", parseInt(data.baseprice || 0));
+      item.append("discount", parseInt(data.discount || 0));
+      item.append("finalprice", fp);
+      item.append("stock", data.stock || "");
+      item.append("description", data.description || "");
+      item.append("defaultDescription", data.defaultDescription || "");
+      item.append("variantDescription", data.variantDescription || "");
+      item.append("specification", JSON.stringify(specsData));
+      if (variants.length > 0) {
+        item.append("variants", JSON.stringify(variants));
+      }
+      if (data.pic1) item.append("pic1", data.pic1);
+      if (data.pic2) item.append("pic2", data.pic2);
+      if (data.pic3) item.append("pic3", data.pic3);
+      if (data.pic4) item.append("pic4", data.pic4);
+      await updateVendorProductAPI(_id, item);
+      showToast.success('Product updated successfully!');
+      navigate("/vendor/products");
+    } else {
+      setShow(true);
+      showToast.error('Please fix the validation errors');
+    }
+  }
+
+
+  useEffect(() => {
+    if (!allproducts.length || !allmaincategories.length) {
+      dispatch(getMaincategory());
+      dispatch(getProduct());
+    }
+    if (!allSlugs.length) {
+      dispatch(getSlug());
+    }
+    if (!allSubSlugs.length) {
+      dispatch(getSubSlug());
+    }
+    // eslint-disable-next-line
+  }, []);
+
   useEffect(() => {
     if (allmaincategories.length) setMaincategory(allmaincategories);
     if (allsubcategories.length) setSubcategory(allsubcategories);
     if (allbrands.length) setBrand(allbrands);
-    if (allSlugs.length) setSlugs(allSlugs);
-    if (allSubSlugs.length) setSubSlugs(allSubSlugs);
-  }, [allmaincategories, allsubcategories, allbrands, allSlugs, allSubSlugs]);
 
-  const handleSlugChange = (e, setFieldValue) => {
-    const selectedSlugId = e.target.value;
-    setFieldValue("slug", selectedSlugId);
-    setFieldValue("innerSlug", "");
-    setFieldValue("subSlug", "");
-    setFieldValue("innerSubSlug", "");
-    setInnerSlugs([]);
-    setSubSlugs([]);
-    setInnerSubSlugs([]);
-    
-    if (selectedSlugId) {
-      const selectedSlugObj = allSlugs.find(s => s._id === selectedSlugId);
-      if (selectedSlugObj && selectedSlugObj.innerSlugs && selectedSlugObj.innerSlugs.length > 0) {
-        setInnerSlugs(selectedSlugObj.innerSlugs);
-      }
-      
-      // Load sub-slugs separately
-      dispatch(getVendorSubSlugByParent({ parentSlugId: selectedSlugId }));
-    }
-  };
-
-  const handleSubSlugChange = (e, setFieldValue) => {
-    const selectedSubSlugId = e.target.value;
-    setFieldValue("subSlug", selectedSubSlugId);
-    setFieldValue("innerSubSlug", "");
-    setInnerSubSlugs([]);
-    
-    if (selectedSubSlugId) {
-      const selectedSubSlugObj = allSubSlugs.find(ss => ss._id === selectedSubSlugId);
-      if (selectedSubSlugObj && selectedSubSlugObj.innerSubSlugs && selectedSubSlugObj.innerSubSlugs.length > 0) {
-        setInnerSubSlugs(selectedSubSlugObj.innerSubSlugs);
-      }
-    }
-  };
-
-  // Fetch product data only once when component mounts and required data is loaded
-  useEffect(() => {
-    if (isAdd || !productId || productFetched || !allSlugs.length || !allSubSlugs.length) return;
-    
-    getProductAPIById(productId)
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.result === "Done") {
-          // Process brand data
-          let brandId = res.data.brand;
-          if (typeof brandId === 'object' && brandId !== null) {
-            brandId = brandId._id;
-          } else if (typeof brandId === 'string' && brandId.startsWith('{')) {
-            try {
-              const parsedBrand = JSON.parse(brandId);
-              brandId = parsedBrand._id ? parsedBrand._id.replace(/"/g, '') : brandId;
-            } catch (e) {
-              console.error("Error parsing brand JSON:", e);
-            }
-          }
-          
-          const processedData = {
-            ...res.data,
-            maincategory: res.data.maincategory && typeof res.data.maincategory === 'object' ? res.data.maincategory._id : res.data.maincategory,
-            subcategory: res.data.subcategory && typeof res.data.subcategory === 'object' ? res.data.subcategory._id : res.data.subcategory,
-            brand: brandId,
-            slug: res.data.slug && typeof res.data.slug === 'object' ? res.data.slug._id : res.data.slug,
-            subSlug: res.data.subSlug && typeof res.data.subSlug === 'object' ? res.data.subSlug._id : res.data.subSlug,
-          };
-          
-          setData(processedData);
-          
-          // If the product has a slug, load the related inner slugs
-          if (processedData.slug) {
-            const selectedSlugObj = allSlugs.find(s => s._id === processedData.slug);
-            if (selectedSlugObj && selectedSlugObj.innerSlugs && selectedSlugObj.innerSlugs.length > 0) {
-              setInnerSlugs(selectedSlugObj.innerSlugs);
-            }
-            
-            // Load sub-slugs for this slug
-            dispatch(getVendorSubSlugByParent({ parentSlugId: processedData.slug }));
-            
-            // After loading sub-slugs, we need to set inner sub slugs if available
-            setTimeout(() => {
-              if (processedData.subSlug) {
-                const updatedSubSlugs = allSubSlugs.filter(ss => ss.parentSlug === processedData.slug);
-                setSubSlugs(updatedSubSlugs);
-                
-                const selectedSubSlugObj = updatedSubSlugs.find(ss => ss._id === processedData.subSlug);
-                if (selectedSubSlugObj && selectedSubSlugObj.innerSubSlugs && selectedSubSlugObj.innerSubSlugs.length > 0) {
-                  setInnerSubSlugs(selectedSubSlugObj.innerSubSlugs);
-                }
-              }
-            }, 500);
-          }
-          
-          setProductFetched(true);
-        } else {
-          alert("Unable to fetch product details");
-          navigate("/vendor/products");
+    if (allproducts.length && _id) {
+      let item = allproducts.find((x) => x._id === _id);
+      if (item && !data.name) {
+        setData({ 
+          ...item, 
+          brand: item?.brand?._id || item?.brand,
+          maincategory: item?.maincategory?._id || item?.maincategory,
+          subcategory: item?.subcategory?._id || item?.subcategory,
+          slug: item?.slug?._id || item?.slug,
+          subSlug: item?.subSlug?._id || item?.subSlug,
+          innerSlug: item?.innerSlug?._id || item?.innerSlug || "",
+          innerSubSlug: item?.innerSubSlug?._id || item?.innerSubSlug || "",
+          defaultDescription: item.defaultDescription || "",
+          variantDescription: item.variantDescription || ""
+        });
+        setSpecsData(item.specification && item.specification.length > 0 ? item.specification : [{ key: "", value: "" }]);
+        const updatedVariants = (item.variants || []).map(variant => ({
+          ...variant,
+          innerSlug: variant.innerSlug || "",
+          innerSubSlug: variant.innerSubSlug || "",
+          defaultDescription: variant.description || "",
+          variantDescription: variant.variantDescription || "",
+          specifications: variant.specification && variant.specification.length > 0 ? variant.specification : [{ key: "", value: "" }]
+        }));
+        setVariants(updatedVariants);
+        
+        // Load related data for the current product
+        if (item?.maincategory?._id || item?.maincategory) {
+          dispatch(getSubcategoryByMainId(item?.maincategory?._id || item?.maincategory));
         }
-      })
-      .catch((err) => {
-        console.error("Error fetching product:", err);
-        alert("Unable to fetch product details");
-        navigate("/vendor/products");
-      });
-  }, [productId, allSlugs, allSubSlugs, isAdd, productFetched, dispatch, navigate]);
-
+        if (item?.slug?._id || item?.slug) {
+          dispatch(getSubSlugByParent({ parentSlugId: item?.slug?._id || item?.slug }));
+        }
+      }
+    }
+    // eslint-disable-next-line
+  }, [allproducts.length, allmaincategories.length, allsubcategories.length, allbrands.length, allSlugs.length, allSubSlugs.length]);
   return (
-    <>
-      <Wrapper>
-        <div className="box__layout">
-          <div className="header__layout">
-            <div className="row">
-              <h3 className="flex-1">Edit Product</h3>
-              <div className="col-md-3 text-right">
-                <Link to="/vendor/products" className="add__item">
-                  Go Back
-                </Link>
-              </div>
-            </div>
+    <div className="page_section">
+      <div className="container-fluid my-3">
+        <div className="row">
+          <div className="col-md-3">
+            <Wrapper />
           </div>
-          <div>
-            <Formik
-              initialValues={{
-                ...data,
-                pic_1: data.pic1,
-                pic_2: data.pic2,
-                pic_3: data.pic3,
-                pic_4: data.pic4,
-              }}
-              onSubmit={async (values, { setSubmitting }) => {
-                let fp = Math.round(
-                  values.baseprice - (values.baseprice * values.discount) / 100
-                );
-                var item = new FormData();
-                if (!isAdd) item.append("_id", productId);
-                item.append("name", values.name);
-                
-                // Ensure we're sending simple string IDs, not objects
-                const maincategoryId = typeof values.maincategory === 'object' ? values.maincategory._id : values.maincategory;
-                const subcategoryId = typeof values.subcategory === 'object' ? values.subcategory._id : values.subcategory;
-                const brandId = typeof values.brand === 'object' ? values.brand._id : values.brand;
-                
-                item.append("maincategory", maincategoryId || (maincategory[0] && maincategory[0]._id));
-                item.append("subcategory", subcategoryId || (subcategory[0] && subcategory[0]._id));
-                item.append("brand", brandId || (brand[0] && brand[0]._id));
-                
-                item.append("color", values.color);
-                item.append("size", values.size);
-                item.append("baseprice", parseInt(values.baseprice));
-                item.append("discount", parseInt(values.discount));
-                item.append("finalprice", fp);
-                item.append("stock", values.stock);
-                item.append("description", values.description);
-                item.append(
-                  "specification",
-                  JSON.stringify(values.specification)
-                );
-                item.append("pic1", values.pic_1);
-                item.append("pic2", values.pic_2);
-                item.append("pic3", values.pic_3);
-                item.append("pic4", values.pic_4);
-                
-                // Add slug, innerSlug, subSlug, innerSubSlug - ensure we're sending simple string IDs
-                const slugId = typeof values.slug === 'object' ? values.slug._id : values.slug;
-                const subSlugId = typeof values.subSlug === 'object' ? values.subSlug._id : values.subSlug;
-                
-                item.append("slug", slugId);
-                if (values.innerSlug) {
-                  item.append("innerSlug", values.innerSlug);
-                }
-                if (values.subSlug) {
-                  item.append("subSlug", subSlugId);
-                }
-                if (values.innerSubSlug) {
-                  item.append("innerSubSlug", values.innerSubSlug);
-                }
-                
-                const METHOD = isAdd
-                  ? addVendorProductAPI
-                  : updateVendorProductAPI;
-                
-                METHOD(productId, item)
-                  .then((res) => {
-                    if (res.status != 200) {
-                      alert("Unable to update product");
-                    } else {
-                      navigate("/vendor/products");
-                    }
-                  })
-                  .catch(() => {
-                    alert("Unable to update product");
-                  });
-              }}
-              validationSchema={Yup.object().shape({
-                name: Yup.string().required("Product name is required"),
-                color: Yup.string().required("Color is required"),
-                size: Yup.string().required("Size is required"),
-                baseprice: Yup.string().required("Base Price is required"),
-                discount: Yup.string().required("Discount is required"),
-                maincategory: Yup.mixed().required("Main Category is required"),
-                subcategory: Yup.mixed().required("Sub Category is required"),
-                brand: Yup.mixed().test(
-                  'is-valid-brand',
-                  'Brand is required',
-                  (value) => {
-                    // Accept string, object with _id, or any non-empty value
-                    return value && (
-                      typeof value === 'string' ||
-                      (typeof value === 'object' && value._id) ||
-                      value !== ''
-                    );
-                  }
-                ),
-                pic_1: Yup.mixed().required("Picture 1 is required"),
-                slug: Yup.mixed().required("Slug is required"),
-                subSlug: Yup.mixed().required("Sub Slug is required"),
-              })}
-              enableReinitialize
-            >
-              {(prop) => {
-                const {
-                  touched,
-                  errors,
-                  isValid,
-                  isSubmitting,
-                  setFieldValue,
-                  values,
-                } = prop;
-
-                return (
-                  <Form noValidate>
-                    <div className="row">
-                      <div className="col-md-6">
-                        <div className="ui__form">
-                          <label htmlFor="name" className="ui__form__label">
-                            Product name
-                          </label>
-                          <Field
-                            id="name"
-                            name="name"
-                            placeholder=""
-                            className={`ui__form__field ${errors.name ? "error" : ""
-                              }`}
-                          />
-                          {errors.name && (
-                            <div className="ui__form__error">{errors.name}</div>
-                          )}
-                        </div>
-
-                        <div className="ui__form">
-                          <label
-                            htmlFor="description"
-                            className="ui__form__label"
-                          >
-                            Product Description
-                          </label>
-                          <Field
-                            id="description"
-                            name="description"
-                            component="textarea"
-                            placeholder=""
-                            className={`ui__form__field ${errors.description ? "error" : ""
-                              }`}
-                          />
-                          {errors.description && (
-                            <div className="ui__form__error">
-                              {errors.description}
-                            </div>
-                          )}
-                        </div>
-                        
-                        {/* Slug and SubSlug fields */}
-                        <div className="row">
-                          <div className="col-md-6">
-                            <div className="ui__form">
-                              <label htmlFor="slug" className="ui__form__label">
-                                Slug
-                              </label>
-                              <Field
-                                id="slug"
-                                name="slug"
-                                component="select"
-                                className={`ui__form__field ${errors.slug ? "error" : ""}`}
-                                onChange={(e) => handleSlugChange(e, setFieldValue)}
-                              >
-                                <option value="">--Select--</option>
-                                {slugs.map((item, index) => (
-                                  <option key={index} value={item._id}>
-                                    {item.slug}
-                                  </option>
-                                ))}
-                              </Field>
-                              {errors.slug && (
-                                <div className="ui__form__error">{errors.slug}</div>
-                              )}
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="ui__form">
-                              <label htmlFor="innerSlug" className="ui__form__label">
-                                Inner Slug
-                              </label>
-                              <Field
-                                id="innerSlug"
-                                name="innerSlug"
-                                component="select"
-                                className={`ui__form__field ${errors.innerSlug ? "error" : ""}`}
-                                disabled={!values.slug || innerSlugs.length === 0}
-                              >
-                                <option value="">--Select--</option>
-                                {innerSlugs.map((item, index) => (
-                                  <option key={index} value={item}>
-                                    {item}
-                                  </option>
-                                ))}
-                              </Field>
-                              {errors.innerSlug && (
-                                <div className="ui__form__error">{errors.innerSlug}</div>
-                              )}
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="ui__form">
-                              <label htmlFor="subSlug" className="ui__form__label">
-                                Sub Slug
-                              </label>
-                              <Field
-                                id="subSlug"
-                                name="subSlug"
-                                component="select"
-                                className={`ui__form__field ${errors.subSlug ? "error" : ""}`}
-                                onChange={(e) => handleSubSlugChange(e, setFieldValue)}
-                                disabled={!values.slug}
-                              >
-                                <option value="">--Select--</option>
-                                {subSlugs.map((item, index) => (
-                                  <option key={index} value={item._id}>
-                                    {item.slug}
-                                  </option>
-                                ))}
-                              </Field>
-                              {errors.subSlug && (
-                                <div className="ui__form__error">{errors.subSlug}</div>
-                              )}
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="ui__form">
-                              <label htmlFor="innerSubSlug" className="ui__form__label">
-                                Inner Sub Slug
-                              </label>
-                              <Field
-                                id="innerSubSlug"
-                                name="innerSubSlug"
-                                component="select"
-                                className={`ui__form__field ${errors.innerSubSlug ? "error" : ""}`}
-                                disabled={!values.subSlug || innerSubSlugs.length === 0}
-                              >
-                                <option value="">--Select--</option>
-                                {innerSubSlugs.map((item, index) => (
-                                  <option key={index} value={item}>
-                                    {item}
-                                  </option>
-                                ))}
-                              </Field>
-                              {errors.innerSubSlug && (
-                                <div className="ui__form__error">{errors.innerSubSlug}</div>
-                              )}
-                            </div>
+          <div className="col-md-9">
+            <div className="box__layout">
+              <div className="header__layout">
+                <div className="row">
+                  <h3 className="flex-1">Update Product</h3>
+                </div>
+              </div>
+              <div>
+                <form onSubmit={postData}>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <div className="ui__form">
+                        <label className="ui__form__label">Product Name</label>
+                        <input 
+                          name="name" 
+                          value={data.name || ""} 
+                          onChange={getInputData} 
+                          placeholder="Product Name" 
+                          required 
+                          className="ui__form__field"
+                        />
+                        {show ? <p className="text-danger">{errorMessage.name}</p> : ""}
+                      </div>
+                      <div className="ui__form">
+                        <label className="ui__form__label">Description</label>
+                        <textarea 
+                          name="description" 
+                          value={data.description || ""} 
+                          onChange={getInputData} 
+                          placeholder="Product description" 
+                          rows="4"
+                          className="ui__form__field"
+                        />
+                      </div>
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Main Category</label>
+                            <select 
+                              name="maincategory" 
+                              value={data.maincategory || ""} 
+                              onChange={handleMainCategoryChange} 
+                              className="ui__form__field"
+                              required
+                            >
+                              <option value="">Select Category</option>
+                              {maincategory.map((item, index) => (
+                                <option key={index} value={item._id}>{item.name}</option>
+                              ))}
+                            </select>
                           </div>
                         </div>
-
-                        <div className="row">
-                          <div className="col-md-6">
-                            <div className="ui__form">
-                              <label
-                                htmlFor="maincategory"
-                                className="ui__form__label"
-                              >
-                                Main Category
-                              </label>
-                              <Field
-                                id="maincategory"
-                                name="maincategory"
-                                component="select"
-                                placeholder=""
-                                className={`ui__form__field ${errors.maincategory ? "error" : ""
-                                  }`}
-                              >
-                                <option value={""}>--Select--</option>
-                                {maincategory.map((item, index) => {
-                                  return (
-                                    <option key={index} value={item._id}>
-                                      {item.name}
-                                    </option>
-                                  );
-                                })}
-                              </Field>
-                              {errors.maincategory && (
-                                <div className="ui__form__error">
-                                  {errors.maincategory}
-                                </div>
-                              )}
-                            </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Sub Category</label>
+                            <select 
+                              name="subcategory" 
+                              value={data.subcategory || ""} 
+                              onChange={getInputData} 
+                              className="ui__form__field"
+                              required
+                            >
+                              <option value="">Select Sub Category</option>
+                              {subcategory.map((item, index) => (
+                                <option key={index} value={item._id}>{item.name}</option>
+                              ))}
+                            </select>
                           </div>
-
-                          <div className="col-md-6">
-                            <div className="ui__form">
-                              <label
-                                htmlFor="subcategory"
-                                className="ui__form__label"
-                              >
-                                Sub Category
-                              </label>
-                              <Field
-                                id="subcategory"
-                                name="subcategory"
-                                component="select"
-                                placeholder=""
-                                className={`ui__form__field ${errors.subcategory ? "error" : ""
-                                  }`}
-                              >
-                                <option value={""}>--Select--</option>
-                                {subcategory.map((item, index) => {
-                                  return (
-                                    <option key={index} value={item._id}>
-                                      {item.name}
-                                    </option>
-                                  );
-                                })}
-                              </Field>
-                              {errors.subcategory && (
-                                <div className="ui__form__error">
-                                  {errors.subcategory}
-                                </div>
-                              )}
-                            </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Brand</label>
+                            <select 
+                              name="brand" 
+                              value={data.brand || ""} 
+                              onChange={getInputData} 
+                              className="ui__form__field"
+                              required
+                            >
+                              <option value="">Select Brand</option>
+                              {brand.map((item, index) => (
+                                <option key={index} value={item._id}>{item.name}</option>
+                              ))}
+                            </select>
                           </div>
-
-                          <div className="col-md-6">
-                            <div className="ui__form">
-                              <label
-                                htmlFor="brand"
-                                className="ui__form__label"
-                              >
-                                Brand
-                              </label>
-                              <Field
-                                id="brand"
-                                name="brand"
-                                component="select"
-                                placeholder=""
-                                className={`ui__form__field ${errors.brand ? "error" : ""
-                                  }`}
-                                onChange={(e) => {
-                                  // Ensure we're setting a simple string value
-                                  setFieldValue("brand", e.target.value);
-                                }}
-                              >
-                                <option value={""}>--Select--</option>
-                                {brand.map((item, index) => {
-                                  return (
-                                    <option key={index} value={item._id}>
-                                      {item.name}
-                                    </option>
-                                  );
-                                })}
-                              </Field>
-                              {errors.brand && (
-                                <div className="ui__form__error">
-                                  {errors.brand}
-                                </div>
-                              )}
-                            </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Slug</label>
+                            <select
+                              name="slug" 
+                              value={data.slug || ""} 
+                              onChange={handleSlugChange} 
+                              className="ui__form__field"
+                            >
+                              <option value="">Select Slug</option>
+                              {allSlugs.map((item, index) => (
+                                <option key={index} value={item._id}>{item.name || item.slug}</option>
+                              ))}
+                            </select>
                           </div>
-
-                          <div className="col-md-6">
-                            <div className="ui__form">
-                              <label
-                                htmlFor="stock"
-                                className="ui__form__label"
-                              >
-                                Stock
-                              </label>
-                              <Field
-                                id="stock"
-                                name="stock"
-                                component="select"
-                                placeholder=""
-                                className={`ui__form__field ${errors.stock ? "error" : ""
-                                  }`}
-                              >
-                                <option value="In Stock">In Stock</option>
-                                <option value="Out Of Stock">
-                                  Out Of Stock
-                                </option>
-                              </Field>
-                              {errors.stock && (
-                                <div className="ui__form__error">
-                                  {errors.stock}
-                                </div>
-                              )}
-                            </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Sub Slug</label>
+                            <select
+                              name="subSlug"
+                              value={data.subSlug || ""}
+                              onChange={getInputData}
+                              className="ui__form__field"
+                              disabled={!data.slug}
+                            >
+                              <option value="">Select Sub Slug</option>
+                              {allSubSlugs.map((item, index) => (
+                                <option key={index} value={item._id}>{item.name || item.slug}</option>
+                              ))}
+                            </select>
                           </div>
-
-                          <div className="col-md-6">
-                            <div className="ui__form">
-                              <label
-                                htmlFor="color"
-                                className="ui__form__label"
-                              >
-                                Color
-                              </label>
-                              <Field
-                                id="color"
-                                name="color"
-                                placeholder=""
-                                className={`ui__form__field ${errors.color ? "error" : ""
-                                  }`}
-                              />
-                              {errors.color && (
-                                <div className="ui__form__error">
-                                  {errors.color}
-                                </div>
-                              )}
-                            </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Inner Slug</label>
+                            <select
+                              name="innerSlug"
+                              value={data.innerSlug || ""}
+                              onChange={getInputData}
+                              className="ui__form__field"
+                            >
+                              <option value="">Select Inner Slug</option>
+                              {allSlugs.map((item, index) => (
+                                <option key={index} value={item._id}>{item.name || item.slug}</option>
+                              ))}
+                            </select>
                           </div>
-                          <div className="col-md-6">
-                            <div className="ui__form">
-                              <label htmlFor="size" className="ui__form__label">
-                                Size
-                              </label>
-                              <Field
-                                id="size"
-                                name="size"
-                                placeholder=""
-                                className={`ui__form__field ${errors.size ? "error" : ""
-                                  }`}
-                              />
-                              {errors.size && (
-                                <div className="ui__form__error">
-                                  {errors.size}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="ui__form">
-                              <label
-                                htmlFor="baseprice"
-                                className="ui__form__label"
-                              >
-                                Base Price
-                              </label>
-                              <Field
-                                id="baseprice"
-                                name="baseprice"
-                                type="number"
-                                placeholder=""
-                                className={`ui__form__field ${errors.baseprice ? "error" : ""
-                                  }`}
-                              />
-                              {errors.baseprice && (
-                                <div className="ui__form__error">
-                                  {errors.baseprice}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="ui__form">
-                              <label
-                                htmlFor="discount"
-                                className="ui__form__label"
-                              >
-                                Discount
-                              </label>
-                              <Field
-                                id="discount"
-                                name="discount"
-                                type="number"
-                                placeholder=""
-                                className={`ui__form__field ${errors.discount ? "error" : ""
-                                  }`}
-                              />
-                              {errors.discount && (
-                                <div className="ui__form__error">
-                                  {errors.discount}
-                                </div>
-                              )}
-                            </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Inner Sub Slug</label>
+                            <select
+                              name="innerSubSlug"
+                              value={data.innerSubSlug || ""}
+                              onChange={getInputData}
+                              className="ui__form__field"
+                            >
+                              <option value="">Select Inner Sub Slug</option>
+                              {allSubSlugs.map((item, index) => (
+                                <option key={index} value={item._id}>{item.name || item.slug}</option>
+                              ))}
+                            </select>
                           </div>
                         </div>
                       </div>
-                      <div className="col-md-6">
-                        <div className="row">
-                          <div className="col-md-6">
-                            <div className="profile__photo profile__photo__rouned">
-                              <div
-                                className="profile__photo__inner profile__photo__rouned"
-                                style={{
-                                  backgroundImage: `url(${getImage(values.pic1)})`,
-                                }}
-                              >
-                                <input
-                                  id="pic_1"
-                                  name="pic_1"
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={(event) => {
-                                    if (event.currentTarget.files) {
-                                      const fileReader = new FileReader();
-                                      fileReader.onload = (event) => {
-                                        console.log(event.target.result)
-                                        setFieldValue(
-                                          "pic1",
-                                          event.target.result
-                                        );
-                                      };
-                                      fileReader.readAsDataURL(
-                                        event.currentTarget.files[0]
-                                      );
-                                      setFieldValue(
-                                        "pic_1",
-                                        event.currentTarget.files[0]
-                                      );
-                                    }
-                                  }}
+                    </div>
+                    <div className="col-md-6">
+                      <h5>Product Images</h5>
+                      <div className="row">
+                        <div className="col-md-6 mb-3">
+                          <div className="profile__photo profile__photo__rouned">
+                            <div className="profile__photo__inner profile__photo__rouned">
+                              <input type="file" name="pic1" onChange={getInputFile} className="form-control" />
+                              {data.pic1 ? (
+                                <img 
+                                  src={typeof data.pic1 === 'string' ? `${apiLink}/public/products/${data.pic1}` : URL.createObjectURL(data.pic1)} 
+                                  alt="Preview" 
+                                  style={{width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0}} 
                                 />
+                              ) : (
                                 <div className="overlay text-center profile__photo__rouned">
                                   <p>
                                     <i className="fa fa-image"></i>
                                     <br />
-                                    Upload Image
+                                    Upload Image 1
                                   </p>
                                 </div>
-                              </div>
-                            </div>
-                            {errors.pic_1 && (
-                              <div className="ui__form__error text-center">
-                                {errors.pic_1}
-                              </div>
-                            )}
-                          </div>
-                          <div className="col-md-6">
-                            <div className="profile__photo profile__photo__rouned">
-                              <div
-                                className="profile__photo__inner profile__photo__rouned"
-                                style={{
-                                  backgroundImage: `url(${getImage(values.pic2)})`,
-                                }}
-                              >
-                                <input
-                                  id="pic_2"
-                                  name="pic_2"
-                                  type="file"
-                                  onChange={(event) => {
-                                    if (event.currentTarget.files) {
-                                      const fileReader = new FileReader();
-                                      fileReader.onload = (event) => {
-                                        console.log(event.target.result)
-                                        setFieldValue(
-                                          "pic2",
-                                          event.target.result
-                                        );
-                                      };
-                                      fileReader.readAsDataURL(
-                                        event.currentTarget.files[0]
-                                      );
-                                      setFieldValue(
-                                        "pic_2",
-                                        event.currentTarget.files[0]
-                                      );
-                                    }
-                                  }}
-                                />
-                                <div className="overlay text-center profile__photo__rouned">
-                                  <p>
-                                    <i className="fa fa-image"></i>
-                                    <br />
-                                    Upload Image
-                                  </p>
-                                </div>
-                              </div>
+                              )}
                             </div>
                           </div>
-                          <div className="col-md-6">
-                            <div className="profile__photo profile__photo__rouned">
-                              <div
-                                className="profile__photo__inner profile__photo__rouned"
-                                style={{
-                                  backgroundImage: `url(${getImage(values.pic3)})`,
-                                }}
-                              >
-                                <input
-                                  id="pic_3"
-                                  name="pic_3"
-                                  type="file"
-                                  onChange={(event) => {
-                                    if (event.currentTarget.files) {
-                                      const fileReader = new FileReader();
-                                      fileReader.onload = (event) => {
-                                        console.log(event.target.result)
-                                        setFieldValue(
-                                          "pic3",
-                                          event.target.result
-                                        );
-                                      };
-                                      fileReader.readAsDataURL(
-                                        event.currentTarget.files[0]
-                                      );
-                                      setFieldValue(
-                                        "pic_3",
-                                        event.currentTarget.files[0]
-                                      );
-                                    }
-                                  }}
+                        </div>
+                        <div className="col-md-6 mb-3">
+                          <div className="profile__photo profile__photo__rouned">
+                            <div className="profile__photo__inner profile__photo__rouned">
+                              <input type="file" name="pic2" onChange={getInputFile} className="form-control" />
+                              {data.pic2 ? (
+                                <img 
+                                  src={typeof data.pic2 === 'string' ? `${apiLink}/public/products/${data.pic2}` : URL.createObjectURL(data.pic2)} 
+                                  alt="Preview" 
+                                  style={{width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0}} 
                                 />
+                              ) : (
                                 <div className="overlay text-center profile__photo__rouned">
                                   <p>
                                     <i className="fa fa-image"></i>
                                     <br />
-                                    Upload Image
+                                    Upload Image 2
                                   </p>
                                 </div>
-                              </div>
+                              )}
                             </div>
                           </div>
-                          <div className="col-md-6">
-                            <div className="profile__photo profile__photo__rouned">
-                              <div
-                                className="profile__photo__inner profile__photo__rouned"
-                                style={{
-                                  backgroundImage: `url(${getImage(values.pic4)})`,
-                                }}
-                              >
-                                <input
-                                  id="pic_4"
-                                  name="pic_4"
-                                  type="file"
-                                  onChange={(event) => {
-                                    if (event.currentTarget.files && event.currentTarget.files[0]) {
-                                      const fileReader = new FileReader();
-                                      
-                                      fileReader.onload = (event) => {
-                                        if (event.target && event.target.result) {
-                                          setFieldValue("pic4", event.target.result);
-                                        }
-                                      };
-                                      
-                                      fileReader.onerror = (error) => {
-                                        console.error("Error reading file:", error);
-                                        alert("Error uploading image. Please try again with a different image.");
-                                      };
-                                      
-                                      try {
-                                        fileReader.readAsDataURL(event.currentTarget.files[0]);
-                                        setFieldValue("pic_4", event.currentTarget.files[0]);
-                                      } catch (error) {
-                                        console.error("Error processing file:", error);
-                                        alert("Error processing image. Please try again.");
-                                      }
-                                    }
-                                  }}
+                        </div>
+                        <div className="col-md-6 mb-3">
+                          <div className="profile__photo profile__photo__rouned">
+                            <div className="profile__photo__inner profile__photo__rouned">
+                              <input type="file" name="pic3" onChange={getInputFile} className="form-control" />
+                              {data.pic3 ? (
+                                <img 
+                                  src={typeof data.pic3 === 'string' ? `${apiLink}/public/products/${data.pic3}` : URL.createObjectURL(data.pic3)} 
+                                  alt="Preview" 
+                                  style={{width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0}} 
                                 />
+                              ) : (
                                 <div className="overlay text-center profile__photo__rouned">
                                   <p>
                                     <i className="fa fa-image"></i>
                                     <br />
-                                    Upload Image
+                                    Upload Image 3
                                   </p>
                                 </div>
-                              </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-6 mb-3">
+                          <div className="profile__photo profile__photo__rouned">
+                            <div className="profile__photo__inner profile__photo__rouned">
+                              <input type="file" name="pic4" onChange={getInputFile} className="form-control" />
+                              {data.pic4 ? (
+                                <img 
+                                  src={typeof data.pic4 === 'string' ? `${apiLink}/public/products/${data.pic4}` : URL.createObjectURL(data.pic4)} 
+                                  alt="Preview" 
+                                  style={{width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0}} 
+                                />
+                              ) : (
+                                <div className="overlay text-center profile__photo__rouned">
+                                  <p>
+                                    <i className="fa fa-image"></i>
+                                    <br />
+                                    Upload Image 4
+                                  </p>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <hr />
-                    <h4 className="h41">
-                      Specification{" "}
-                      <button
-                        className="hs-btn"
-                        type="button"
-                        onClick={() => {
-                          values.specification.push({
-                            key: "",
-                            value: "",
-                          });
-                          setFieldValue("specification", values.specification);
-                        }}
-                      >
-                        Add
-                      </button>
-                    </h4>
-                    {values.specification?.map((pair, index) => (
-                      <div className="row mb-2" key={index}>
-                        <div className="col-md-4">
-                          <div className="ui__form">
-                            <label className="ui__form__label">
-                              Enter Specification Key
-                            </label>
-                            <input
-                              type="text"
-                              name="skey"
-                              className="ui__form__field"
-                              value={values.specification[index].key}
-                              onChange={(e) => {
-                                values.specification[index].key =
-                                  e.target.value;
-                                setFieldValue(
-                                  "specification",
-                                  values.specification
-                                );
-                              }}
-                            />
+                  </div>
+                  {/* VARIANTS SECTION */}
+                  {variants && variants.length > 0 ? (
+                    <div className="card mt-4 mb-4">
+                      <div className="card-header bg-light">
+                        <h5 className="mb-0">Product Variants ({variants.length})</h5>
+                      </div>
+                      <div className="card-body">
+                        {variants.map((variant, idx) => (
+                          <div key={idx} className="border p-3 mb-3 rounded">
+                            <h6>Variant {idx + 1}</h6>
+                            <div className="row">
+                              <div className="col-md-6">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Inner Slug</label>
+                                  <select
+                                    value={variant.innerSlug || ""}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].innerSlug = e.target.value;
+                                      setVariants(newVariants);
+                                    }}
+                                    className="ui__form__field"
+                                  >
+                                    <option value="">Select Inner Slug</option>
+                                    {allSlugs.map((item, index) => (
+                                      <option key={index} value={item._id}>{item.name || item.slug}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="col-md-6">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Inner Sub Slug</label>
+                                  <select
+                                    value={variant.innerSubSlug || ""}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].innerSubSlug = e.target.value;
+                                      setVariants(newVariants);
+                                    }}
+                                    className="ui__form__field"
+                                  >
+                                    <option value="">Select Inner Sub Slug</option>
+                                    {allSubSlugs.map((item, index) => (
+                                      <option key={index} value={item._id}>{item.name || item.slug}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="col-md-6">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Color</label>
+                                  <input
+                                    value={variant.color}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].color = e.target.value;
+                                      setVariants(newVariants);
+                                    }}
+                                    className="ui__form__field"
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Size</label>
+                                  <input
+                                    value={variant.size}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].size = e.target.value;
+                                      setVariants(newVariants);
+                                    }}
+                                    className="ui__form__field"
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Base Price</label>
+                                  <input
+                                    type="number"
+                                    value={variant.baseprice}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].baseprice = Number(e.target.value);
+                                      newVariants[idx].finalprice = Math.round(newVariants[idx].baseprice - (newVariants[idx].baseprice * newVariants[idx].discount) / 100);
+                                      setVariants(newVariants);
+                                    }}
+                                    className="ui__form__field"
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Discount (%)</label>
+                                  <input
+                                    type="number"
+                                    value={variant.discount}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].discount = Number(e.target.value);
+                                      newVariants[idx].finalprice = Math.round(newVariants[idx].baseprice - (newVariants[idx].baseprice * newVariants[idx].discount) / 100);
+                                      setVariants(newVariants);
+                                    }}
+                                    className="ui__form__field"
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-4">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Stock</label>
+                                  <input
+                                    type="number"
+                                    value={variant.stock}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].stock = Number(e.target.value);
+                                      setVariants(newVariants);
+                                    }}
+                                    className="ui__form__field"
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-4">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Final Price (Auto-calculated)</label>
+                                  <input
+                                    value={Math.round(variant.baseprice - (variant.baseprice * variant.discount) / 100) || 0}
+                                    readOnly
+                                    className="ui__form__field"
+                                    style={{ backgroundColor: '#f8f9fa' }}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-12">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Default Description (Will appear as first bullet point)</label>
+                                  <textarea
+                                    value={variant.defaultDescription || variant.description || ""}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].defaultDescription = e.target.value;
+                                      newVariants[idx].description = e.target.value;
+                                      setVariants(newVariants);
+                                    }}
+                                    placeholder="• This is a sample Product"
+                                    rows="3"
+                                    className="ui__form__field"
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-12">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Additional Variant Description</label>
+                                  <textarea
+                                    value={variant.variantDescription || ""}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].variantDescription = e.target.value;
+                                      setVariants(newVariants);
+                                    }}
+                                    placeholder="variant specific description"
+                                    rows="3"
+                                    className="ui__form__field"
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-12">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Specifications</label>
+                                  {(variant.specifications || variant.specification || [{ key: "", value: "" }]).map((spec, specIdx) => (
+                                    <div key={specIdx} className="d-flex mb-2">
+                                      <input
+                                        value={spec.key}
+                                        onChange={(e) => {
+                                          const newVariants = [...variants];
+                                          if (!newVariants[idx].specifications) newVariants[idx].specifications = [];
+                                          newVariants[idx].specifications[specIdx] = { ...spec, key: e.target.value };
+                                          setVariants(newVariants);
+                                        }}
+                                        placeholder="Key"
+                                        className="ui__form__field me-2"
+                                      />
+                                      <input
+                                        value={spec.value}
+                                        onChange={(e) => {
+                                          const newVariants = [...variants];
+                                          if (!newVariants[idx].specifications) newVariants[idx].specifications = [];
+                                          newVariants[idx].specifications[specIdx] = { ...spec, value: e.target.value };
+                                          setVariants(newVariants);
+                                        }}
+                                        placeholder="Value"
+                                        className="ui__form__field me-2"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const newVariants = [...variants];
+                                          if (newVariants[idx].specifications && newVariants[idx].specifications.length > 1) {
+                                            newVariants[idx].specifications.splice(specIdx, 1);
+                                            setVariants(newVariants);
+                                          }
+                                        }}
+                                        className="btn btn-outline-danger btn-sm"
+                                      >
+                                        ×
+                                      </button>
+                                    </div>
+                                  ))}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newVariants = [...variants];
+                                      if (!newVariants[idx].specifications) newVariants[idx].specifications = [];
+                                      newVariants[idx].specifications.push({ key: "", value: "" });
+                                      setVariants(newVariants);
+                                    }}
+                                    className="btn btn-outline-primary btn-sm"
+                                  >
+                                    + Add Spec
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="card mt-4 mb-4">
+                      <div className="card-header bg-light">
+                        <h5 className="mb-0">Product Details</h5>
+                      </div>
+                      <div className="card-body">
+                        <div className="row">
+                          <div className="col-md-6">
+                            <div className="ui__form">
+                              <label className="ui__form__label">Color</label>
+                              <input
+                                name="color"
+                                value={data.color || ""}
+                                onChange={getInputData}
+                                placeholder="Color"
+                                className="ui__form__field"
+                              />
+                              {show ? <p className="text-danger">{errorMessage.color}</p> : ""}
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="ui__form">
+                              <label className="ui__form__label">Size</label>
+                              <input
+                                name="size"
+                                value={data.size || ""}
+                                onChange={getInputData}
+                                placeholder="Size"
+                                className="ui__form__field"
+                              />
+                              {show ? <p className="text-danger">{errorMessage.size}</p> : ""}
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="ui__form">
+                              <label className="ui__form__label">Base Price</label>
+                              <input
+                                name="baseprice"
+                                value={data.baseprice || ""}
+                                onChange={getInputData}
+                                placeholder="Base Price"
+                                type="number"
+                                className="ui__form__field"
+                              />
+                              {show ? <p className="text-danger">{errorMessage.baseprice}</p> : ""}
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="ui__form">
+                              <label className="ui__form__label">Discount (%)</label>
+                              <input
+                                name="discount"
+                                value={data.discount || ""}
+                                onChange={getInputData}
+                                placeholder="Discount (%)"
+                                type="number"
+                                className="ui__form__field"
+                              />
+                              {show ? <p className="text-danger">{errorMessage.discount}</p> : ""}
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="ui__form">
+                              <label className="ui__form__label">Stock</label>
+                              <input
+                                name="stock"
+                                value={data.stock || ""}
+                                onChange={getInputData}
+                                placeholder="Stock"
+                                type="number"
+                                className="ui__form__field"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="ui__form">
+                              <label className="ui__form__label">Final Price (Auto-calculated)</label>
+                              <input
+                                value={Math.round(data.baseprice - (data.baseprice * data.discount) / 100) || 0}
+                                readOnly
+                                className="ui__form__field"
+                                style={{ backgroundColor: '#f8f9fa' }}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-12">
+                            <div className="ui__form">
+                              <label className="ui__form__label">Default Description (Will appear as first bullet point)</label>
+                              <textarea
+                                name="defaultDescription"
+                                value={data.defaultDescription || ""}
+                                onChange={getInputData}
+                                placeholder="• This is a sample Product"
+                                rows="3"
+                                className="ui__form__field"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-12">
+                            <div className="ui__form">
+                              <label className="ui__form__label">Additional Variant Description</label>
+                              <textarea
+                                name="variantDescription"
+                                value={data.variantDescription || ""}
+                                onChange={getInputData}
+                                placeholder="variant specific description"
+                                rows="3"
+                                className="ui__form__field"
+                              />
+                            </div>
                           </div>
                         </div>
-                        <div className="col-md-4">
-                          <div className="ui__form">
-                            <label className="ui__form__label">
-                              Enter Specification Value
-                            </label>
-                            <input
-                              type="text"
-                              name="skey"
-                              className="ui__form__field"
-                              value={values.specification[index].value}
-                              onChange={(e) => {
-                                values.specification[index].value =
-                                  e.target.value;
-                                setFieldValue(
-                                  "specification",
-                                  values.specification
-                                );
-                              }}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-3">
+                        <div className="ui__form">
+                          <label className="ui__form__label">Specifications</label>
+                          {specsData?.map((spec, idx) => (
+                            <div key={idx} className="d-flex mb-2">
+                              <input
+                                value={spec.key}
+                                onChange={e => handleInputChange(idx, 'key', e.target.value)}
+                                placeholder="Key"
+                                className="ui__form__field me-2"
+                              />
+                              <input
+                                value={spec.value}
+                                onChange={e => handleInputChange(idx, 'value', e.target.value)}
+                                placeholder="Value"
+                                className="ui__form__field me-2"
+                              />
+                            </div>
+                          ))}
                           <button
                             type="button"
-                            className="hs-btn"
-                            onClick={() => {
-                              if (window.confirm("Are you sure want to remove ?")) {  // Use window.confirm explicitly
-                                values.specification.splice(index, 1);
-                                setFieldValue("specification", values.specification);
-                              }
-                            }}
+                            onClick={handleAddPair}
+                            className="btn btn-outline-primary btn-sm"
                           >
-                            Delete
+                            + Add Spec
                           </button>
-
                         </div>
                       </div>
-                    ))}
-
-                    {!isValid && (
-                      <div className="alert alert-danger">
-                        Please validate all field
-                      </div>
-                    )}
-                    <button className="ui__form__button">Save Product</button>
-                  </Form>
-                );
-              }}
-            </Formik>
+                    </div>
+                  )}
+                  {/* Only one submit button at the end of the form */}
+                  <div className="ui__form mt-4">
+                    <button
+                      type="submit"
+                      className="ui__form__button w-100"
+                    >
+                      Update Product
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
-      </Wrapper>
-    </>
+      </div>
+    </div>
   );
 }

@@ -11,7 +11,6 @@ import {
 } from "../../Store/ActionCreators/SubcategoryActionCreators";
 import {
   getBrand,
-  getBrandBySubCategoryId,
 } from "../../Store/ActionCreators/BrandActionCreators";
 import { addProduct } from "../../Store/ActionCreators/ProductActionCreators";
 import { getSlug } from "../../Store/ActionCreators/SlugActionCreators";
@@ -137,7 +136,6 @@ export default function VendorAddProduct() {
   // Handle subcategory change
   const handleSubCategoryChange = (e) => {
     handleChange(e);
-    dispatch(getBrandBySubCategoryId(e.target.value));
   };
 
   // Handle slug change
@@ -187,13 +185,21 @@ export default function VendorAddProduct() {
       return showToast.error('Please add at least one variant');
     }
     try {
+      console.log('Starting product upload...');
+      console.log('Form data:', form);
+      console.log('Variant list:', variantList);
+      
       // Create single product with variants array
       const productItem = new FormData();
       // Add base product data
       Object.keys(form).forEach((key) => {
         if (key === "pic1" || key === "pic2" || key === "pic3" || key === "pic4") {
-          if (form[key]) productItem.append(key, form[key]);
+          if (form[key]) {
+            console.log(`Adding file ${key}:`, form[key].name);
+            productItem.append(key, form[key]);
+          }
         } else if (form[key] !== undefined && form[key] !== "") {
+          console.log(`Adding ${key}:`, form[key]);
           productItem.append(key, form[key]);
         }
       });
@@ -210,10 +216,12 @@ export default function VendorAddProduct() {
       productItem.append("color", "Multiple");
       productItem.append("size", "Multiple");
       productItem.append("specification", JSON.stringify([{ key: "Variants", value: variantList.length }]));
-      const loadingToast = showToast.loading('Uploading product...');
+      
+      console.log('Dispatching addProduct action...');
       await dispatch(addProduct(productItem));
+      console.log('Product uploaded successfully');
       showToast.success('Product uploaded successfully!');
-      navigate("/vendor-products");
+      navigate("/vendor/products");
       // Reset form
       setForm({
         name: '',
@@ -349,8 +357,8 @@ export default function VendorAddProduct() {
                               className="ui__form__field"
                             >
                               <option value="">Select Slug</option>
-                              {allSlugs.map((item, index) => (
-                                <option key={index} value={item._id}>{item.slug}</option>
+                              {allSlugs && allSlugs.map((item, index) => (
+                                <option key={index} value={item._id}>{item.name || item.slug}</option>
                               ))}
                             </select>
                           </div>
@@ -381,13 +389,17 @@ export default function VendorAddProduct() {
                           <div className="profile__photo profile__photo__rouned">
                             <div className="profile__photo__inner profile__photo__rouned">
                               <input type="file" name="pic1" onChange={getInputFile} className="form-control" required />
-                              <div className="overlay text-center profile__photo__rouned">
-                                <p>
-                                  <i className="fa fa-image"></i>
-                                  <br />
-                                  Upload Image 1
-                                </p>
-                              </div>
+                              {form.pic1 ? (
+                                <img src={URL.createObjectURL(form.pic1)} alt="Preview" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                              ) : (
+                                <div className="overlay text-center profile__photo__rouned">
+                                  <p>
+                                    <i className="fa fa-image"></i>
+                                    <br />
+                                    Upload Image 1
+                                  </p>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -395,13 +407,17 @@ export default function VendorAddProduct() {
                           <div className="profile__photo profile__photo__rouned">
                             <div className="profile__photo__inner profile__photo__rouned">
                               <input type="file" name="pic2" onChange={getInputFile} className="form-control" />
-                              <div className="overlay text-center profile__photo__rouned">
-                                <p>
-                                  <i className="fa fa-image"></i>
-                                  <br />
-                                  Upload Image 2
-                                </p>
-                              </div>
+                              {form.pic2 ? (
+                                <img src={URL.createObjectURL(form.pic2)} alt="Preview" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                              ) : (
+                                <div className="overlay text-center profile__photo__rouned">
+                                  <p>
+                                    <i className="fa fa-image"></i>
+                                    <br />
+                                    Upload Image 2
+                                  </p>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -409,13 +425,17 @@ export default function VendorAddProduct() {
                           <div className="profile__photo profile__photo__rouned">
                             <div className="profile__photo__inner profile__photo__rouned">
                               <input type="file" name="pic3" onChange={getInputFile} className="form-control" />
-                              <div className="overlay text-center profile__photo__rouned">
-                                <p>
-                                  <i className="fa fa-image"></i>
-                                  <br />
-                                  Upload Image 3
-                                </p>
-                              </div>
+                              {form.pic3 ? (
+                                <img src={URL.createObjectURL(form.pic3)} alt="Preview" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                              ) : (
+                                <div className="overlay text-center profile__photo__rouned">
+                                  <p>
+                                    <i className="fa fa-image"></i>
+                                    <br />
+                                    Upload Image 3
+                                  </p>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -423,13 +443,17 @@ export default function VendorAddProduct() {
                           <div className="profile__photo profile__photo__rouned">
                             <div className="profile__photo__inner profile__photo__rouned">
                               <input type="file" name="pic4" onChange={getInputFile} className="form-control" />
-                              <div className="overlay text-center profile__photo__rouned">
-                                <p>
-                                  <i className="fa fa-image"></i>
-                                  <br />
-                                  Upload Image 4
-                                </p>
-                              </div>
+                              {form.pic4 ? (
+                                <img src={URL.createObjectURL(form.pic4)} alt="Preview" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                              ) : (
+                                <div className="overlay text-center profile__photo__rouned">
+                                  <p>
+                                    <i className="fa fa-image"></i>
+                                    <br />
+                                    Upload Image 4
+                                  </p>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
