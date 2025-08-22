@@ -42,33 +42,56 @@ const ClientSidebar = () => {
   };
 
   return (
-    <div className="list-group" onMouseLeave={handleMouseLeave}>
+    <div className="sidebar-container" onMouseLeave={handleMouseLeave}>
       <div
         id="sidebar"
         className="list-group"
         style={{
-          overflow: "auto",
-          borderRight: "1px solid #ddd",
+          background: "#fff",
+          border: "1px solid #ddd",
+          borderRadius: "8px",
+          overflow: "hidden",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
           position: "relative",
           zIndex: 2,
         }}
       >
         <div
-          style={{ background: "#6068bf", color: "white" }}
-          className="list-group-item list-group-item-action active"
+          className="list-group-item"
+          style={{
+            background: "#6068bf",
+            color: "white",
+            padding: "12px 16px",
+            fontWeight: "600",
+            fontSize: "14px",
+            border: "none"
+          }}
         >
+          <i className="fa fa-th-large me-2"></i>
           All Categories
         </div>
-        <div className="list-group" style={{ height: "24rem", overflow: "auto" }}>
+        <div className="categories-list" style={{ height: "400px", overflow: "auto" }}>
           {allMaincategory.map((item) => (
-            <div
+            <Link
               key={item._id}
+              to={`/shop/${item._id}/All/All`}
               onMouseEnter={(e) => handleMainCatEnter(item, e)}
               className="list-group-item list-group-item-action"
-              style={{ cursor: "pointer" }}
+              style={{
+                padding: "12px 16px",
+                cursor: "pointer",
+                border: "none",
+                borderBottom: "1px solid #f0f0f0",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                textDecoration: "none",
+                color: "inherit"
+              }}
             >
-              {item.name}
-            </div>
+              <span>{item.name}</span>
+              <i className="fa fa-chevron-right" style={{ fontSize: "12px", color: "#999" }}></i>
+            </Link>
           ))}
         </div>
       </div>
@@ -76,60 +99,111 @@ const ClientSidebar = () => {
       {/* Subcategory Panel */}
       {hoveredMainCat && sidebarPos && (
         <div
+          className="subcategory-panel"
           style={{
-            height: "27rem",
+            height: "400px",
+            width: "280px",
             position: "fixed",
             top: `${sidebarPos.top}px`,
             left: `${sidebarPos.left}px`,
-            background: "#f8f9fa",
+            background: "white",
             border: "1px solid #ddd",
-            padding: "1rem",
+            borderRadius: "8px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            padding: "0",
             overflowY: "auto",
-            zIndex: 3,
+            zIndex: 3
           }}
+          onMouseEnter={() => setHoveredMainCat(hoveredMainCat)}
         >
-          <h5 style={{ color: "#6068bf" }}>{hoveredMainCat.name} Subcategories</h5>
-          <hr />
-          {allSubcategory
-            .filter((sub) => sub.maincategory === hoveredMainCat._id)
-            .map((sub) => (
-              <div
-                key={sub._id}
-                onMouseEnter={(e) => handleSubCatEnter(sub, e)}
-                className="list-group-item list-group-item-action"
-                style={{ cursor: "pointer" }}
-              >
-                {sub.name}
-              </div>
-            ))}
+          <div style={{
+            padding: "12px 16px",
+            background: "#6068bf",
+            color: "white",
+            fontWeight: "600",
+            fontSize: "14px"
+          }}>
+            {hoveredMainCat.name}
+          </div>
+          <div>
+            {allSubcategory
+              .filter((sub) => sub.maincategory === hoveredMainCat._id)
+              .map((sub) => (
+                <Link
+                  key={sub._id}
+                  to={`/shop/${hoveredMainCat._id}/${sub._id}/All`}
+                  onMouseEnter={(e) => handleSubCatEnter(sub, e)}
+                  className="list-group-item list-group-item-action"
+                  style={{
+                    padding: "10px 16px",
+                    cursor: "pointer",
+                    border: "none",
+                    borderBottom: "1px solid #f0f0f0",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    textDecoration: "none",
+                    color: "inherit"
+                  }}
+                >
+                  <span>{sub.name}</span>
+                  <i className="fa fa-chevron-right" style={{ fontSize: "10px", color: "#999" }}></i>
+                </Link>
+              ))}
+          </div>
         </div>
       )}
 
       {/* Brand Panel */}
       {hoveredSubCat && subcatPanelPos && (
         <div
+          className="brand-panel"
           style={{
             position: "fixed",
             top: `${subcatPanelPos.top}px`,
             left: `${subcatPanelPos.left}px`,
-            background: "#fff",
+            background: "white",
             border: "1px solid #ddd",
-            padding: "1rem",
+            borderRadius: "8px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            padding: "0",
             zIndex: 4,
-            width: "220px",
-            maxHeight: "27rem",
-            overflowY: "auto",
+            width: "250px",
+            maxHeight: "400px",
+            overflowY: "auto"
           }}
+          onMouseEnter={() => setHoveredSubCat(hoveredSubCat)}
         >
-          <h6 style={{ color: "#6068bf" }}>{hoveredSubCat.name} Brands</h6>
-          <hr />
-          {allBrand
-            .filter((brand) => brand.subcategory === hoveredSubCat._id)
-            .map((brand) => (
-              <div key={brand._id} className="list-group-item">
-                {brand.name}
-              </div>
-            ))}
+          <div style={{
+            padding: "12px 16px",
+            background: "#6068bf",
+            color: "white",
+            fontWeight: "600",
+            fontSize: "14px"
+          }}>
+            {hoveredSubCat.name} Brands
+          </div>
+          <div>
+            {allBrand
+              .filter((brand) => brand.subcategory === hoveredSubCat._id)
+              .map((brand) => (
+                <Link
+                  key={brand._id}
+                  to={`/shop/${hoveredMainCat._id}/${hoveredSubCat._id}/${brand._id}`}
+                  className="list-group-item list-group-item-action"
+                  style={{
+                    display: "block",
+                    padding: "10px 16px",
+                    textDecoration: "none",
+                    color: "#333",
+                    border: "none",
+                    borderBottom: "1px solid #f0f0f0"
+                  }}
+                >
+                  {brand.name}
+                </Link>
+              ))}
+          </div>
         </div>
       )}
     </div>

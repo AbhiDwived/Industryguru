@@ -41,8 +41,14 @@ function* addProductSaga(action) {
 }
 function* updateProductSaga(action) {
   //executer
-  yield updateProductAPI(action.payload);
-  yield put({ type: UPDATE_PRODUCT_RED, payload: action.payload });
+  try {
+    yield updateProductAPI(action.payload);
+    // Refresh the product list after successful update
+    const response = yield getProductAPI();
+    yield put({ type: GET_PRODUCT_RED, payload: response.data });
+  } catch (error) {
+    console.error('Error updating product:', error);
+  }
 }
 function* getProductByMainCategorySaga(action) {
   //executer

@@ -236,10 +236,17 @@ export default function Product() {
               }}
             >
               <img
-                src={`${apiLink}/public/products/${row.pic1}`}
+                src={`${apiLink}/products/${row.pic1}`}
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 alt=""
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
               />
+              <div style={{ display: 'none', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', backgroundColor: '#f5f5f5' }}>
+                <i className="fa fa-image" style={{ color: '#ccc' }}></i>
+              </div>
             </Box>
           </a>
         );

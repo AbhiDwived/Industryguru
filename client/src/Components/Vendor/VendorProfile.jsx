@@ -23,7 +23,7 @@ const getImage = (img) => {
 };
 
 // Default profile image - use absolute path
-const DEFAULT_PROFILE_IMAGE = `${window.location.origin}/assets/img/User.png`;
+const DEFAULT_PROFILE_IMAGE = `${window.location.origin}/assets/img/noimage.png`;
 
 export default function VendorProfile() {
   const navigate = useNavigate();
@@ -249,20 +249,19 @@ export default function VendorProfile() {
               <Form noValidate>
                 <div className="row">
                   <div className="col-md-3">
-                    <div className="profile__photo">
+                    <div className="profile__photo" style={{ display: "flex", justifyContent: "center" }}>
                         <div
                           className="profile__photo__inner"
                           style={{
                             backgroundImage: `url(${getImage(values.pic)})`,
                             backgroundSize: "cover",
-                            backgroundPosition: "center",
-                            height: "200px",
+                            backgroundPosition: "center center",
+                            backgroundRepeat: "no-repeat",
                             width: "200px",
                             position: "relative",
                             border: "1px solid #ddd",
                             borderRadius: "50%",
-                            overflow: "hidden",
-                            margin: "0 auto"
+                            overflow: "hidden"
                           }}
                         >
                           <input
@@ -291,9 +290,23 @@ export default function VendorProfile() {
                               }
                             }}
                           />
-                          <div className="overlay text-center">
-                            <p>
-                            <i className="fa fa-image"></i>
+                          <div className="overlay text-center" style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "100%",
+                            backgroundColor: "rgba(0,0,0,0.5)",
+                            color: "white",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            opacity: 0,
+                            transition: "opacity 0.3s",
+                            borderRadius: "50%"
+                          }}>
+                            <p style={{ margin: 0 }}>
+                            <i className="fa fa-camera"></i>
                               <br />
                             Update Photo
                             </p>

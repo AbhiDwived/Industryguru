@@ -110,7 +110,7 @@ export default function AdminHome() {
                       {imagePreview || user.pic ? (
                         <div
                           style={{
-                            backgroundImage: `url(${imagePreview || `${apiLink}/public/users/${user.pic}`})`,
+                            backgroundImage: `url(${imagePreview || `${apiLink}/users/${user.pic}`})`,
                             backgroundSize: "cover",
                             backgroundPosition: "center",
                             width: "100%",

@@ -187,7 +187,7 @@ export default function UpdateProfile() {
                         {imagePreview || data.pic ? (
                           <div
                             style={{
-                              backgroundImage: `url(${imagePreview || (data.pic ? `${apiLink}/public/users/${data.pic}` : '')})`,
+                              backgroundImage: `url(${imagePreview || (data.pic ? `${apiLink}/users/${data.pic}` : '')})`,
                               backgroundSize: "cover",
                               backgroundPosition: "center",
                               width: "100%",

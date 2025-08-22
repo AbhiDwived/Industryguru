@@ -14,6 +14,7 @@ export default function Profile() {
   var [wishlist, setWishlist] = useState([]);
   var [order, setOrder] = useState([]);
   var [refresh, setRefresh] = useState(false); // Add refresh state
+  const [imagePreview, setImagePreview] = useState(null);
 
   var allWishlists = useSelector((state) => state.WishlistStateData);
   var allCheckouts = useSelector((state) => state.CheckoutStateData);
@@ -64,90 +65,131 @@ export default function Profile() {
   console.log(user.pic);
   return (
     <div className="page_section">
-      <div className="container-fluid ">
+      <div className="container-fluid">
         <div className="row">
-          <div className="col-md-6">
-            {user.pic ? (
-              <img
-                src={`${apiLink}/public/users/${user.pic}`}
-                height="600px"
-                width="100%"
-                alt=""
-              />
-            ) : (
-              <img
-                src={`/assets/img/noimage.png`}
-                height="600px"
-                width="100%"
-                alt=""
-              />
-            )}
-          </div>
-          <div className="col-md-6">
-            <h5 className="text-center  header-color  p-2">My Profile</h5>
-            <BuyerProfile user={user} onAddressUpdated={() => setRefresh(r => !r)} />
+          <div className="col-md-12">
+            <div className="box__layout">
+              <div className="header__layout">
+                <h3>Profile Settings</h3>
+              </div>
+              <div className="row">
+                <div className="col-md-3">
+                  <div className="profile__photo" style={{ display: "flex", justifyContent: "center" }}>
+                    <div
+                      className="profile__photo__inner"
+                      style={{
+                        width: "200px",
+                        position: "relative",
+                        border: "1px solid #ddd",
+                        borderRadius: "50%",
+                        overflow: "hidden",
+                        cursor: "pointer",
+                        backgroundColor: "#f5f5f5"
+                      }}
+                    >
+                      <img
+                        src={imagePreview || (user.pic ? `${apiLink}/users/${user.pic}` : '/assets/img/noimage.png')}
+                        alt="Profile"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover"
+                        }}
+                        onError={(e) => {
+                          e.target.src = '/assets/img/noimage.png';
+                        }}
+                      />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          height: "100%",
+                          opacity: 0,
+                          cursor: "pointer",
+                          zIndex: 2
+                        }}
+                      />
+                      <div className="overlay text-center" style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        backgroundColor: "rgba(0,0,0,0.5)",
+                        color: "white",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        opacity: 0,
+                        transition: "opacity 0.3s",
+                        borderRadius: "50%"
+                      }}>
+                        <p style={{ margin: 0 }}>
+                          <i className="fa fa-camera"></i>
+                          <br />
+                          Update Photo
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-9">
+                  <BuyerProfile user={user} onAddressUpdated={() => setRefresh(r => !r)} />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <h5 className="mt-2 text-center  header-color p-2">Wishlists</h5>
-        <div className="table-responsive">
+        <div className="box__layout mt-4">
+          <div className="header__layout">
+            <h3>My Wishlist</h3>
+          </div>
           {wishlist.length ? (
-            <table className="table table-bordered">
-              <tbody>
-                <tr>
-                  <th></th>
-                  <th>Name</th>
-                  <th>Brand</th>
-                  <th>Color</th>
-                  <th>Size</th>
-                  <th>Price</th>
-                  <th></th>
-                  <th></th>
-                </tr>
-                {wishlist.map((item, index) => {
-                  return (
-                    <tr key={index}>
-                      <td>
+            <div className="row">
+              {wishlist.map((item, index) => (
+                <div key={index} className="col-md-4 mb-4">
+                  <div className="card h-100 shadow-sm">
+                    <div style={{ height: '200px', overflow: 'hidden' }}>
+                      <img
+                        src={`${apiLink}/products/${item.pic}`}
+                        className="card-img-top"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        alt={item.name}
+                      />
+                    </div>
+                    <div className="card-body d-flex flex-column">
+                      <h6 className="card-title">{item.name}</h6>
+                      <p className="card-text text-muted mb-1">Brand: {item.brand}</p>
+                      <p className="card-text text-muted mb-1">Color: {item.color} | Size: {item.size}</p>
+                      <p className="card-text fw-bold text-primary">₹{item.price}</p>
+                      <div className="mt-auto d-flex gap-2">
                         <Link
-                          target="_blank"
-                          rel="noreferrer"
-                          to={`${apiLink}/public/products/${item.pic}`}
+                          to={`/single-product/${item.productid}`}
+                          className="btn btn-primary btn-sm flex-fill"
                         >
-                          <img
-                            src={`${apiLink}/public/products/${item.pic}`}
-                            height="100px"
-                            width="100%"
-                            className="rounded"
-                            alt=""
-                          />
+                          <i className="fa fa-shopping-cart me-1"></i>Buy Now
                         </Link>
-                      </td>
-                      <td>{item.name}</td>
-                      <td>{item.brand}</td>
-                      <td>{item.color}</td>
-                      <td>{item.size}</td>
-                      <td>&#8377;{item.price}</td>
-                      <td>
-                        <Link
-                          to={`${apiLink}/single-product/${item.productid}`}
-                        >
-                          <i className="fa fa-shopping-cart text-success"></i>
-                        </Link>
-                      </td>
-                      <td>
                         <button
-                          className="btn"
+                          className="btn btn-outline-danger btn-sm"
                           onClick={() => deleteItem(item._id)}
                         >
-                          <i className="fa fa-trash text-danger"></i>
+                          <i className="fa fa-trash"></i>
                         </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : (
-            <div className="text-center">No Items in Wishlist</div>
+            <div className="text-center py-5">
+              <i className="fa fa-heart-o fa-3x text-muted mb-3"></i>
+              <p className="text-muted">No Items in Wishlist</p>
+            </div>
           )}
         </div>
       </div>

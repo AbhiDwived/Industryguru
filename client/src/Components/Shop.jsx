@@ -16,7 +16,7 @@ export default function Shop() {
   let [search, setSearch] = useState("");
   var [product, setProduct] = useState([]);
   let [min, setMin] = useState(0);
-  let [max, setMax] = useState(1000);
+  let [max, setMax] = useState(1000000);
   var [priceFilter] = useState("None");
   var [activeButton, setActiveButton] = useState("allCategory");
   var dispatch = useDispatch();
@@ -38,52 +38,37 @@ export default function Shop() {
   let query = useQuery();
 
   function filterData(mc, sc, br, min, max, priceFilter) {
-    let filteredProducts = allProducts;
-    if (mc !== "All") {
-      filteredProducts = filteredProducts.filter((x) => x.maincategory === mc);
+    let filteredProducts = [...allProducts];
+    
+    // Main category filter
+    if (mc !== "All" && mc !== "all") {
+      filteredProducts = filteredProducts.filter((x) => {
+        return x.maincategory === mc || x.maincategory?._id === mc;
+      });
     }
-    if (sc !== "All") {
-      filteredProducts = filteredProducts.filter((x) => x.subcategory === sc);
+    
+    // Subcategory filter
+    if (sc !== "All" && sc !== "all") {
+      filteredProducts = filteredProducts.filter((x) => {
+        return x.subcategory === sc || x.subcategory?._id === sc;
+      });
     }
-    if (br !== "All") {
-      filteredProducts = filteredProducts.filter((x) => x.brand === br);
+    
+    // Brand filter
+    if (br !== "All" && br !== "all") {
+      filteredProducts = filteredProducts.filter((x) => {
+        return x.brand === br || x.brand?._id === br;
+      });
     }
-    if (min !== -1 && max !== -1) {
+    
+    // Price filter
+    if (min > 0 || max < 1000000) {
       filteredProducts = filteredProducts.filter(
         (x) => x.finalprice >= min && x.finalprice <= max
       );
-    } else if (priceFilter !== "None") {
-      if (priceFilter === "first") {
-        filteredProducts = filteredProducts.filter(
-          (x) => x.finalprice >= 0 && x.finalprice <= 1000
-        );
-      } else if (priceFilter === "second") {
-        filteredProducts = filteredProducts.filter(
-          (x) => x.finalprice >= 1001 && x.finalprice <= 2000
-        );
-      } else if (priceFilter === "third") {
-        filteredProducts = filteredProducts.filter(
-          (x) => x.finalprice >= 2001 && x.finalprice <= 3000
-        );
-      } else if (priceFilter === "fourth") {
-        filteredProducts = filteredProducts.filter(
-          (x) => x.finalprice >= 3001 && x.finalprice <= 4000
-        );
-      } else if (priceFilter === "fifth") {
-        filteredProducts = filteredProducts.filter(
-          (x) => x.finalprice >= 4001 && x.finalprice <= 5000
-        );
-      } else {
-        filteredProducts = filteredProducts.filter(
-          (x) => x.finalprice >= 5001 && x.finalprice <= 989898000
-        );
-      }
     }
-    if (mc === "All" && sc === "All" && br === "All") {
-      setProduct(allProducts);
-    } else {
-      setProduct(filteredProducts);
-    }
+    
+    setProduct(filteredProducts);
   }
 
   function postSearch(e) {
@@ -123,15 +108,7 @@ export default function Shop() {
   }
 
   function getAPIData() {
-    if (maincat && maincat !== "All") {
-      dispatch(getProductByMaincategory(maincat));
-    } else if (subcat && subcat !== "All") {
-      dispatch(getProductBySubCategory(subcat));
-    } else if (brnd && brnd !== "All") {
-      dispatch(getProductByBrand(brnd));
-    } else {
-      dispatch(getProduct());
-    }
+    dispatch(getProduct());
     dispatch(getMaincategory());
     dispatch(getSubcategory());
     dispatch(getBrand());
@@ -181,9 +158,7 @@ export default function Shop() {
 
   const handleChangeBrand = (_id) => {
     setBr(_id);
-    setMc("All");
-    setSc("All");
-    filterData("All", "All", _id, min, max, priceFilter);
+    filterData(mc, sc, _id, min, max, priceFilter);
   };
   
   useEffect(() => {
@@ -198,10 +173,16 @@ export default function Shop() {
     // eslint-disable-next-line
   }, [allProducts, mc, sc, br]);
 
+  useEffect(() => {
+    setMc(maincat || "All");
+    setSc(subcat || "All");
+    setBr(brnd || "All");
+  }, [maincat, subcat, brnd]);
+
   const AllCategory = () => (
     <div className="list-group" style={{ height: "24rem", overflow: "auto" }}>
       <button
-        className="list-group-item list-group-item-action"
+        className={`list-group-item list-group-item-action ${mc === "All" ? "active" : ""}`}
         onClick={() => {
           setMc("All");
           filterData("All", sc, br, min, max, priceFilter);
@@ -214,7 +195,7 @@ export default function Shop() {
           <button
             key={index}
             onClick={() => handleChange(item._id)}
-            className="list-group-item list-group-item-action"
+            className={`list-group-item list-group-item-action ${mc === item._id ? "active" : ""}`}
           >
             {item.name}
           </button>
@@ -223,55 +204,67 @@ export default function Shop() {
     </div>
   );
 
-  const AllSubCategory = () => (
-    <div className="list-group" style={{ height: "24rem", overflow: "auto" }}>
-      <button
-        className="list-group-item list-group-item-action"
-        onClick={() => {
-          setSc("All");
-          filterData(mc, "All", br, min, max, priceFilter);
-        }}
-      >
-        All
-      </button>
-      {allSubcategories.map((item, index) => {
-        return (
-          <button
-            key={index}
-            onClick={() => handleChangeSub(item._id)}
-            className="list-group-item list-group-item-action"
-          >
-            {item.name}
-          </button>
-        );
-      })}
-    </div>
-  );
+  const AllSubCategory = () => {
+    const filteredSubcategories = mc !== "All" 
+      ? allSubcategories.filter(sub => sub.maincategory === mc)
+      : allSubcategories;
+    
+    return (
+      <div className="list-group" style={{ height: "24rem", overflow: "auto" }}>
+        <button
+          className={`list-group-item list-group-item-action ${sc === "All" ? "active" : ""}`}
+          onClick={() => {
+            setSc("All");
+            filterData(mc, "All", br, min, max, priceFilter);
+          }}
+        >
+          All
+        </button>
+        {filteredSubcategories.map((item, index) => {
+          return (
+            <button
+              key={index}
+              onClick={() => handleChangeSub(item._id)}
+              className={`list-group-item list-group-item-action ${sc === item._id ? "active" : ""}`}
+            >
+              {item.name}
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
 
-  const AllBrand = () => (
-    <div className="list-group" style={{ height: "24rem", overflow: "auto" }}>
-      <button
-        className="list-group-item list-group-item-action"
-        onClick={() => {
-          setBr("All");
-          filterData(mc, sc, "All", min, max, priceFilter);
-        }}
-      >
-        All
-      </button>
-      {allBrands.map((item, index) => {
-        return (
-          <button
-            key={index}
-            onClick={() => handleChangeBrand(item._id)}
-            className="list-group-item list-group-item-action"
-          >
-            {item.name}
-          </button>
-        );
-      })}
-    </div>
-  );
+  const AllBrand = () => {
+    const filteredBrands = sc !== "All" 
+      ? allBrands.filter(brand => brand.subcategory === sc)
+      : allBrands;
+    
+    return (
+      <div className="list-group" style={{ height: "24rem", overflow: "auto" }}>
+        <button
+          className={`list-group-item list-group-item-action ${br === "All" ? "active" : ""}`}
+          onClick={() => {
+            setBr("All");
+            filterData(mc, sc, "All", min, max, priceFilter);
+          }}
+        >
+          All
+        </button>
+        {filteredBrands.map((item, index) => {
+          return (
+            <button
+              key={index}
+              onClick={() => handleChangeBrand(item._id)}
+              className={`list-group-item list-group-item-action ${br === item._id ? "active" : ""}`}
+            >
+              {item.name}
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
 
   const handleButtonClick = (button) => {
     setActiveButton(button);
@@ -394,7 +387,7 @@ export default function Shop() {
                         <Link to={`/single-product/${item._id}`}>
                           <img
                             className="img-fluid w-100"
-                            src={`${apiLink}/public/products/${item.pic1}`}
+                            src={`${apiLink}/products/${item.pic1}`}
                             style={{ height: "200px", width: "100%" }}
                             alt=""
                           />

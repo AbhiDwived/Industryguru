@@ -14,6 +14,8 @@ import { getBrand, getBrandBySubCategoryId } from "../../Store/ActionCreators/Br
 import { getAdminSlug } from "../../Store/ActionCreators/AdminSlugActionCreators";
 import { getAdminSubSlugByParent, getAdminSubSlug } from "../../Store/ActionCreators/AdminSlugActionCreators";
 import { showToast } from "../../utils/toast";
+import { updateProductAPI } from "../../Store/Services/ProductService";
+import { apiLink } from "../../utils/utils";
 
 export default function UpdateProduct() {
 
@@ -57,6 +59,8 @@ export default function UpdateProduct() {
   let allproducts = useSelector((state) => state.ProductStateData);
   let allSlugs = useSelector((state) => state.AdminSlugStateData);
   let allSubSlugs = useSelector((state) => state.AdminSubSlugStateData);
+  
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const [specsData, setSpecsData] = useState([{ key: "", value: "" }]);
   const [variants, setVariants] = useState([]);
@@ -138,7 +142,6 @@ export default function UpdateProduct() {
   }
   async function postData(e) {
     e.preventDefault();
-    console.log("Data:", data);
     let error = Object.keys(errorMessage).find(
       (x) => errorMessage[x] && errorMessage[x].length !== 0
     );
@@ -173,10 +176,18 @@ export default function UpdateProduct() {
       if (data.pic2) item.append("pic2", data.pic2);
       if (data.pic3) item.append("pic3", data.pic3);
       if (data.pic4) item.append("pic4", data.pic4);
-      const loadingToast = showToast.loading('Updating product...');
-      dispatch(updateProduct(item));
-      showToast.success('Product updated successfully!');
-      navigate("/admin-products");
+      
+      setIsUpdating(true);
+      try {
+        const response = await updateProductAPI(item);
+        showToast.success('Product updated successfully!');
+        dispatch(getProduct()); // Refresh product list
+        setTimeout(() => navigate("/admin-products"), 1000);
+      } catch (error) {
+        showToast.error('Failed to update product');
+      } finally {
+        setIsUpdating(false);
+      }
     } else {
       setShow(true);
       showToast.error('Please fix the validation errors');
@@ -406,62 +417,38 @@ export default function UpdateProduct() {
                     <div className="col-md-6">
                       <h5>Product Images</h5>
                       <div className="row">
-                        <div className="col-md-6 mb-3">
-                          <div className="profile__photo profile__photo__rouned">
-                            <div className="profile__photo__inner profile__photo__rouned">
-                              <input type="file" name="pic1" onChange={getInputFile} className="form-control" />
-                              <div className="overlay text-center profile__photo__rouned">
-                                <p>
-                                  <i className="fa fa-image"></i>
-                                  <br />
-                                  Upload Image 1
-                                </p>
+                        {[1, 2, 3, 4].map((num) => {
+                          const picKey = `pic${num}`;
+                          const currentProduct = allproducts.find(p => p._id === _id);
+                          const existingImage = currentProduct?.[picKey];
+                          const newImage = data[picKey];
+                          const imageUrl = (newImage && newImage instanceof File) ? URL.createObjectURL(newImage) : (existingImage ? `${apiLink}/products/${existingImage}` : null);
+                          
+                          return (
+                            <div key={num} className="col-md-6 mb-3">
+                              <div className="profile__photo profile__photo__rouned" style={{ position: 'relative', height: '150px', border: '2px dashed #ddd' }}>
+                                {imageUrl ? (
+                                  <img src={imageUrl} alt={`Product ${num}`} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+                                ) : (
+                                  <div className="d-flex align-items-center justify-content-center h-100">
+                                    <div className="text-center">
+                                      <i className="fa fa-image fa-2x text-muted"></i>
+                                      <p className="mt-2 text-muted">Upload Image {num}</p>
+                                    </div>
+                                  </div>
+                                )}
+                                <input 
+                                  type="file" 
+                                  name={picKey} 
+                                  onChange={getInputFile} 
+                                  className="form-control" 
+                                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
+                                  accept="image/*"
+                                />
                               </div>
                             </div>
-                          </div>
-                        </div>
-                        <div className="col-md-6 mb-3">
-                          <div className="profile__photo profile__photo__rouned">
-                            <div className="profile__photo__inner profile__photo__rouned">
-                              <input type="file" name="pic2" onChange={getInputFile} className="form-control" />
-                              <div className="overlay text-center profile__photo__rouned">
-                                <p>
-                                  <i className="fa fa-image"></i>
-                                  <br />
-                                  Upload Image 2
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-md-6 mb-3">
-                          <div className="profile__photo profile__photo__rouned">
-                            <div className="profile__photo__inner profile__photo__rouned">
-                              <input type="file" name="pic3" onChange={getInputFile} className="form-control" />
-                              <div className="overlay text-center profile__photo__rouned">
-                                <p>
-                                  <i className="fa fa-image"></i>
-                                  <br />
-                                  Upload Image 3
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-md-6 mb-3">
-                          <div className="profile__photo profile__photo__rouned">
-                            <div className="profile__photo__inner profile__photo__rouned">
-                              <input type="file" name="pic4" onChange={getInputFile} className="form-control" />
-                              <div className="overlay text-center profile__photo__rouned">
-                                <p>
-                                  <i className="fa fa-image"></i>
-                                  <br />
-                                  Upload Image 4
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
@@ -840,8 +827,9 @@ export default function UpdateProduct() {
                     <button
                       type="submit"
                       className="ui__form__button w-100"
+                      disabled={isUpdating}
                     >
-                      Update Product
+                      {isUpdating ? 'Updating...' : 'Update Product'}
                     </button>
                   </div>
                 </form>
