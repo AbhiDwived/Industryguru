@@ -2,6 +2,8 @@
   "name": "studentmall",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
+
   "dependencies": {
     "@auth0/auth0-react": "^2.3.0",
     "@emotion/react": "^11.14.0",
@@ -29,22 +31,33 @@
     "react-circular-progressbar": "^2.2.0",
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",
-    "react-owl-carousel": "^2.3.3",
     "react-redux": "^9.1.2",
     "react-router-dom": "^6.24.1",
-    "react-scripts": "^5.0.1",
     "react-slick": "^0.30.2",
     "react-toastify": "^10.0.5",
     "redux-saga": "^1.3.0",
     "slick-carousel": "^1.8.1",
     "styled-components": "^6.1.11",
+    "swiper": "^11.2.10",
     "yup": "^1.4.0"
   },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^5.0.1",
+    "eslint": "^9.33.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "vite": "^7.1.3"
+  },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "npx vite",
+    "start": "npx vite",
+    "build": "npx vite build",
+    "preview": "npx vite preview",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
   "eslintConfig": {
     "extends": [

@@ -329,7 +329,7 @@ export default function Home() {
           </div>
           <div className="col-md-6">
             <div className="product-offer mb-30" style={{ height: "300px" }}>
-              <img className="img-fluid" src="/assets/img/driver.webp" alt="" />
+              <img className="img-fluid" src="/assets/img/Driver.webp" alt="" />
               <div className="offer-text">
                 <h6 className="text-white text-uppercase">Save Upto 90%</h6>
                 <h3 className="text-white mb-3">Big Sale</h3>

@@ -3,8 +3,6 @@ import ReactDOM from 'react-dom/client'
 import App from './Components/App'
 import { Auth0Provider } from '@auth0/auth0-react';
 import "./Page.css"
-
-
 import { Provider } from 'react-redux'
 import Store from "./Store/Store"
 import { apiLink } from './utils/utils';

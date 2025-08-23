@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import OwlCarousel from "react-owl-carousel";
-import "owl.carousel/dist/assets/owl.carousel.css";
-import "owl.carousel/dist/assets/owl.theme.default.css";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
 import { getProduct } from "../Store/ActionCreators/ProductActionCreators";
 import { Link } from "react-router-dom";
 import { apiLink } from "../utils/utils";
@@ -39,54 +40,49 @@ const TrendingProductsCarousel = () => {
       <h2 className="section-title text-center position-relative text-uppercase featuredMargin">
         <span className="bg-secondary pr-3">Today's Hot Deals</span>
       </h2>
-      <OwlCarousel
-        className="product-item bg-light"
+      <Swiper
+        modules={[Navigation, Autoplay]}
+        spaceBetween={10}
+        navigation
         loop
-        margin={10}
-        nav
-        dots={false}
-        items={1}
-        autoplay
-        autoplayTimeout={3000}
-        navText={false}
-        responsive={{
-          450: { items: 2 },
-          576: { items: 3 },
-          768: { items: 4 },
-          992: { items: 5 },
-          1200: { items: 6 },
+        autoplay={{ delay: 3000 }}
+        breakpoints={{
+          450: { slidesPerView: 2 },
+          576: { slidesPerView: 3 },
+          768: { slidesPerView: 4 },
+          992: { slidesPerView: 5 },
+          1200: { slidesPerView: 6 },
         }}
+        slidesPerView={1}
       >
         {trendingProducts.map((item) => (
-          <Link
-            to={`/single-product/${item._id}`}
-            key={item._id}
-            className="Slider-card"
-          >
-            <img
-              className="w-100"
-              src={`${apiLink}/public/products/${item.pic1}`}
-              alt={item.name}
-              style={{ height: "150px" }}
-            />
-            <div className="mt-2 text-center">
-              <h6>
-                {/* {item.name.length > 24
-                  ? `${item.name.slice(0, 26)}... `
-                  : `item.name`} */}
+          <SwiperSlide key={item._id}>
+            <Link
+              to={`/single-product/${item._id}`}
+              className="Slider-card"
+            >
+              <img
+                className="w-100"
+                src={`${apiLink}/public/products/${item.pic1}`}
+                alt={item.name}
+                style={{ height: "150px" }}
+              />
+              <div className="mt-2 text-center">
+                <h6>
                   {item.name}
-              </h6>
-              <div>
-                <h5>&#8377;{item.finalprice}</h5>
-                <h6 className="text-muted">
-                  <del className="text-danger">&#8377;{item.baseprice}</del>{" "}
-                  <sup className="text-success">{item.discount}% Off</sup>
                 </h6>
+                <div>
+                  <h5>&#8377;{item.finalprice}</h5>
+                  <h6 className="text-muted">
+                    <del className="text-danger">&#8377;{item.baseprice}</del>{" "}
+                    <sup className="text-success">{item.discount}% Off</sup>
+                  </h6>
+                </div>
               </div>
-            </div>
-          </Link>
+            </Link>
+          </SwiperSlide>
         ))}
-      </OwlCarousel>
+      </Swiper>
     </div>
     </>
   );
