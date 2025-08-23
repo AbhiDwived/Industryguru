@@ -55,7 +55,7 @@
   "scripts": {
     "dev": "npx vite",
     "start": "npx vite",
-    "build": "npx vite build",
+    "build": "vite build",
     "preview": "npx vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
