@@ -1,5 +1,8 @@
-export default {
-  plugins: [],
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
   server: {
     port: 3000,
     proxy: {
@@ -11,7 +14,7 @@ export default {
     }
   },
   build: {
-    outDir: 'build',
-    sourcemap: true
+    outDir: 'dist',
+    sourcemap: false
   }
-}
+})

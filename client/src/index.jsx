@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './Components/App'
+import App from './Components/App.jsx'
 import { Auth0Provider } from '@auth0/auth0-react';
 import "./Page.css"
 import { Provider } from 'react-redux'
