@@ -416,7 +416,13 @@ const SingleProduct = () => {
                       className="btn main-color dropdown-toggle"
                       type="button"
                         onClick={() => setShowInnerSlugDropdown(!showInnerSlugDropdown)}
-                      style={{ width: "140px" }}
+                      style={{ 
+                        minWidth: "120px",
+                        maxWidth: "250px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis"
+                      }}
                         disabled={isLoadingVariant}
                     >
                         {selectedInnerSlug || "Select Curve"}
@@ -426,7 +432,9 @@ const SingleProduct = () => {
                         position: 'absolute', 
                         top: '100%', 
                         left: 0, 
-                        width: '140px',
+                        minWidth: '120px',
+                        maxWidth: '300px',
+                        width: 'max-content',
                         maxHeight: '200px',
                         overflowY: 'auto',
                           zIndex: 1050
@@ -439,6 +447,11 @@ const SingleProduct = () => {
                             onClick={(e) => {
                               e.preventDefault();
                                 handleInnerSlugChange(innerSlug);
+                            }}
+                            style={{
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis"
                             }}
                           >
                             {innerSlug}
@@ -454,7 +467,13 @@ const SingleProduct = () => {
                       className="btn main-color dropdown-toggle"
                       type="button"
                         onClick={() => setShowInnerSubSlugDropdown(!showInnerSubSlugDropdown)}
-                      style={{ width: "140px" }}
+                      style={{ 
+                        minWidth: "120px",
+                        maxWidth: "250px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis"
+                      }}
                         disabled={isLoadingVariant || !selectedInnerSlug}
                     >
                         {selectedInnerSubSlug || "Select Poles/Current"}
@@ -464,7 +483,9 @@ const SingleProduct = () => {
                         position: 'absolute', 
                         top: '100%', 
                           right: 0, 
-                        width: '140px',
+                        minWidth: '120px',
+                        maxWidth: '300px',
+                        width: 'max-content',
                         maxHeight: '200px',
                         overflowY: 'auto',
                           zIndex: 1050
@@ -477,6 +498,11 @@ const SingleProduct = () => {
                             onClick={(e) => {
                               e.preventDefault();
                                 handleInnerSubSlugChange(innerSubSlug);
+                            }}
+                            style={{
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis"
                             }}
                           >
                             {innerSubSlug}
