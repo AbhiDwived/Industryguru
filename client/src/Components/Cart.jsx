@@ -18,16 +18,18 @@ export default function Cart() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    getAPIData();
-  }, [allCarts.length]);
-
-  function getAPIData() {
     dispatch(getCart());
-    if (allCarts.length) {
-      let data = allCarts;
-      setCarts(data);
+  }, [dispatch]);
+
+  useEffect(() => {
+    setCarts(allCarts);
+    calculateTotals(allCarts);
+  }, [allCarts]);
+
+  function calculateTotals(cartData) {
+    if (cartData.length) {
       let count = 0;
-      for (let item of data) {
+      for (let item of cartData) {
         count = count + item.total;
       }
       let shipping = 0;
@@ -40,6 +42,10 @@ export default function Cart() {
       const gstRate = 0.18; // Assuming a GST rate of 18%
       const gstAmount = count * gstRate;
       setTotal(count + shipping + gstAmount);
+    } else {
+      setShipping(0);
+      setSubTotal(0);
+      setTotal(0);
     }
   }
 
@@ -60,13 +66,12 @@ export default function Cart() {
     }
     item.total = item.qty * unitPrice;
     dispatch(updateCart({ ...item }));
-    getAPIData();
   }
 
   function deleteItem(_id) {
     dispatch(deleteCart({ _id: _id }));
+    dispatch(getCart()); // Refresh cart data immediately
     showToast.success("Item removed from cart");
-    getAPIData();
   }
 
   return (

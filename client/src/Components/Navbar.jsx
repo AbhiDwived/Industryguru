@@ -16,6 +16,7 @@ import Badge from "@mui/material/Badge";
 import { apiLink } from "../utils/utils";
 import { Button, Dropdown } from "react-bootstrap";
 import { showToast } from "../utils/toast";
+import "./BrandSlider.css";
 
 export default function Navbar({ product }) {
   var [user, setUser] = useState({});
@@ -31,6 +32,7 @@ export default function Navbar({ product }) {
   const containerRef = useRef(null);
   const [showMobileMenu, setShowMobileMenu] = useState(false); // State for mobile menu
   const [showSidebar, setShowSidebar] = useState(false); // State for sidebar
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false); // State for profile dropdown
 
   // Assuming you have data file
   // const allMaincategories = allMaincategories;
@@ -87,6 +89,13 @@ export default function Navbar({ product }) {
   }
   let query = useQuery();
   useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showProfileDropdown && !event.target.closest('.dropdown')) {
+        setShowProfileDropdown(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    
     const handleResize = () => {
       setShowMobileMenu(window.innerWidth <= 500);
     };
@@ -141,6 +150,7 @@ export default function Navbar({ product }) {
       clearInterval(scrollInterval);
       container.removeEventListener("mouseenter", handleMouseEnter);
       container.removeEventListener("mouseleave", handleMouseLeave);
+      document.removeEventListener('click', handleClickOutside);
     };
   }, []);
   const handleChange = (_id) => {
@@ -350,8 +360,13 @@ export default function Navbar({ product }) {
                   
                 </Link>
                 {localStorage.getItem("login") ? (
-                  <div className="nav-item dropdown ">
-                    <a href="#/" data-toggle="dropdown">
+                  <div className="nav-item dropdown" style={{position: 'relative'}}>
+                    <button 
+                      type="button" 
+                      className="btn p-0 border-0 bg-transparent" 
+                      onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                      style={{outline: 'none', boxShadow: 'none'}}
+                    >
                       <div className="col-md-6 navbarPic">
                         <div
                           style={{
@@ -385,42 +400,53 @@ export default function Navbar({ product }) {
                           )}
                         </div>
                       </div>
-                    </a>
-                    <div
-                      className="dropdown-menu header-color rounded-0 border-0"
-                      style={{ marginLeft: "-90px", marginTop: "18px" }}
-                    >
-                      {localStorage.getItem("role") === "Admin" ||
-                      localStorage.getItem("role") === "Vendor" ? (
-                        <>
-                          <Link
-                            to={
-                              localStorage.getItem("role") === "Admin"
-                                ? "/admin"
-                                : "/vendor"
-                            }
-                            className="dropdown-item"
-                          >
-                            Profile
-                          </Link>
-                        </>
-                      ) : (
-                        <>
-                          <Link to="/profile" className="dropdown-item">
-                            Profile
-                          </Link>
-                          <Link to="/cart" className="dropdown-item">
-                            Cart
-                          </Link>
-                          <Link to="/order" className="dropdown-item">
-                            Order History
-                          </Link>
-                        </>
-                      )}
-                      <button className="dropdown-item" onClick={logout}>
-                        Logout
-                      </button>
-                    </div>
+                    </button>
+                    {showProfileDropdown && (
+                      <div
+                        className="dropdown-menu header-color rounded-0 border-0 show"
+                        style={{ 
+                          position: 'absolute',
+                          left: 'auto',
+                          right: '0px',
+                          top: '100%',
+                          marginTop: "8px",
+                          zIndex: 1000,
+                          display: 'block',
+                        }}
+                      >
+                        {localStorage.getItem("role") === "Admin" ||
+                        localStorage.getItem("role") === "Vendor" ? (
+                          <>
+                            <Link
+                              to={
+                                localStorage.getItem("role") === "Admin"
+                                  ? "/admin"
+                                  : "/vendor"
+                              }
+                              className="dropdown-item"
+                              onClick={() => setShowProfileDropdown(false)}
+                            >
+                              Profile
+                            </Link>
+                          </>
+                        ) : (
+                          <>
+                            <Link to="/profile" className="dropdown-item" onClick={() => setShowProfileDropdown(false)}>
+                              Profile
+                            </Link>
+                            <Link to="/cart" className="dropdown-item" onClick={() => setShowProfileDropdown(false)}>
+                              Cart
+                            </Link>
+                            <Link to="/order" className="dropdown-item" onClick={() => setShowProfileDropdown(false)}>
+                              Order History
+                            </Link>
+                          </>
+                        )}
+                        <button className="dropdown-item" onClick={() => {logout(); setShowProfileDropdown(false);}}>
+                          Logout
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <button className="Login" onClick={() => navigate('/login')}>
@@ -662,16 +688,25 @@ export default function Navbar({ product }) {
           >
             {allBrands.map((item, index) => (
               item && item.name ? (
-                <div
+                <button
                   key={index}
-                  className="brand-item mr-2"
-                  style={{ fontSize: "12px", maxWidth: "100%" }}
+                  className="brand-item mr-2 btn btn-link text-white p-1"
+                  style={{ 
+                    fontSize: "12px", 
+                    maxWidth: "100%", 
+                    border: "none", 
+                    background: "transparent",
+                    textDecoration: "none",
+                    whiteSpace: "nowrap",
+                    cursor: "pointer"
+                  }}
+                  onClick={() => handleChangeBrand(item._id)}
+                  title={item.name}
                 >
-                  {/* Your button content */}
                   {item.name.length > 10
                     ? `${item.name.slice(0, 10)}...`
                     : item.name}
-                </div>
+                </button>
               ) : null
             ))}
           </div>

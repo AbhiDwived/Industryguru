@@ -1,0 +1,17 @@
+.brand-item {
+  transition: all 0.3s ease;
+  border-radius: 4px;
+  padding: 4px 8px !important;
+  margin: 0 4px;
+}
+
+.brand-item:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  transform: translateY(-1px);
+  text-decoration: none !important;
+}
+
+.brand-item:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}

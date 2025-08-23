@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
 
+
   "dependencies": {
     "@auth0/auth0-react": "^2.3.0",
     "@emotion/react": "^11.14.0",

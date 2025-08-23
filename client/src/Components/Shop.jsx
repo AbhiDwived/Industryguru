@@ -15,11 +15,28 @@ import { apiLink } from "../utils/utils";
 export default function Shop() {
   let [search, setSearch] = useState("");
   var [product, setProduct] = useState([]);
-  let [min, setMin] = useState(0);
-  let [max, setMax] = useState(1000000);
+  let [min, setMin] = useState("");
+  let [max, setMax] = useState("");
   var [priceFilter] = useState("None");
   var [activeButton, setActiveButton] = useState("allCategory");
   var dispatch = useDispatch();
+
+  // Helper function to get display price for products with variants
+  const getDisplayPrice = (product) => {
+    if (product.variants && product.variants.length > 0) {
+      const firstVariant = product.variants[0];
+      return {
+        finalprice: firstVariant.finalprice,
+        baseprice: firstVariant.baseprice,
+        discount: firstVariant.discount
+      };
+    }
+    return {
+      finalprice: product.finalprice,
+      baseprice: product.baseprice,
+      discount: product.discount
+    };
+  };
   var allProducts = useSelector((state) => state.ProductStateData);
   var allMaincategories = useSelector((state) => state.MaincategoryStateData);
   var allSubcategories = useSelector((state) => state.SubcategoryStateData);
@@ -62,10 +79,14 @@ export default function Shop() {
     }
     
     // Price filter
-    if (min > 0 || max < 1000000) {
-      filteredProducts = filteredProducts.filter(
-        (x) => x.finalprice >= min && x.finalprice <= max
-      );
+    const minPrice = min ? Number(min) : 0;
+    const maxPrice = max ? Number(max) : Infinity;
+    if (min !== "" || max !== "") {
+      filteredProducts = filteredProducts.filter((x) => {
+        const displayPrice = getDisplayPrice(x);
+        const price = Number(displayPrice.finalprice);
+        return price >= minPrice && price <= maxPrice;
+      });
     }
     
     setProduct(filteredProducts);
@@ -403,15 +424,22 @@ export default function Shop() {
                             : `${item.name}`}
                         </Link>
                         <div className="d-flex align-items-center justify-content-center mt-2">
-                          <h5>&#8377;{item.finalprice}</h5>
-                          <h6 className="text-muted ml-2">
-                            <del className="text-danger">
-                              &#8377;{item.baseprice}
-                            </del>
-                            <sup className="text-success">
-                              {item.discount}% OFF
-                            </sup>
-                          </h6>
+                          {(() => {
+                            const displayPrice = getDisplayPrice(item);
+                            return (
+                              <>
+                                <h5>&#8377;{displayPrice.finalprice}</h5>
+                                <h6 className="text-muted ml-2">
+                                  <del className="text-danger">
+                                    &#8377;{displayPrice.baseprice}
+                                  </del>
+                                  <sup className="text-success">
+                                    {displayPrice.discount}% OFF
+                                  </sup>
+                                </h6>
+                              </>
+                            );
+                          })()}  
                         </div>
                       </div>
                     </div>

@@ -4,6 +4,8 @@ import {
   deleteWishlist,
 } from "../Store/ActionCreators/WishlistActionCreators";
 import { getCheckoutUser } from "../Store/ActionCreators/CheckoutActionCreators";
+import { addCart, getCart } from "../Store/ActionCreators/CartActionCreators";
+import { showToast } from "../utils/toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { apiLink } from "../utils/utils";
@@ -15,6 +17,7 @@ const Wishlist = () => {
 
   var allWishlists = useSelector((state) => state.WishlistStateData);
   var allCheckouts = useSelector((state) => state.CheckoutStateData);
+  var allCarts = useSelector((state) => state.CartStateData);
 
   var dispatch = useDispatch();
   var navigate = useNavigate();
@@ -46,11 +49,56 @@ const Wishlist = () => {
   }
   function deleteItem(_id) {
     dispatch(deleteWishlist({ _id: _id }));
+    dispatch(getWishlist()); // Refresh wishlist after deletion
+  }
+
+  function addToCart(item) {
+    var existingItem = allCarts.find(
+      (x) =>
+        x.userid === localStorage.getItem("userid") &&
+        x.productid === item.productid &&
+        x.color === item.color &&
+        x.size === item.size
+    );
+    if (existingItem) {
+      showToast.info("Item already in cart!");
+      navigate("/cart");
+    } else {
+      var cartItem = {
+        userid: localStorage.getItem("userid"),
+        productid: item.productid,
+        name: item.name,
+        color: item.color,
+        size: item.size,
+        brand: item.brand,
+        price: item.price,
+        qty: 1,
+        total: item.price,
+        pic: item.pic,
+        review: item.review,
+        rating: item.rating
+      };
+      dispatch(addCart(cartItem));
+      dispatch(getCart());
+      showToast.success("Item added to cart!");
+      navigate("/cart");
+    }
   }
   useEffect(() => {
-    getAPIData();
-    // eslint-disable-next-line
-  }, [allWishlists.length, allCheckouts.length]);
+    dispatch(getWishlist());
+    dispatch(getCheckoutUser());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (allWishlists.length) {
+      setWishlist(allWishlists);
+    }
+    if (allCheckouts.length) {
+      setOrder(
+        allCheckouts.filter((x) => x.userid === localStorage.getItem("userid"))
+      );
+    }
+  }, [allWishlists, allCheckouts]);
 
   return (
     <div className="page_section">
@@ -92,9 +140,12 @@ const Wishlist = () => {
                     <td>{item.size}</td>
                     <td>&#8377;{item.price}</td>
                     <td>
-                      <Link to={`/single-product/${item.productid}`}>
+                      <button
+                        className="btn"
+                        onClick={() => addToCart(item)}
+                      >
                         <i className="fa fa-shopping-cart text-success"></i>
-                      </Link>
+                      </button>
                     </td>
                     <td>
                       <button

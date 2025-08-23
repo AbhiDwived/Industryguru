@@ -195,8 +195,7 @@ const SingleProduct = () => {
         x.size === selectedVariant.size
     );
     if (item) {
-      showToast.info("Item already in cart. Redirecting...");
-      setTimeout(() => window.location.href = "/cart", 1000);
+      showToast.info("Item already in cart!");
     } else {
       var cartItem = {
         userid: localStorage.getItem("userid"),
@@ -215,8 +214,8 @@ const SingleProduct = () => {
         rating: product.rating
       };
       dispatch(addCart(cartItem));
+      dispatch(getCart()); // Refresh cart data
       showToast.success("Item added to cart!");
-      setTimeout(() => window.location.href = "/cart", 1000);
     }
   };
 
@@ -227,8 +226,7 @@ const SingleProduct = () => {
       (x) => x.userid === localStorage.getItem("userid") && x.productid === product._id
     );
     if (item) {
-      showToast.info("Item already in wishlist. Redirecting...");
-      setTimeout(() => window.location.href = "/wishlist", 1000);
+      showToast.info("Item already in wishlist!");
     } else {
       var wishlistItem = {
         userid: localStorage.getItem("userid"),
@@ -244,8 +242,8 @@ const SingleProduct = () => {
         // Do NOT include selectedVariant here
       };
       dispatch(addWishlist(wishlistItem));
+      dispatch(getWishlist()); // Refresh wishlist data
       showToast.success("Item added to wishlist!");
-      setTimeout(() => window.location.href = "/profile", 1000);
     }
   };
 
