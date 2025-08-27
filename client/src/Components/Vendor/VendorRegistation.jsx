@@ -22,6 +22,8 @@ export default function BecomeSeller() {
   const [phoneSent, setPhoneSent] = useState(""); // Store phone after OTP is sent
   const [timer, setTimer] = useState(0);
   const [isResendDisabled, setIsResendDisabled] = useState(false);
+  const [otpValue, setOtpValue] = useState("");
+  const [registrationData, setRegistrationData] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -128,6 +130,7 @@ export default function BecomeSeller() {
       const result = await response.json();
 
       if (result.success) {
+        setRegistrationData({ ...values, phone: formattedPhone });
         setOtpSent(true);
         setPhoneSent(formattedPhone); // Save phone for next step
         setTimer(300); // Start 5-minute timer
@@ -155,7 +158,7 @@ export default function BecomeSeller() {
 
       if (result.success) {
         showToast.success("OTP verified successfully!");
-        await registerVendor({ ...values, phone: phoneSent });
+        await registerVendor(registrationData);
       } else {
         showToast.error(result.message || "Invalid OTP!");
       }
@@ -525,42 +528,46 @@ export default function BecomeSeller() {
               )}
             </Formik>
           ) : (
-            <Formik
-              initialValues={{ otp: "" }}
-              validationSchema={Yup.object().shape({
-                otp: Yup.string().required("OTP is required"),
-              })}
-              onSubmit={verifyOtp}
-            >
-              {(props) => {
-                const { errors, touched } = props;
-                return (
-                  <Form noValidate>
-                    <h4 className="text-center mb-3">Enter OTP</h4>
-                    <p className="text-center mb-3">We've sent a 6-digit code to your mobile.</p>
+            <div key="otp-section">
+              <h4 className="text-center mb-3">Enter OTP</h4>
+              <p className="text-center mb-3">We've sent a 6-digit code to your mobile.</p>
+              
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (otpValue) {
+                  verifyOtp({ otp: otpValue });
+                }
+              }}>
+                <div className="ui__form">
+                  <label htmlFor="otpVerify" className="ui__form__label">
+                    OTP Code
+                  </label>
+                  <input
+                    id="otpVerify"
+                    name="otpVerify"
+                    value={otpValue}
+                    onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    onFocus={(e) => {
+                      setOtpValue('');
+                      e.target.value = '';
+                    }}
+                    placeholder="Enter 6-digit OTP"
+                    autoComplete="new-password"
+                    data-lpignore="true"
+                    data-1p-ignore="true"
+                    maxLength="6"
+                    type="text"
+                    inputMode="numeric"
+                    className="ui__form__field"
+                  />
+                  {!otpValue && (
+                    <div className="ui__form__error">OTP is required</div>
+                  )}
+                </div>
 
-                    <div className="ui__form">
-                      <label htmlFor="otp" className="ui__form__label">
-                        OTP Code
-                      </label>
-                      <Field
-                        id="otp"
-                        name="otp"
-                        placeholder="Enter 6-digit OTP"
-                        autoComplete="one-time-code"
-                        maxLength="6"
-                        className={`ui__form__field ${
-                          touched.otp && errors.otp ? "error" : ""
-                        }`}
-                      />
-                      {touched.otp && errors.otp && (
-                        <div className="ui__form__error">{errors.otp}</div>
-                      )}
-                    </div>
-
-                    <button className="ui__form__button">
-                      Verify OTP & Register
-                    </button>
+                <button type="submit" className="ui__form__button">
+                  Verify OTP & Register
+                </button>
 
                     <p className="form__info">
                       Didn't receive OTP?{" "}
@@ -601,10 +608,8 @@ export default function BecomeSeller() {
                         ← Back to Form
                       </button>
                     </p>
-                  </Form>
-                );
-              }}
-            </Formik>
+                  </form>
+                </div>
           )}
         </div>
       </div>
