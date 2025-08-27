@@ -71,12 +71,10 @@ const TrendingProductsCarousel = () => {
                 <h6>
                   {item.name}
                 </h6>
-                <div>
-                  <h5>&#8377;{item.finalprice}</h5>
-                  <h6 className="text-muted">
-                    <del className="text-danger">&#8377;{item.baseprice}</del>{" "}
-                    <sup className="text-success">{item.discount}% Off</sup>
-                  </h6>
+                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', marginBottom: '4px', justifyContent: 'center' }}>
+                  <span style={{ fontSize: '18px', fontWeight: '700', color: '#B12704', marginRight: '8px' }}>&#8377;{item.finalprice}</span>
+                  <span style={{ fontSize: '12px', color: '#565959', textDecoration: 'line-through', marginRight: '4px' }}>&#8377;{item.baseprice}</span>
+                  <span style={{ fontSize: '12px', color: '#CC0C39', fontWeight: '400' }}>({item.discount}% off)</span>
                 </div>
               </div>
             </Link>

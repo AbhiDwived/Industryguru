@@ -239,6 +239,7 @@ async function updateUser(req, res) {
       data.bank_branch = req.body.bank_branch ?? data.bank_branch;
       data.bank_name = req.body.bank_name ?? data.bank_name;
       data.upi = req.body.upi ?? data.upi;
+      data.gstNumber = req.body.gstNumber ?? data.gstNumber;
 
       // Add this line to update isActive status
       data.isActive = req.body.isActive ?? data.isActive;

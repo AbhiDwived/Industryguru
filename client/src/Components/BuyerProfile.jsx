@@ -51,6 +51,10 @@ export default function BuyerProfile({ user }) {
           <td>{user.state}</td>
         </tr>
         <tr>
+          <th>GST Number</th>
+          <td>{user.gstNumber || 'Not provided'}</td>
+        </tr>
+        <tr>
           <td colSpan={2}>
             <Link className="btn main-color w-100" to="/update-profile">
               Update

@@ -203,13 +203,23 @@ export default function AdminSinglecheckout() {
                   </td>
                 </tr>
                 <tr>
-                  <th>Total Amount</th>
+                  <th>Subtotal</th>
                   <td>&#8377;{checkout.subtotal}</td>
                 </tr>
                 <tr>
                   <th>Shipping</th>
                   <td>&#8377;{checkout.shipping}</td>
                 </tr>
+                <tr>
+                  <th>GST Amount (18%)</th>
+                  <td>&#8377;{checkout.gstAmount}</td>
+                </tr>
+                {checkout.gstRequired && (
+                  <tr>
+                    <th>Customer GST Number</th>
+                    <td>{checkout.gstNumber}</td>
+                  </tr>
+                )}
                 <tr>
                   <th>Total Amount</th>
                   <td>&#8377;{checkout.total}</td>

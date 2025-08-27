@@ -30,6 +30,18 @@ const OrderShema = new mongoose.Schema({
         type: Number,
         required: [true, "Total Must Required"]
     },
+    gstRequired: {
+        type: Boolean,
+        default: false
+    },
+    gstNumber: {
+        type: String,
+        default: ""
+    },
+    gstAmount: {
+        type: Number,
+        default: 0
+    },
     rppid : {
         type:String,
         default:""

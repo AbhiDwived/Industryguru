@@ -9,6 +9,7 @@ import { addCheckout } from "../Store/ActionCreators/CheckoutActionCreators";
 import BuyerProfile from "./BuyerProfile";
 import { apiLink } from "../utils/utils";
 import { showToast } from "../utils/toast";
+import "./checkout-gst.css";
 
 export default function Checkout() {
   const [user, setUser] = useState({});
@@ -17,6 +18,9 @@ export default function Checkout() {
   const [shipping, setShipping] = useState(0);
   const [total, setTotal] = useState(0);
   const [mode, setMode] = useState("COD");
+  const [gstRequired, setGstRequired] = useState(false);
+  const [gstNumber, setGstNumber] = useState("");
+  const [gstAmount, setGstAmount] = useState(0);
   const allCarts = useSelector((state) => state.CartStateData);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -24,6 +28,14 @@ export default function Checkout() {
   useEffect(() => {
     getAPIData();
   }, [allCarts.length]);
+
+  useEffect(() => {
+    // Load GST data when user data is available
+    if (user.gstNumber && !gstRequired) {
+      setGstRequired(true);
+      setGstNumber(user.gstNumber);
+    }
+  }, [user]);
 
   async function getAPIData() {
     const response = await fetch(
@@ -37,8 +49,9 @@ export default function Checkout() {
       }
     );
     const userData = await response.json();
-    if (userData.result === "Done") setUser(userData.data);
-    else navigate("/login");
+    if (userData.result === "Done") {
+      setUser(userData.data);
+    } else navigate("/login");
 
     dispatch(getCart());
     if (allCarts.length) {
@@ -56,16 +69,53 @@ export default function Checkout() {
 
       setShipping(shipping);
       setSubTotal(count);
-
-      // Apply GST here
-      const gstRate = 0.18; // Assuming a GST rate of 18%
-      const gstAmount = count * gstRate;
-      setTotal(count + shipping + gstAmount);
+      calculateTotal(count, shipping, gstRequired);
     }
   }
 
   function getMode(e) {
     setMode(e.target.value);
+  }
+
+  function calculateTotal(subtotal, shipping, hasGstNumber) {
+    const gstRate = 0.18; // 18% GST - Always applied
+    const calculatedGstAmount = subtotal * gstRate;
+    setGstAmount(calculatedGstAmount);
+    setTotal(subtotal + shipping + calculatedGstAmount);
+  }
+
+  function handleGstCheckbox(e) {
+    const checked = e.target.checked;
+    setGstRequired(checked);
+    if (!checked) {
+      setGstNumber("");
+    }
+    // GST is always calculated, checkbox only determines if user provides GST number
+  }
+
+  function handleGstNumber(e) {
+    const value = e.target.value.toUpperCase();
+    setGstNumber(value);
+  }
+
+  async function saveGstToProfile(gstNum) {
+    try {
+      await fetch(`${apiLink}/api/user/` + localStorage.getItem("userid"), {
+        method: "put",
+        headers: {
+          "content-type": "application/json",
+          authorization: localStorage.getItem("token"),
+        },
+        body: JSON.stringify({ gstNumber: gstNum }),
+      });
+    } catch (error) {
+      console.error("Error saving GST number:", error);
+    }
+  }
+
+  function validateGstNumber(gstNumber) {
+    const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+    return gstRegex.test(gstNumber);
   }
 
   const valideCheckoutAddress = () => {
@@ -90,6 +140,23 @@ export default function Checkout() {
   async function placeOrder() {
     if (!valideCheckoutAddress()) return;
     setProcessing(true);
+    if (gstRequired && !gstNumber.trim()) {
+      showToast.warning("Please enter your GST number.");
+      setProcessing(false);
+      return;
+    }
+
+    if (gstRequired && !validateGstNumber(gstNumber)) {
+      showToast.warning("Please enter a valid GST number.");
+      setProcessing(false);
+      return;
+    }
+
+    // Save GST number to user profile if it's new or different
+    if (gstRequired && gstNumber && gstNumber !== user.gstNumber) {
+      await saveGstToProfile(gstNumber);
+    }
+
     const item = {
       userid: localStorage.getItem("userid"),
       paymentmode: mode,
@@ -98,6 +165,9 @@ export default function Checkout() {
       subtotal: subtotal,
       shipping: shipping,
       total: total,
+      gstRequired: gstRequired,
+      gstNumber: gstRequired ? gstNumber : "",
+      gstAmount: gstAmount,
       products: cart,
       date: new Date(),
     };
@@ -168,11 +238,10 @@ export default function Checkout() {
                   <h6 className="font-weight-medium">Shipping</h6>
                   <h6 className="font-weight-medium">&#8377;{shipping}</h6>
                 </div>
-                {/* Display GST amount */}
                 <div className="d-flex justify-content-between">
                   <h6 className="font-weight-medium">GST @ 18%</h6>
                   <h6 className="font-weight-medium">
-                    &#8377;{(total - subtotal - shipping).toFixed(2)}
+                    &#8377;{gstAmount.toFixed(2)}
                   </h6>
                 </div>
               </div>
@@ -185,9 +254,47 @@ export default function Checkout() {
             </div>
             <div className="mb-5">
               <h5 className="section-title position-relative text-uppercase mb-3">
-                <span className="bg-secondary pr-3">Payment</span>
+                <span className="bg-secondary pr-3">GST & Payment</span>
               </h5>
               <div className="bg-light p-30">
+                <div className="gst-section">
+                  <div className="gst-checkbox-container">
+                    <input
+                      type="checkbox"
+                      id="gstCheckbox"
+                      checked={gstRequired}
+                      onChange={handleGstCheckbox}
+                    />
+                    <label htmlFor="gstCheckbox">
+                      <strong>I have GST Number</strong> (for GST invoice)
+                    </label>
+                  </div>
+                  <div className="gst-info">
+                    <small>Note: 18% GST is applicable on all products</small>
+                  </div>
+                  {gstRequired && (
+                    <div className="gst-input">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter GST Number (e.g., 22AAAAA0000A1Z5)"
+                        value={gstNumber}
+                        onChange={handleGstNumber}
+                        pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}"
+                        title="Please enter a valid GST number"
+                        maxLength="15"
+                      />
+                      <div className="gst-info">
+                        Format: 15 characters (2 digits + 10 alphanumeric + 1 check digit + Z + 1 check digit)
+                      </div>
+                      {gstAmount > 0 && (
+                        <div className="gst-amount-display">
+                          GST Amount: ₹{gstAmount.toFixed(2)}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
                 <select name="mode" onChange={getMode} className="form-control">
                   <option value="COD">COD</option>
                   <option value="Net Banking">Net Banking/Card/UPI</option>

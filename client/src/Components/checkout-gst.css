@@ -1,0 +1,50 @@
+.gst-section {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  background-color: #f9f9f9;
+}
+
+.gst-checkbox-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.gst-checkbox-container input[type="checkbox"] {
+  margin-right: 8px;
+  transform: scale(1.2);
+}
+
+.gst-input {
+  margin-top: 10px;
+}
+
+.gst-input input {
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.gst-input input:focus {
+  border-color: #007185;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 113, 133, 0.1);
+}
+
+.gst-info {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+}
+
+.gst-amount-display {
+  background-color: #e8f5e8;
+  border-left: 4px solid #28a745;
+  padding: 8px 12px;
+  margin-top: 10px;
+  border-radius: 4px;
+}

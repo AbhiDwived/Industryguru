@@ -18,7 +18,8 @@ export default function UpdateProfile() {
     state: "",
     role: "",
     _id: "",
-    username: ""
+    username: "",
+    gstNumber: ""
   });
   const [imagePreview, setImagePreview] = useState(null);
   var navigate = useNavigate();
@@ -66,6 +67,7 @@ export default function UpdateProfile() {
     formData.append("state", data.state || "");
     formData.append("username", data.username || "");
     formData.append("role", data.role || "");
+    formData.append("gstNumber", data.gstNumber || "");
     
     // Only append pic if there's a new file
     if (data.pic && typeof data.pic === 'object') {
@@ -369,6 +371,20 @@ export default function UpdateProfile() {
                             onChange={getInputData}
                             className="ui__form__field"
                             placeholder="Enter State"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6">
+                        <div className="ui__form">
+                          <label className="ui__form__label">GST Number (Optional)</label>
+                          <input
+                            type="text"
+                            name="gstNumber"
+                            value={data.gstNumber || ""}
+                            onChange={getInputData}
+                            className="ui__form__field"
+                            placeholder="Enter GST Number (e.g., 22AAAAA0000A1Z5)"
+                            maxLength="15"
                           />
                         </div>
                       </div>

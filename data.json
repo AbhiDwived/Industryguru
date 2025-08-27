@@ -1,322 +1,2055 @@
-[
-  {
-  "_id": {
-    "$oid": "68808bf4602e452ea2d6b42c"
-  },
-  "name": "PG GLANDS & METRIC GLANDS WITH LOCK NUT",
-  "maincategory": {
-    "$oid": "686a27cadeb6717a29c2cd71"
-  },
-  "subcategory": {
-    "$oid": "686a2847deb6717a29c2cd78"
-  },
-  "brand": {
-    "$oid": "686a2857deb6717a29c2cd7f"
-  },
-  "slug": {
-    "$oid": "68806855602e452ea2d699ae"
-  },
-  "subSlug": {
-    "$oid": "688086e3602e452ea2d6af74"
-  },
+{
+  "_id": { "$oid": "68a9890900cba083fb01bf2e" },
+  "name": "DRAG CHAIN OPEN TYPE",
+  "maincategory": { "$oid": "686a27cadeb6717a29c2cd71" },
+  "subcategory": { "$oid": "68a830fb40a7b4e8f10ea57f" },
+  "brand": { "$oid": "68a8338740a7b4e8f10ea5b3" },
+  "slug": { "$oid": "68a8342c40a7b4e8f10ea7f1" },
+  "subSlug": { "$oid": "68a9584500cba083fb01b17a" },
   "color": "Multiple",
   "size": "Multiple",
-  "baseprice": 5526,
+  "baseprice": 438,
   "discount": 0,
-  "finalprice": 5526,
-  "stock": 505047475050505000,
+  "finalprice": 438,
+  "stock": 500497,
   "specification": [
-    {
-      "key": "Variants",
-      "value": 9
-    }
+    { "key": "Variants", "value": 47 }
   ],
-  "description": "A Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
-  "pic2": "",
-  "pic3": "",
-  "pic4": "",
-  "variants": [
-    {
-      "innerSlug": "PG",
-      "innerSubSlug": "PG-07",
-      "color": "Black",
-      "size": "PG07",
-      "baseprice": 4500,
-      "discount": 5,
-      "finalprice": 4275,
-      "stock": 50,
-      "description": "A PG-07 Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
-      "specification": [
-        {
-          "key": "RATE/PCS",
-          "value": "105",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b42e"
-          }
-        },
-        {
-          "key": "PCS/PKT",
-          "value": "100",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b42f"
-          }
+  "description": "a flexible, segmented conduit that protects and guides cables...",
+  "pic2": "1755941129041drag_chain_2.jpg",
+  "pic3": "1755941129111Cable-drag-chain.jpg",
+  "pic4": "1755941129143110310621179_006.jpg",
+
+ "variants":[
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.10.OP 10X10/ OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 480,
+    "discount": 10,
+    "finalprice": 432,
+    "stock": 500,
+    "description": "Model STR.DRG.10.OP with inner size 10X10 OP mm and outer size 14X16 OP mm, designed with a bending radius of 15 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.10.OP",
+        "_id": {
+          "$oid": "37c42274d4e18d9ad2db2d07"
         }
-      ],
-      "_id": {
-        "$oid": "68808bf4602e452ea2d6b42d"
-      }
-    },
-    {
-      "innerSlug": "PG",
-      "innerSubSlug": "PG-09",
-      "color": "BLACK",
-      "size": "PG-09",
-      "baseprice": 5000,
-      "discount": 5,
-      "finalprice": 4750,
-      "stock": 50,
-      "description": "A PG-09 Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
-      "specification": [
-        {
-          "key": "RATE/PCS",
-          "value": "115",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b431"
-          }
-        },
-        {
-          "key": "PCS/PKT",
-          "value": "100",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b432"
-          }
+      },
+      {
+        "key": "Inner Size",
+        "value": "10X10/ OP",
+        "_id": {
+          "$oid": "253411e446887a436c82c2da"
         }
-      ],
-      "_id": {
-        "$oid": "68808bf4602e452ea2d6b430"
-      }
-    },
-    {
-      "innerSlug": "PG",
-      "innerSubSlug": "PG-11",
-      "color": "BLACK",
-      "size": "PG-11",
-      "baseprice": 6000,
-      "discount": 5,
-      "finalprice": 5700,
-      "stock": 47,
-      "description": "A PG-011 Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
-      "specification": [
-        {
-          "key": "RATE/PCS",
-          "value": "195",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b434"
-          }
-        },
-        {
-          "key": "PCS/PKT",
-          "value": "100",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b435"
-          }
+      },
+      {
+        "key": "Outer Size",
+        "value": "14X16/ OP",
+        "_id": {
+          "$oid": "cb42c752302cfe2532090235"
         }
-      ],
-      "_id": {
-        "$oid": "68808bf4602e452ea2d6b433"
-      }
-    },
-    {
-      "innerSlug": "PG",
-      "innerSubSlug": "PG-13.5",
-      "color": "BLACK",
-      "size": "PG-11",
-      "baseprice": 7000,
-      "discount": 5,
-      "finalprice": 6650,
-      "stock": 47,
-      "description": "A PG-11  Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
-      "specification": [
-        {
-          "key": "RATE/PCS",
-          "value": "185",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b437"
-          }
-        },
-        {
-          "key": "PCS/PKT",
-          "value": "100",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b438"
-          }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "15",
+        "_id": {
+          "$oid": "0137ca94381c263a5d8bfb99"
         }
-      ],
-      "_id": {
-        "$oid": "68808bf4602e452ea2d6b436"
       }
-    },
-    {
-      "innerSlug": "PG",
-      "innerSubSlug": "PG-16",
-      "color": "BLACK",
-      "size": "PG-16",
-      "baseprice": 8500,
-      "discount": 5,
-      "finalprice": 8075,
-      "stock": 50,
-      "description": "A PG-16  Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
-      "specification": [
-        {
-          "key": "RATE/PCS",
-          "value": "175",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b43a"
-          }
-        },
-        {
-          "key": "PCS/PKT",
-          "value": "100",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b43b"
-          }
-        }
-      ],
-      "_id": {
-        "$oid": "68808bf4602e452ea2d6b439"
-      }
-    },
-    {
-      "innerSlug": "PG",
-      "innerSubSlug": "PG-21",
-      "color": "BLACK",
-      "size": "PG-21",
-      "baseprice": 11000,
-      "discount": 5,
-      "finalprice": 10450,
-      "stock": 50,
-      "description": "A PG-21  Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
-      "specification": [
-        {
-          "key": "RATE/PCS",
-          "value": "165",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b43d"
-          }
-        },
-        {
-          "key": "PCS/PKT",
-          "value": "100",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b43e"
-          }
-        }
-      ],
-      "_id": {
-        "$oid": "68808bf4602e452ea2d6b43c"
-      }
-    },
-    {
-      "innerSlug": "PG",
-      "innerSubSlug": "PG-29",
-      "color": "BLACK",
-      "size": "PG-29",
-      "baseprice": 6750,
-      "discount": 5,
-      "finalprice": 6413,
-      "stock": 50,
-      "description": "A PG-29  Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
-      "specification": [
-        {
-          "key": "RATE/PCS",
-          "value": "145",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b440"
-          }
-        },
-        {
-          "key": "PCS/PKT",
-          "value": "50",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b441"
-          }
-        }
-      ],
-      "_id": {
-        "$oid": "68808bf4602e452ea2d6b43f"
-      }
-    },
-    {
-      "innerSlug": "PG",
-      "innerSubSlug": "PG-36",
-      "color": "BLACK",
-      "size": "PG-36",
-      "baseprice": 1650,
-      "discount": 5,
-      "finalprice": 1568,
-      "stock": 50,
-      "description": "A PG-36  Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
-      "specification": [
-        {
-          "key": "RATE/PCS",
-          "value": "135",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b443"
-          }
-        },
-        {
-          "key": "PCS/PKT",
-          "value": "10",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b444"
-          }
-        }
-      ],
-      "_id": {
-        "$oid": "68808bf4602e452ea2d6b442"
-      }
-    },
-    {
-      "innerSlug": "PG",
-      "innerSubSlug": "PG-48",
-      "color": "BLACK",
-      "size": "PG-48",
-      "baseprice": 1950,
-      "discount": 5,
-      "finalprice": 1853,
-      "stock": 50,
-      "description": "A PG-48  Pipe gland is a mechanical device used to secure and seal the end of an electrical cable to equipment or machinery, preventing the entry of dirt, dust, water, and other contaminants. It also ensures that the cable remains securely attached and insulated, providing strain relief to avoid damage from excessive pulling or bending.",
-      "specification": [
-        {
-          "key": "RATE/PCS",
-          "value": "125",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b446"
-          }
-        },
-        {
-          "key": "PCS/PKT",
-          "value": "10",
-          "_id": {
-            "$oid": "68808bf4602e452ea2d6b447"
-          }
-        }
-      ],
-      "_id": {
-        "$oid": "68808bf4602e452ea2d6b445"
-      }
+    ],
+    "_id": {
+      "$oid": "30fb231e9d673a3e4b02daa0"
     }
-  ],
-  "addedBy": {
-    "$oid": "687927880fc8e2587dd1c04c"
   },
-  "pic1": "1753254900681Pipe Gland.jpg",
-  "createdAt": {
-    "$date": "2025-07-23T07:15:00.694Z"
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.10.OP 10X15/ OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 504,
+    "discount": 10,
+    "finalprice": 453,
+    "stock": 500,
+    "description": "Model STR.DRG.10.OP with inner size 10X15 OP mm and outer size 14X21 OP mm, designed with a bending radius of 15 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.10.OP",
+        "_id": {
+          "$oid": "fb2e8a20c8c64e27ba53f947"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "10X15/ OP",
+        "_id": {
+          "$oid": "79a09ce9b46680dc26ad62f4"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "14X21/ OP",
+        "_id": {
+          "$oid": "83b1f4f0803bc7b3fbeda2ea"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "15",
+        "_id": {
+          "$oid": "bfb60a90967586a84321db35"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "6f191abade814ec6b66df659"
+    }
   },
-  "updatedAt": {
-    "$date": "2025-07-23T07:15:00.694Z"
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.15.OP 15/15/ OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 516,
+    "discount": 10,
+    "finalprice": 464,
+    "stock": 500,
+    "description": "Model STR.DRG.15.OP with inner size 1515 OP mm and outer size 20X25  OP mm, designed with a bending radius of 25 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.15.OP",
+        "_id": {
+          "$oid": "d53197852d07a87b2e1efd57"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "15/15/ OP",
+        "_id": {
+          "$oid": "6e9f5964e926e68c1891dcc5"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "20X25 / OP",
+        "_id": {
+          "$oid": "b79b135813951d11b3e1b30d"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "25",
+        "_id": {
+          "$oid": "b2cff1b51f48da1dc4f17821"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "1ec432fc07840a2f8b115fe0"
+    }
   },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.15.OP 15X20/ OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 534,
+    "discount": 10,
+    "finalprice": 480,
+    "stock": 500,
+    "description": "Model STR.DRG.15.OP with inner size 15X20 OP mm and outer size 20X30 OP mm, designed with a bending radius of 25 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.15.OP",
+        "_id": {
+          "$oid": "993d3a033ef012be8f3379a8"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "15X20/ OP",
+        "_id": {
+          "$oid": "cae0741637290a5a8f092201"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "20X30/ OP",
+        "_id": {
+          "$oid": "a083734b8001cacd4e39ed69"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "25",
+        "_id": {
+          "$oid": "c6d542da1da9c1ac42ed0cfa"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "858df277354284c83b664f13"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.20.OP 20X25/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 540,
+    "discount": 10,
+    "finalprice": 486,
+    "stock": 500,
+    "description": "Model STR.DRG.20.OP with inner size 20X25OP mm and outer size 29X40 OP mm, designed with a bending radius of 40 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.20.OP",
+        "_id": {
+          "$oid": "e1682a1921468b5c79080eed"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "20X25/OP",
+        "_id": {
+          "$oid": "3dcb3e8490eb18426b228081"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "29X40/ OP",
+        "_id": {
+          "$oid": "917c1182d9d44112e92f59b3"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "40",
+        "_id": {
+          "$oid": "ec0d4c2017fd9f2b7bf5991b"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "87e06bac74ab67fdfe93efd2"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.20.OP 20x40/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 558,
+    "discount": 10,
+    "finalprice": 502,
+    "stock": 500,
+    "description": "Model STR.DRG.20.OP with inner size 20x40OP mm and outer size 29X55 OP mm, designed with a bending radius of 40 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.20.OP",
+        "_id": {
+          "$oid": "8c049137aedc9630f7cc188c"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "20x40/OP",
+        "_id": {
+          "$oid": "49cd1ca4ab844969fe461d84"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "29X55/ OP",
+        "_id": {
+          "$oid": "1df18fff042a18aba51a97db"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "40",
+        "_id": {
+          "$oid": "86d81c3546da62e84df47b2e"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "f1d71f1597e66eb4f755097c"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.25.OP 25X35/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 840,
+    "discount": 10,
+    "finalprice": 756,
+    "stock": 500,
+    "description": "Model STR.DRG.25.OP with inner size 25X35OP mm and outer size 40X53 OP mm, designed with a bending radius of 50-75-100-125-150 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.25.OP",
+        "_id": {
+          "$oid": "b54adbc6d8f3652239e85489"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "25X35/OP",
+        "_id": {
+          "$oid": "e19bb325a523157987f42476"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "40X53/ OP",
+        "_id": {
+          "$oid": "dee34d5453ce72058e9bf549"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "50-75-100-125-150",
+        "_id": {
+          "$oid": "98c2eb5f1bea07f936c3c36e"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "48b90ce986924224609682ad"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.25.OP 25X50/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 900,
+    "discount": 10,
+    "finalprice": 810,
+    "stock": 500,
+    "description": "Model STR.DRG.25.OP with inner size 25X50OP mm and outer size 40X68 OP mm, designed with a bending radius of 50-75-100-125-150 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.25.OP",
+        "_id": {
+          "$oid": "e580759d3c50984824251f4b"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "25X50/OP",
+        "_id": {
+          "$oid": "f6811640d4e6f88c597bc99e"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "40X68/ OP",
+        "_id": {
+          "$oid": "72d12d0b01f575b5c42d9389"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "50-75-100-125-150",
+        "_id": {
+          "$oid": "43693bd1f255949e44d928f4"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "23897d64b60b5d631979cfd0"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.25.OP 25X60/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 925,
+    "discount": 10,
+    "finalprice": 832,
+    "stock": 500,
+    "description": "Model STR.DRG.25.OP with inner size 25X60OP mm and outer size 40X78 OP mm, designed with a bending radius of 50-75-100-125-150 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.25.OP",
+        "_id": {
+          "$oid": "ad84d78bdcec00c9287c359b"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "25X60/OP",
+        "_id": {
+          "$oid": "0654ba554121e873c8b08649"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "40X78/ OP",
+        "_id": {
+          "$oid": "34ec3ce2d8afd5a569b167d9"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "50-75-100-125-150",
+        "_id": {
+          "$oid": "04faebb363ce9657bf7dd417"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "d64acc5b6e30045c2c349fa1"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.25.OP 25X75/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 943,
+    "discount": 10,
+    "finalprice": 848,
+    "stock": 500,
+    "description": "Model STR.DRG.25.OP with inner size 25X75OP mm and outer size 40X93 OP mm, designed with a bending radius of 50-75-100-125-150 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.25.OP",
+        "_id": {
+          "$oid": "c217e95eb1d64b1258395ebd"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "25X75/OP",
+        "_id": {
+          "$oid": "e5b5db122269e00c7bfcd676"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "40X93/ OP",
+        "_id": {
+          "$oid": "68000b60dc757701a4f93c07"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "50-75-100-125-150",
+        "_id": {
+          "$oid": "0140bb86895c1eb4fd69f8d9"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "fe04cbd6e6737d8caf04307b"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.25.OP 25X80/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 985,
+    "discount": 10,
+    "finalprice": 886,
+    "stock": 500,
+    "description": "Model STR.DRG.25.OP with inner size 25X80OP mm and outer size 40X98 OP mm, designed with a bending radius of 50-75-100-125-150 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.25.OP",
+        "_id": {
+          "$oid": "6bb9f82aa32518ae98e759c2"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "25X80/OP",
+        "_id": {
+          "$oid": "2bf693bc8a54be4d0fa57c56"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "40X98/ OP",
+        "_id": {
+          "$oid": "ca4f4d06b338dd2432cf615e"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "50-75-100-125-150",
+        "_id": {
+          "$oid": "15f730476ac70d101a1f1fd3"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "0b7abe45279a92c1808e0f9c"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.25.OP 25X100/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1020,
+    "discount": 10,
+    "finalprice": 918,
+    "stock": 500,
+    "description": "Model STR.DRG.25.OP with inner size 25X100OP mm and outer size 40X118 OP mm, designed with a bending radius of 50-75-100-125-150 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.25.OP",
+        "_id": {
+          "$oid": "2937203014be8ce5b46ab5b9"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "25X100/OP",
+        "_id": {
+          "$oid": "3b76f8f3f12eb54c84f6da0e"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "40X118/ OP",
+        "_id": {
+          "$oid": "ca2f9bb36f224327301e4972"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "50-75-100-125-150",
+        "_id": {
+          "$oid": "e6d93f6f0e798b2fbbc65d60"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "ce6d4e242205199ec3d38e7a"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.25.OP 25X112/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1080,
+    "discount": 10,
+    "finalprice": 972,
+    "stock": 500,
+    "description": "Model STR.DRG.25.OP with inner size 25X112OP mm and outer size 40X130 OP mm, designed with a bending radius of 50-75-100-125-150 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.25.OP",
+        "_id": {
+          "$oid": "eda6f6371bffa53f96e041ba"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "25X112/OP",
+        "_id": {
+          "$oid": "bce45dc0695b9a34f20ebeb2"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "40X130/ OP",
+        "_id": {
+          "$oid": "a2560e3b346aebb58f06d0ab"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "50-75-100-125-150",
+        "_id": {
+          "$oid": "92e199e8460e58c084b4a1b7"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "333f030dfc2549a439e74e44"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.25.OP 25X125/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1131,
+    "discount": 10,
+    "finalprice": 1018,
+    "stock": 500,
+    "description": "Model STR.DRG.25.OP with inner size 25X125OP mm and outer size 40X143 OP mm, designed with a bending radius of 50-75-100-125-150 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.25.OP",
+        "_id": {
+          "$oid": "47d2ee7ec06b7453d992d391"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "25X125/OP",
+        "_id": {
+          "$oid": "aae2fa72fd8c07f35c2475c1"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "40X143/ OP",
+        "_id": {
+          "$oid": "5e9f78e620c6d744a2f19019"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "50-75-100-125-150",
+        "_id": {
+          "$oid": "8731217d436245b023eaffa0"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "c11f928ca3807461cc902f15"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.25.OP 25X137/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1183,
+    "discount": 10,
+    "finalprice": 1064,
+    "stock": 500,
+    "description": "Model STR.DRG.25.OP with inner size 25X137OP mm and outer size 40X155 OP mm, designed with a bending radius of 50-75-100-125-150 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.25.OP",
+        "_id": {
+          "$oid": "90b4aed79533e3454d0c47c6"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "25X137/OP",
+        "_id": {
+          "$oid": "7d7ebbd315a9b165a70ac84b"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "40X155/ OP",
+        "_id": {
+          "$oid": "6dbc21253100830ccabc7737"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "50-75-100-125-150",
+        "_id": {
+          "$oid": "aa77fb7224f6089c85d096c7"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "58cefdf5e44ae677e7a018b3"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.25.OP 25X150/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1251,
+    "discount": 10,
+    "finalprice": 1126,
+    "stock": 500,
+    "description": "Model STR.DRG.25.OP with inner size 25X150OP mm and outer size 40X168 OP mm, designed with a bending radius of 50-75-100-125-150 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.25.OP",
+        "_id": {
+          "$oid": "d8fce96d3c3d7a108e25c427"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "25X150/OP",
+        "_id": {
+          "$oid": "ba9a28d6c9b79fa3745687e4"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "40X168/ OP",
+        "_id": {
+          "$oid": "bbd2f0cb116839f9c3dd7dde"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "50-75-100-125-150",
+        "_id": {
+          "$oid": "d715e6639586c583474d4476"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "ae45ae752224b6a6d87207e4"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.25.OP 25X162/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1320,
+    "discount": 10,
+    "finalprice": 1188,
+    "stock": 500,
+    "description": "Model STR.DRG.25.OP with inner size 25X162OP mm and outer size 40X180 OP mm, designed with a bending radius of 50-75-100-125-150 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.25.OP",
+        "_id": {
+          "$oid": "892ae59553c9df7e92523790"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "25X162/OP",
+        "_id": {
+          "$oid": "68a97c8d705c6879f5ad1992"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "40X180/ OP",
+        "_id": {
+          "$oid": "1a36cbc58a769ac1bf0a73bb"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "50-75-100-125-150",
+        "_id": {
+          "$oid": "b13b5106754042c1fe237c31"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "4a4824d735180d27dc659a4a"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.25.OP 25X175/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1388,
+    "discount": 10,
+    "finalprice": 1249,
+    "stock": 500,
+    "description": "Model STR.DRG.25.OP with inner size 25X175OP mm and outer size 40X193 OP mm, designed with a bending radius of 50-75-100-125-150 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.25.OP",
+        "_id": {
+          "$oid": "4226e300a0c80d7f97befd4a"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "25X175/OP",
+        "_id": {
+          "$oid": "9d342ca4331ae1412fe9eb29"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "40X193/ OP",
+        "_id": {
+          "$oid": "f4967014f31bb5a46878dd13"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "50-75-100-125-150",
+        "_id": {
+          "$oid": "32778515a4bee7a4498ea278"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "f7bf5efd6f8f6293702afcb5"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.25.OP 25X200/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1474,
+    "discount": 10,
+    "finalprice": 1327,
+    "stock": 500,
+    "description": "Model STR.DRG.25.OP with inner size 25X200OP mm and outer size 40X218 OP mm, designed with a bending radius of 50-75-100-125-150 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.25.OP",
+        "_id": {
+          "$oid": "05658dfb6f2fcf5471f445fc"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "25X200/OP",
+        "_id": {
+          "$oid": "e82a7d832965e9abe9fc32b0"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "40X218/ OP",
+        "_id": {
+          "$oid": "511ab666645d63bced288df2"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "50-75-100-125-150",
+        "_id": {
+          "$oid": "078ebfb945071c4c2a3a58f3"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "f53b32fa8eda197df3129ee3"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.25.OP 25X225/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1560,
+    "discount": 10,
+    "finalprice": 1404,
+    "stock": 500,
+    "description": "Model STR.DRG.25.OP with inner size 25X225OP mm and outer size 40X243 OP mm, designed with a bending radius of 50-75-100-125-150 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.25.OP",
+        "_id": {
+          "$oid": "661fb46e7faf38f4d22f0ff9"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "25X225/OP",
+        "_id": {
+          "$oid": "bdcaacb6f61d8a74df571ac4"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "40X243/ OP",
+        "_id": {
+          "$oid": "99ae852e695a75578aeaadda"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "50-75-100-125-150",
+        "_id": {
+          "$oid": "300f2830f7d3b41cd553827a"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "141d6b849c330ae31338ef96"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.25.OP 25X237/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1645,
+    "discount": 10,
+    "finalprice": 1480,
+    "stock": 500,
+    "description": "Model STR.DRG.25.OP with inner size 25X237OP mm and outer size 40X255 OP mm, designed with a bending radius of 50-75-100-125-150 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.25.OP",
+        "_id": {
+          "$oid": "3c88e1e89195fe24ad3cd485"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "25X237/OP",
+        "_id": {
+          "$oid": "d7f147a7a1fe88231d128171"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "40X255/ OP",
+        "_id": {
+          "$oid": "e584298528b895c843e289c9"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "50-75-100-125-150",
+        "_id": {
+          "$oid": "7a6c457f08eed80ef1ae13af"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "e28fe8f5539dc62affb49f46"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.25.OP 25X250/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1731,
+    "discount": 10,
+    "finalprice": 1558,
+    "stock": 500,
+    "description": "Model STR.DRG.25.OP with inner size 25X250OP mm and outer size 40X268 OP mm, designed with a bending radius of 50-75-100-125-150 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.25.OP",
+        "_id": {
+          "$oid": "5548f5df3e0c7bf69198412f"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "25X250/OP",
+        "_id": {
+          "$oid": "f80d88b389d45c68ff8543d5"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "40X268/ OP",
+        "_id": {
+          "$oid": "814ece733c004bad7afad4ab"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "50-75-100-125-150",
+        "_id": {
+          "$oid": "4a5afecdf5b46022788f7f52"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "433a0a6245c244d7d6b69f54"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.35.OP 35X35/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 900,
+    "discount": 10,
+    "finalprice": 810,
+    "stock": 500,
+    "description": "Model STR.DRG.35.OP with inner size 35X35OP mm and outer size 52X55 OP mm, designed with a bending radius of 75-100-150-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.35.OP",
+        "_id": {
+          "$oid": "ea50c3c2a37e168196a505e9"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "35X35/OP",
+        "_id": {
+          "$oid": "fb16e40a7b611c2313ff86cf"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "52X55/ OP",
+        "_id": {
+          "$oid": "6261f11e782f1c29bb0abb4c"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "75-100-150-300",
+        "_id": {
+          "$oid": "10c25ec043d6854f2b9ef458"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "be43f2c5a46d833d891585fc"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.35.OP 35X50/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 960,
+    "discount": 10,
+    "finalprice": 864,
+    "stock": 500,
+    "description": "Model STR.DRG.35.OP with inner size 35X50OP mm and outer size 52X70 OP mm, designed with a bending radius of 75-100-150-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.35.OP",
+        "_id": {
+          "$oid": "973c880b70ad3b7ff5e90dda"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "35X50/OP",
+        "_id": {
+          "$oid": "e3e1bff23126ed949c3fb8a8"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "52X70/ OP",
+        "_id": {
+          "$oid": "d52e1d8a192ab30b967b3285"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "75-100-150-300",
+        "_id": {
+          "$oid": "fe0db401c6b5ebf95555f84b"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "1feddb47d8a74e3cb400e79a"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.35.OP 35X60/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1003,
+    "discount": 10,
+    "finalprice": 902,
+    "stock": 500,
+    "description": "Model STR.DRG.35.OP with inner size 35X60OP mm and outer size 52X80 OP mm, designed with a bending radius of 75-100-150-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.35.OP",
+        "_id": {
+          "$oid": "e4943dd9bab4591744624305"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "35X60/OP",
+        "_id": {
+          "$oid": "5cb4dd6a0f42889d6afc479d"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "52X80/ OP",
+        "_id": {
+          "$oid": "8118fb689af376666c62ce30"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "75-100-150-300",
+        "_id": {
+          "$oid": "bb77fd5183f871694e7889eb"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "dc6ff1e01f6c76350414d097"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.35.OP 35X75/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1020,
+    "discount": 10,
+    "finalprice": 918,
+    "stock": 500,
+    "description": "Model STR.DRG.35.OP with inner size 35X75OP mm and outer size 52X95 OP mm, designed with a bending radius of 75-100-150-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.35.OP",
+        "_id": {
+          "$oid": "5e4244c4453f7b85c7ec46c0"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "35X75/OP",
+        "_id": {
+          "$oid": "b0be5573ae4b51a11c839a65"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "52X95/ OP",
+        "_id": {
+          "$oid": "045b2b101309cb587c8290a1"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "75-100-150-300",
+        "_id": {
+          "$oid": "77993a38bd95f13dd444b921"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "120034d9d05b684e3cc7a919"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.35.OP 35X80/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1063,
+    "discount": 10,
+    "finalprice": 956,
+    "stock": 500,
+    "description": "Model STR.DRG.35.OP with inner size 35X80OP mm and outer size 52X100 OP mm, designed with a bending radius of 75-100-150-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.35.OP",
+        "_id": {
+          "$oid": "bfcc375e902acff42f9d22b4"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "35X80/OP",
+        "_id": {
+          "$oid": "bcaa7dbc8fabc9c8b8dd1f65"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "52X100/ OP",
+        "_id": {
+          "$oid": "d345baee163ce94b131a6b1e"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "75-100-150-300",
+        "_id": {
+          "$oid": "c4c71e8bf46ab43915b4f5fc"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "ba5da59f2afcf3c25bd33df2"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.35.OP 35X100/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1096,
+    "discount": 10,
+    "finalprice": 987,
+    "stock": 500,
+    "description": "Model STR.DRG.35.OP with inner size 35X100OP mm and outer size 52X120 OP mm, designed with a bending radius of 75-100-150-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.35.OP",
+        "_id": {
+          "$oid": "c5a0490707f48cf0c9b10058"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "35X100/OP",
+        "_id": {
+          "$oid": "0a3c0788737c527b920daeb4"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "52X120/ OP",
+        "_id": {
+          "$oid": "dd0618d96393dceea30d5a86"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "75-100-150-300",
+        "_id": {
+          "$oid": "29ab34f6318c8c35799a4e59"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "f27eab6103b28afffa2b68b1"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.35.OP 35X112/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1131,
+    "discount": 10,
+    "finalprice": 1018,
+    "stock": 500,
+    "description": "Model STR.DRG.35.OP with inner size 35X112OP mm and outer size 52X132 OP mm, designed with a bending radius of 75-100-150-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.35.OP",
+        "_id": {
+          "$oid": "89f95180c5daf6f93285c728"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "35X112/OP",
+        "_id": {
+          "$oid": "42725559ce1964fa6a213b6f"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "52X132/ OP",
+        "_id": {
+          "$oid": "94826a6331e6fc6d07dfc395"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "75-100-150-300",
+        "_id": {
+          "$oid": "a2bbf0f5d5d8ecd9b6662292"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "5e79af454597584bfd489c75"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.35.OP 35X125/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1183,
+    "discount": 10,
+    "finalprice": 1064,
+    "stock": 500,
+    "description": "Model STR.DRG.35.OP with inner size 35X125OP mm and outer size 52X145 OP mm, designed with a bending radius of 75-100-150-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.35.OP",
+        "_id": {
+          "$oid": "326973e9cfe034c8125436d6"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "35X125/OP",
+        "_id": {
+          "$oid": "829c378f6e4e504175e4cfbc"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "52X145/ OP",
+        "_id": {
+          "$oid": "e470ec3b7812f9d43720609a"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "75-100-150-300",
+        "_id": {
+          "$oid": "5fa65b23f1269c7e3635310f"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "6a4cc05bcaa04acd3e3a87f9"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.35.OP 35X137/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1234,
+    "discount": 10,
+    "finalprice": 1111,
+    "stock": 500,
+    "description": "Model STR.DRG.35.OP with inner size 35X137OP mm and outer size 52X157 OP mm, designed with a bending radius of 75-100-150-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.35.OP",
+        "_id": {
+          "$oid": "52dc177d29cbf68d5f2728a6"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "35X137/OP",
+        "_id": {
+          "$oid": "fb45423b66f0fc4942b843d1"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "52X157/ OP",
+        "_id": {
+          "$oid": "381937bbf914be13e191eefd"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "75-100-150-300",
+        "_id": {
+          "$oid": "1bec78ed0aff4c042ec38cf4"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "881e78fbcfef5d8e8a87b3d1"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.35.OP 35X150/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1303,
+    "discount": 10,
+    "finalprice": 1172,
+    "stock": 500,
+    "description": "Model STR.DRG.35.OP with inner size 35X150OP mm and outer size 52X170 OP mm, designed with a bending radius of 75-100-150-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.35.OP",
+        "_id": {
+          "$oid": "96c8f11f9fd25c6071f09026"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "35X150/OP",
+        "_id": {
+          "$oid": "5dbb1fe8372fb959201d0b73"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "52X170/ OP",
+        "_id": {
+          "$oid": "ee9f66586ae6fd32e6effe64"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "75-100-150-300",
+        "_id": {
+          "$oid": "11a7d4b4bf28be2d3633a1be"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "a35fabc4835cc4b1eb0a8c1e"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.35.OP 35X162/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1371,
+    "discount": 10,
+    "finalprice": 1234,
+    "stock": 500,
+    "description": "Model STR.DRG.35.OP with inner size 35X162OP mm and outer size 52X182 OP mm, designed with a bending radius of 75-100-150-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.35.OP",
+        "_id": {
+          "$oid": "7b07d69f0daea0e5ec54ee18"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "35X162/OP",
+        "_id": {
+          "$oid": "a4f46af761d89e19d31d0256"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "52X182/ OP",
+        "_id": {
+          "$oid": "c98d28c79f62e46b61def8ba"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "75-100-150-300",
+        "_id": {
+          "$oid": "e4d8cfc5f5e9fe3b6c7eb400"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "597e101727c7f561a877988c"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.35.OP 35X175/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1440,
+    "discount": 10,
+    "finalprice": 1296,
+    "stock": 500,
+    "description": "Model STR.DRG.35.OP with inner size 35X175OP mm and outer size 52X195 OP mm, designed with a bending radius of 75-100-150-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.35.OP",
+        "_id": {
+          "$oid": "a3317a284d2658b8c4f54fd0"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "35X175/OP",
+        "_id": {
+          "$oid": "c37a086a16163495d9b47d9f"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "52X195/ OP",
+        "_id": {
+          "$oid": "ccd4f77f46402265f3ad3b82"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "75-100-150-300",
+        "_id": {
+          "$oid": "87a72f8b47c615c1e6c6a7b5"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "ffa8a2ac11816406015510cf"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.35.OP 35X200/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1525,
+    "discount": 10,
+    "finalprice": 1372,
+    "stock": 500,
+    "description": "Model STR.DRG.35.OP with inner size 35X200OP mm and outer size 52X220 OP mm, designed with a bending radius of 75-100-150-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.35.OP",
+        "_id": {
+          "$oid": "6d99bc4eadc41b1c92520f35"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "35X200/OP",
+        "_id": {
+          "$oid": "7708d50a2d3bc80683583523"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "52X220/ OP",
+        "_id": {
+          "$oid": "aa82a142840f8c070b499252"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "75-100-150-300",
+        "_id": {
+          "$oid": "b3c2487187e07ac84be2a3fe"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "da6d622ce9ba5e4a4e2c8684"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.35.OP 35X225/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1611,
+    "discount": 10,
+    "finalprice": 1450,
+    "stock": 500,
+    "description": "Model STR.DRG.35.OP with inner size 35X225OP mm and outer size 52X245 OP mm, designed with a bending radius of 75-100-150-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.35.OP",
+        "_id": {
+          "$oid": "eb74be3ace647a6980e60285"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "35X225/OP",
+        "_id": {
+          "$oid": "0b8f4ed3b53f840b213b0fe7"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "52X245/ OP",
+        "_id": {
+          "$oid": "7f20162054b95ea598f99b5d"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "75-100-150-300",
+        "_id": {
+          "$oid": "3643528a7c781f311daac82d"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "7909bac147635dda5fffba4a"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.35.OP 35X237/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1696,
+    "discount": 10,
+    "finalprice": 1527,
+    "stock": 500,
+    "description": "Model STR.DRG.35.OP with inner size 35X237OP mm and outer size 52X257 OP mm, designed with a bending radius of 75-100-150-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.35.OP",
+        "_id": {
+          "$oid": "bccf17ffc98d7ba0789ae03c"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "35X237/OP",
+        "_id": {
+          "$oid": "0bb62d78d3ab4d28cee9fec4"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "52X257/ OP",
+        "_id": {
+          "$oid": "3c27e90d5af4bbaf9a02b3e0"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "75-100-150-300",
+        "_id": {
+          "$oid": "e0fe003c034e7ca095194923"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "b5273f417882bd7bde674860"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.35.OP 35X250/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1800,
+    "discount": 10,
+    "finalprice": 1620,
+    "stock": 500,
+    "description": "Model STR.DRG.35.OP with inner size 35X250OP mm and outer size 52X270 OP mm, designed with a bending radius of 75-100-150-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.35.OP",
+        "_id": {
+          "$oid": "57392e7a64d288fd59c74c3d"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "35X250/OP",
+        "_id": {
+          "$oid": "aeffe787cd6d79258d5dfe9a"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "52X270/ OP",
+        "_id": {
+          "$oid": "973df79556ba6abcdf61809a"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "75-100-150-300",
+        "_id": {
+          "$oid": "38b69870eeed6b8aefe78198"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "08ab328360a27db41fcf1971"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.45.OP 45X100/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1320,
+    "discount": 10,
+    "finalprice": 1188,
+    "stock": 500,
+    "description": "Model STR.DRG.45.OP with inner size 45X100OP mm and outer size 64X128OP mm, designed with a bending radius of 100-150-200 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.45.OP",
+        "_id": {
+          "$oid": "54c98dedc6aabc354b3e58f1"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "45X100/OP",
+        "_id": {
+          "$oid": "cdb67b238f39ea1b38b8fa3a"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "64X128/OP",
+        "_id": {
+          "$oid": "a08db80e84545f2d497e7a52"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "100-150-200",
+        "_id": {
+          "$oid": "766743cfbcb2839658cac9b6"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "97061b7f675f129c85c45adc"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.45.OP 45X125/ OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1440,
+    "discount": 10,
+    "finalprice": 1296,
+    "stock": 500,
+    "description": "Model STR.DRG.45.OP with inner size 45X125 OP mm and outer size 64X153OP mm, designed with a bending radius of 100-150-200 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.45.OP",
+        "_id": {
+          "$oid": "bba2c6a4cc1196e965b8b25c"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "45X125/ OP",
+        "_id": {
+          "$oid": "dcc3838a4ecfa2501e62e4da"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "64X153/OP",
+        "_id": {
+          "$oid": "b9cb26edef35b6672eb3dc7a"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "100-150-200",
+        "_id": {
+          "$oid": "a1e69ee6326148f5809dba62"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "3c033287ae58fdb8ab19d454"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.45.OP 45X150/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1560,
+    "discount": 10,
+    "finalprice": 1404,
+    "stock": 500,
+    "description": "Model STR.DRG.45.OP with inner size 45X150OP mm and outer size 64X178OP mm, designed with a bending radius of 100-150-200 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.45.OP",
+        "_id": {
+          "$oid": "442477f4a637292148992afd"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "45X150/OP",
+        "_id": {
+          "$oid": "1b574f40919523213876fb9d"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "64X178/OP",
+        "_id": {
+          "$oid": "645016f4b8a638bfe1734030"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "100-150-200",
+        "_id": {
+          "$oid": "4a5e8fd2965f2c4e46879b22"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "0da63cadda2883df19a48330"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.45.OP 45X200/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 1680,
+    "discount": 10,
+    "finalprice": 1512,
+    "stock": 500,
+    "description": "Model STR.DRG.45.OP with inner size 45X200OP mm and outer size 64X228OP mm, designed with a bending radius of 100-150-200 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.45.OP",
+        "_id": {
+          "$oid": "5ebb49067843b943b5f78184"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "45X200/OP",
+        "_id": {
+          "$oid": "18a0dd9a2395a171467ed39e"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "64X228/OP",
+        "_id": {
+          "$oid": "e91eef12231e987dd87fd2db"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "100-150-200",
+        "_id": {
+          "$oid": "4cd4187be96cb925c25d2610"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "c59a90903aa131dd5d382904"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.60.OP 60X100/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 2640,
+    "discount": 10,
+    "finalprice": 2376,
+    "stock": 500,
+    "description": "Model STR.DRG.60.OP with inner size 60X100OP mm and outer size 86X136OP mm, designed with a bending radius of 100-150-200-250-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.60.OP",
+        "_id": {
+          "$oid": "ae3160d2dbf607b941af58e3"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "60X100/OP",
+        "_id": {
+          "$oid": "dd119272aedb58bf3d2d91d0"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "86X136/OP",
+        "_id": {
+          "$oid": "cab217a3c79c4893c84ee7d6"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "100-150-200-250-300",
+        "_id": {
+          "$oid": "7a0883fce00746cfde75cfbc"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "92f74b22c7804c8ad49563b7"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.60.OP 60X125/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 2820,
+    "discount": 10,
+    "finalprice": 2538,
+    "stock": 500,
+    "description": "Model STR.DRG.60.OP with inner size 60X125OP mm and outer size 86X161OP mm, designed with a bending radius of 100-150-200-250-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.60.OP",
+        "_id": {
+          "$oid": "b4a496988167316437d80404"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "60X125/OP",
+        "_id": {
+          "$oid": "71ccfc9e510f8913e3753b37"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "86X161/OP",
+        "_id": {
+          "$oid": "cf592d6875e4905fd99b959d"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "100-150-200-250-300",
+        "_id": {
+          "$oid": "56c180d7a506eb3bc3e1555c"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "2c59906fa3d58284decf0527"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.60.OP 60X160/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 3000,
+    "discount": 10,
+    "finalprice": 2700,
+    "stock": 500,
+    "description": "Model STR.DRG.60.OP with inner size 60X160OP mm and outer size 86X196OP mm, designed with a bending radius of 100-150-200-250-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.60.OP",
+        "_id": {
+          "$oid": "00bb8a3d5041452af25e232f"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "60X160/OP",
+        "_id": {
+          "$oid": "f290a68155a56dbeaf9119b4"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "86X196/OP",
+        "_id": {
+          "$oid": "50804e31027ccb7893d754c4"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "100-150-200-250-300",
+        "_id": {
+          "$oid": "d638316e6f038f9f3f877cc4"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "c616d015d013e3d9cc39693d"
+    }
+  },
+  {
+    "innerSlug": "OPEN TYPE",
+    "innerSubSlug": "STR.DRG.60.OP 60X200/OP",
+    "color": "Black",
+    "size": "Standard",
+    "baseprice": 3120,
+    "discount": 10,
+    "finalprice": 2808,
+    "stock": 500,
+    "description": "Model STR.DRG.60.OP with inner size 60X200OP mm and outer size 86X236OP mm, designed with a bending radius of 100-150-200-250-300 mm. Durable, lightweight, and suitable for cable and hose management in industrial applications",
+    "specification": [
+      {
+        "key": "Model No",
+        "value": "STR.DRG.60.OP",
+        "_id": {
+          "$oid": "d77bae7ebb6ceb064bbe64fa"
+        }
+      },
+      {
+        "key": "Inner Size",
+        "value": "60X200/OP",
+        "_id": {
+          "$oid": "ac0b97a382b2eea79930d746"
+        }
+      },
+      {
+        "key": "Outer Size",
+        "value": "86X236/OP",
+        "_id": {
+          "$oid": "18a599385f347dbc1f06a383"
+        }
+      },
+      {
+        "key": "Bending Radius",
+        "value": "100-150-200-250-300",
+        "_id": {
+          "$oid": "1003080bd7f2ed4b8893498b"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "667e4456e5df44b5edbc63fd"
+    }
+  }
+],
+
+  "addedBy": { "$oid": "68a9540a00cba083fb01aa83" },
+  "pic1": "1755941129041cable-drag-chain-1605953199.jpg",
+  "createdAt": { "$date": "2025-08-23T09:25:29.164Z" },
+  "updatedAt": { "$date": "2025-08-23T09:25:29.164Z" },
   "__v": 0
 }
-]
