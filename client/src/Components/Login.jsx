@@ -110,11 +110,21 @@ export default function Login() {
                       Want to become a seller?{" "}
                       <Link to="/vendor_registation">Register as Vendor</Link>
                     </p>
-                    <p className="form__desc">
-                      <strong>
-                        <Link to="/vendor-login">Vendor Login</Link>
-                      </strong>
-                    </p>
+                    <Link 
+                      to="/vendor-login" 
+                      style={{ 
+                        fontSize: "16px", 
+                        fontWeight: "600",
+                        padding: "6px 20px",
+                        textDecoration: "none",
+                        backgroundColor: "#6068bf",
+                        color: "white",
+                        borderRadius: "5px",
+                        display: "inline-block"
+                      }}
+                    >
+                      Vendor Login
+                    </Link>
                   </div>
                 </Form>
               );

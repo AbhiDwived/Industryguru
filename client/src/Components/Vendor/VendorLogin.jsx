@@ -140,14 +140,14 @@ export default function VendorLogin() {
               <div className="text-center mt-4">
                 <small>
                   Don't have an account?{" "}
-                  <Link to="/vendor_registation" className="text-decoration-none">
+                  <Link to="/vendor_registation" className="text-decoration-none" style={{ color: "#00c6ff" }}>
                     Register
                   </Link>
                 </small>
                 <br />
                 <small>
                   Forgot password?{" "}
-                  <Link to="/forget-password-1" className="text-decoration-none">
+                  <Link to="/forget-password-1" className="text-decoration-none" style={{ color: "#00c6ff" }}>
                     Reset
                   </Link>
                 </small>
