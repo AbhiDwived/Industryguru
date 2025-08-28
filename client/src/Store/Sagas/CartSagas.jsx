@@ -8,7 +8,11 @@ function* addCartSaga(action) {    //executer
 }
 function* getCartSaga(action) {    //executer
     var response = yield getCartAPI()
-    yield put({ type: GET_CART_RED, payload: response.data })
+    if (response.result === "Done" && response.data) {
+        yield put({ type: GET_CART_RED, payload: response.data })
+    } else {
+        yield put({ type: GET_CART_RED, payload: [] })
+    }
 }
 function* updateCartSaga(action) {    //executer
     yield updateCartAPI(action.payload)

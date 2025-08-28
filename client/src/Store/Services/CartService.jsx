@@ -20,12 +20,12 @@ export async function getCartAPI(data) {
   }
   
   var response = await fetch(
-    `${apiLink}/api/cart/` + userid,
+    `${apiLink}/api/cart/` + localStorage.getItem("userid"),
     {
       method: "get",
       headers: {
         "content-type": "application/json",
-        authorization: token,
+        authorization: localStorage.getItem("token"),
       },
     }
   );

@@ -40,11 +40,16 @@ const TrendingProductsCarousel = () => {
       <h2 className="section-title text-center position-relative text-uppercase featuredMargin">
         <span className="bg-secondary pr-3">Today's Hot Deals</span>
       </h2>
+      {trendingProducts.length === 0 ? (
+        <div className="text-center py-4">
+          <p>No trending products available at the moment.</p>
+        </div>
+      ) : (
       <Swiper
         modules={[Navigation, Autoplay]}
         spaceBetween={10}
         navigation
-        loop
+        loop={trendingProducts.length > 6}
         autoplay={{ delay: 3000 }}
         breakpoints={{
           450: { slidesPerView: 2 },
@@ -81,6 +86,7 @@ const TrendingProductsCarousel = () => {
           </SwiperSlide>
         ))}
       </Swiper>
+      )}
     </div>
     </>
   );

@@ -8,7 +8,7 @@ export default function WishlistReducer(state = [], action) {
          newState.push(action.payload)
          return newState
       case GET_WISHLIST_RED:
-         return action.payload
+         return action.payload || []
       case DELETE_WISHLIST_RED:
           newState = state.filter((item)=>item._id!==action.payload._id)
          return newState

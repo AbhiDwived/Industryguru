@@ -55,8 +55,10 @@ const SingleProduct = () => {
   useEffect(() => {
     // Load initial data
     dispatch(getProduct());
-    dispatch(getCart());
-    dispatch(getWishlist());
+    if (localStorage.getItem("login") && localStorage.getItem("userid")) {
+      dispatch(getCart());
+      dispatch(getWishlist());
+    }
     dispatch(getSlug());
   }, [dispatch]);
 
@@ -184,6 +186,11 @@ const SingleProduct = () => {
 
   // Cart and Wishlist functions
   const addToCart = () => {
+    if (!localStorage.getItem("login")) {
+      showToast.warning("Please login to add items to cart");
+      return;
+    }
+    
     if (!selectedVariant) return;
         
     // Check for duplicate by productid, color, and size
@@ -220,6 +227,11 @@ const SingleProduct = () => {
   };
 
   const addToWishlist = () => {
+    if (!localStorage.getItem("login")) {
+      showToast.warning("Please login to add items to wishlist");
+      return;
+    }
+    
     if (!selectedVariant) return;
 
     var item = allWishlists.find(

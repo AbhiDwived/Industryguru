@@ -50,6 +50,11 @@ const ProductCard = ({ product }) => {
     e.preventDefault();
     e.stopPropagation();
     
+    if (!localStorage.getItem("login")) {
+      showToast.warning("Please login to add items to cart");
+      return;
+    }
+    
     const displayPrice = getDisplayPrice(product);
     const variant = product.variants && product.variants.length > 0 ? product.variants[0] : product;
     
@@ -87,6 +92,11 @@ const ProductCard = ({ product }) => {
   const addToWishlist = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    if (!localStorage.getItem("login")) {
+      showToast.warning("Please login to add items to wishlist");
+      return;
+    }
     
     const displayPrice = getDisplayPrice(product);
     const variant = product.variants && product.variants.length > 0 ? product.variants[0] : product;
@@ -194,8 +204,10 @@ function Hotsell() {
 
   useEffect(() => {
     dispatch(getProduct());
-    dispatch(getCart());
-    dispatch(getWishlist());
+    if (localStorage.getItem("login") && localStorage.getItem("userid")) {
+      dispatch(getCart());
+      dispatch(getWishlist());
+    }
   }, [dispatch]);
 
   useEffect(() => {
@@ -238,7 +250,7 @@ function Hotsell() {
           <FaChevronLeft />
         </NavButton>
         <SliderWrapper>
-          <SliderTrack currentIndex={currentIndex}>
+          <SliderTrack $currentIndex={currentIndex}>
             {hotProducts.map((product) => (
               <ProductCard key={product._id} product={product} />
             ))}
@@ -281,7 +293,7 @@ const SliderWrapper = styled.div`
 const SliderTrack = styled.div`
   display: flex;
   transition: transform 0.5s ease;
-  transform: translateX(-${props => props.currentIndex * (100/6)}%);
+  transform: translateX(-${props => props.$currentIndex * (100/6)}%);
 `;
 
 const NavButton = styled.button`

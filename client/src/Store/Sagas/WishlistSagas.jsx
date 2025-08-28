@@ -8,7 +8,11 @@ function* addWishlistSaga(action) {    //executer
 }
 function* getWishlistSaga(action) {    //executer
     var response = yield getWishlistAPI()
-    yield put({ type: GET_WISHLIST_RED, payload: response.data})
+    if (response.result === "Done" && response.data) {
+        yield put({ type: GET_WISHLIST_RED, payload: response.data})
+    } else {
+        yield put({ type: GET_WISHLIST_RED, payload: []})
+    }
 }
 function* deleteWishlistSaga(action) {    //executer
     yield deleteWishlistAPI(action.payload)

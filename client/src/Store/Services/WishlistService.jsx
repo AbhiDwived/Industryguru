@@ -12,13 +12,20 @@ export async function addWishlistAPI(data) {
   return await response.json();
 }
 export async function getWishlistAPI(data) {
+  const userid = localStorage.getItem("userid");
+  const token = localStorage.getItem("token");
+  
+  if (!userid || !token) {
+    return { result: "Fail", message: "User not logged in" };
+  }
+  
   var response = await fetch(
-    `${apiLink}/api/wishlist/` + localStorage.getItem("userid"),
+    `${apiLink}/api/wishlist/` + userid,
     {
       method: "get",
       headers: {
         "content-type": "application/json",
-        authorization: localStorage.getItem("token"),
+        authorization: token,
       },
     }
   );

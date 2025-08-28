@@ -8,7 +8,7 @@ export default function CartReducer(state = [], action) {
          newState.push(action.payload)
          return newState
       case GET_CART_RED:
-         return action.payload
+         return action.payload || []
       case UPDATE_CART_RED:
         newState = state
          index = newState.findIndex((x)=>x._id===action.payload._id)
