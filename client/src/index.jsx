@@ -5,9 +5,26 @@ import { Auth0Provider } from '@auth0/auth0-react';
 import "./Page.css"
 import { Provider } from 'react-redux'
 import Store from "./Store/Store"
-import { apiLink } from './utils/utils';
+import { measureWebVitals, preloadCriticalResources } from './utils/performance';
+
+// Preload critical resources
+preloadCriticalResources();
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('SW registered'))
+      .catch(() => console.log('SW registration failed'));
+  });
+}
+
+// Measure performance
+if (process.env.NODE_ENV === 'development') {
+  measureWebVitals();
+}
+
 const root = ReactDOM.createRoot(document.getElementById("root"))
-// eslint-disable-next-line
 root.render(
     <Provider store={Store}>
         <Auth0Provider
@@ -18,7 +35,6 @@ root.render(
             }}
         >
             <App />
-
         </Auth0Provider>
     </Provider>
 )

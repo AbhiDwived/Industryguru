@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const Product = require("../Models/Product");
 const Checkout = require("../Models/Checkout");
 const fs = require("fs");
+const path = require("path");
 const { MongoClient, ObjectId } = require("mongodb");
 const mongoose = require("mongoose");
 
@@ -254,16 +255,10 @@ async function CreateProductByVendor(req, res) {
 async function getAllProduct(req, res) {
   try {
     var data = await Product.find()
-      .populate("brand")
-      .populate({
-        path: "slug",
-        model: "slug"
-      })
-      .populate({
-        path: "subSlug",
-        model: "subslug"
-      })
-      .sort({ _id: -1 });
+      .select('name pic1 baseprice discount finalprice variants')
+      .sort({ _id: -1 })
+      .limit(20)
+      .lean();
       
     console.log("Product data fetched successfully");
     res.send({ result: "Done", count: data.length, data: data });
@@ -291,20 +286,13 @@ async function getAllProductByVendor(req, res) {
       query.name = { $regex: new RegExp(search, "i") };
     }
     var data = await Product.find(query)
-      .populate("brand")
-      .populate({
-        path: "slug",
-        model: "slug"
-      })
-      .populate({
-        path: "subSlug",
-        model: "subslug"
-      })
+      .select('name pic1 baseprice discount finalprice stock variants')
       .sort({ _id: -1 })
       .limit(limit)
-      .skip(skip);
+      .skip(skip)
+      .lean();
       
-    var count = await Product.count(query);
+    var count = await Product.countDocuments(query);
     console.log(`Found ${data.length} products for vendor ${user}`);
     res.send({ result: "Done", count: count, data: data });
   } catch (error) {
@@ -372,8 +360,7 @@ async function getProductByBrand(req, res) {
 }
 async function updateProduct(req, res) {
   try {
-    console.log("Update request body:", req.body);
-    console.log("Update request files:", req.files);
+    console.log("Update request received");
     
     var data = await Product.findOne({ _id: req.params._id });
     if (data) {
@@ -395,9 +382,11 @@ async function updateProduct(req, res) {
       // Handle specification
       if (req.body.specification) {
         try {
-          data.specification = JSON.parse(req.body.specification);
+          const spec = JSON.parse(req.body.specification);
+          data.specification = Array.isArray(spec) ? spec : [];
         } catch (parseError) {
-          console.error("Error parsing specification:", parseError);
+          console.error("Invalid specification format");
+          data.specification = [];
         }
       }
       
@@ -414,8 +403,9 @@ async function updateProduct(req, res) {
       try {
         if (req.files?.pic1?.[0]) {
           if (data.pic1) {
+            const safePath = path.join(__dirname, "../public/products/", path.basename(data.pic1));
             try {
-              fs.unlinkSync("public/products/" + data.pic1);
+              fs.unlinkSync(safePath);
             } catch (unlinkError) {}
           }
           data.pic1 = req.files.pic1[0].filename;
@@ -490,7 +480,14 @@ async function updateProductByVendor(req, res) {
       data.finalprice = req.body.finalprice ?? data.finalprice;
       data.stock = req.body.stock ?? data.stock;
       data.description = req.body.description ?? data.description;
-      data.specification = JSON.parse(req.body.specification);
+      if (req.body.specification) {
+        try {
+          const spec = JSON.parse(req.body.specification);
+          data.specification = Array.isArray(spec) ? spec : [];
+        } catch (e) {
+          data.specification = [];
+        }
+      }
       try {
         if (req.files.pic1[0] && data.pic1) {
           fs.unlinkSync("public/products/" + data.pic1);
@@ -587,28 +584,30 @@ async function deleteProductByVendor(req, res) {
 async function searchProduct(req, res) {
   try {
     const search = req.body.search;
+    const limit = parseInt(req.query.limit) || 20;
+    
+    // Use text search for better performance
     var data = await Product.find({
-      $or: [
-        { name: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
-        { innerSlug: { $regex: search, $options: "i" } },
-        { innerSubSlug: { $regex: search, $options: "i" } },
-        { color: { $regex: search, $options: "i" } },
-        { size: { $regex: search, $options: "i" } },
-      ],
+      $text: { $search: search }
     })
-      .populate("brand")
-      .populate("maincategory")
-      .populate("subcategory")
+      .populate("brand", "name")
+      .populate("maincategory", "name")
+      .populate("subcategory", "name")
       .populate({
         path: "slug",
-        model: "slug"
+        model: "slug",
+        select: "name"
       })
       .populate({
         path: "subSlug",
-        model: "subslug"
+        model: "subslug",
+        select: "name"
       })
-      .sort({ _id: -1 });
+      .select('-specification')
+      .sort({ score: { $meta: "textScore" } })
+      .limit(limit)
+      .lean();
+      
     res.send({ result: "Done", count: data.length, data: data });
   } catch (error) {
     console.error("Error in searchProduct:", error);
@@ -920,7 +919,7 @@ async function getSingleProductByVendor(req, res) {
       process.env.JWT_VENDOR_KEY
     );
     const user = decoded.data._id;
-    console.log(`Fetching product: ID=${req.params._id}, User=${user}`);
+    console.log("Fetching product for vendor");
     
     // Find product by ID where the vendor is the owner (addedBy)
     const data = await Product.findOne({ 

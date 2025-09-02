@@ -1,8 +1,12 @@
 const express = require("express");
+const compression = require("compression");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const validator = require("validator");
 require('./Controller/UserController')
 
 const port = process.env.PORT || 8001;
@@ -10,11 +14,35 @@ const port = process.env.PORT || 8001;
 dotenv.config();
 
 const router = require("./Routes/index");
+const { performanceMonitor } = require('./performanceMonitor');
+const imageOptimizer = require('./imageOptimizer');
+const { csrfProtection } = require('./middleware/csrf');
 
 require("./dbConnect");
 const app = express();
+
+// Compression middleware
+app.use(compression({
+  level: 6,
+  threshold: 1024
+}));
+
+// Security middleware
+app.use(helmet());
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Too many requests from this IP'
+}));
+
+app.use(performanceMonitor);
 app.use(express.urlencoded({ extended: true }))
-app.use(cors());
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://industryguru-backend.hcx5k4.easypanel.host']
+    : ['http://localhost:3000', 'http://localhost:5173'],
+  credentials: true
+}));
 
 // Ensure public directories exist
 const publicDir = path.join(__dirname, "public");
@@ -31,9 +59,21 @@ if (!fs.existsSync(productsDir)) {
   fs.mkdirSync(productsDir);
 }
 
-// Serve static files
-app.use("/public", express.static("public"));
-// Also serve files directly from the users directory for easier access
+// Serve static files with optimization
+app.use("/public/products", imageOptimizer);
+app.use("/public", express.static("public", {
+  maxAge: '1y',
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js') || path.endsWith('.css')) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+    if (path.endsWith('.jpg') || path.endsWith('.png') || path.endsWith('.webp')) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000');
+    }
+  }
+}));
 app.use("/users", express.static(path.join(__dirname, "public/users")));
 app.use("/products", express.static(path.join(__dirname, "public/products")));
 
@@ -41,21 +81,28 @@ app.use(express.static(path.join(__dirname, "build")));
 
 // Add a route to check if an image exists
 app.get("/api/check-image", (req, res) => {
+  const { validatePath, sanitizeLog } = require('./middleware/security');
   const imagePath = req.query.path;
+  
   if (!imagePath) {
     return res.status(400).json({ exists: false, message: "No image path provided" });
   }
   
+  // Validate path to prevent traversal attacks
+  if (!validatePath(imagePath)) {
+    return res.status(400).json({ exists: false, message: "Invalid path" });
+  }
+  
   const fullPath = path.join(__dirname, imagePath);
-  console.log(`Checking if image exists at: ${fullPath}`);
+  console.log(`Checking if image exists at: ${sanitizeLog(fullPath)}`);
   
   fs.access(fullPath, fs.constants.F_OK, (err) => {
     if (err) {
-      console.log(`Image not found: ${fullPath}`);
-      return res.json({ exists: false, message: "Image not found", path: fullPath });
+      console.log(`Image not found: ${sanitizeLog(fullPath)}`);
+      return res.json({ exists: false, message: "Image not found" });
     }
-    console.log(`Image found: ${fullPath}`);
-    return res.json({ exists: true, message: "Image found", path: fullPath });
+    console.log(`Image found: ${sanitizeLog(fullPath)}`);
+    return res.json({ exists: true, message: "Image found" });
   });
 });
 
@@ -66,7 +113,12 @@ app.get("/api/check-image", (req, res) => {
 //   })
 // )
 
-app.use(express.json());
+// Security middleware
+const { sanitizeInput } = require('./middleware/security');
+app.use(sanitizeInput);
+app.use(csrfProtection);
+
+app.use(express.json({ limit: '10mb' }));
 app.use("/api", router);
 
 // 👇 Default route for browser
