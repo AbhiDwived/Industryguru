@@ -39,7 +39,7 @@ app.use(performanceMonitor);
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://industryguru-backend.hcx5k4.easypanel.host']
+    ? ['https://www.industryguru.in', 'http://www.industryguru.in', 'https://industryguru-backend.hcx5k4.easypanel.host']
     : ['http://localhost:3000', 'http://localhost:5173'],
   credentials: true
 }));
