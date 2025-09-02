@@ -16,7 +16,7 @@ dotenv.config();
 const router = require("./Routes/index");
 const { performanceMonitor } = require('./performanceMonitor');
 const imageOptimizer = require('./imageOptimizer');
-const { csrfProtection } = require('./middleware/csrf');
+
 
 require("./dbConnect");
 const app = express();
@@ -38,10 +38,10 @@ app.use(rateLimit({
 app.use(performanceMonitor);
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://www.industryguru.in', 'http://www.industryguru.in']
-    : ['http://localhost:3000', 'http://localhost:5173'],
-  credentials: true
+  origin: ['https://www.industryguru.in', 'http://www.industryguru.in', 'https://industryguru-backend.hcx5k4.easypanel.host', 'http://localhost:3000', 'http://localhost:5173'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
 // Ensure public directories exist
@@ -116,7 +116,6 @@ app.get("/api/check-image", (req, res) => {
 // Security middleware
 const { sanitizeInput } = require('./middleware/security');
 app.use(sanitizeInput);
-app.use(csrfProtection);
 
 app.use(express.json({ limit: '10mb' }));
 app.use("/api", router);
