@@ -6,9 +6,18 @@ function* addMaincategorySaga(action) {    //executer
    var response = yield addMaincategoryAPI(action.payload)
    yield put({type:ADD_MAINCATEGORY_RED,payload:response.data})
 }
-function* getMaincategorySaga(action) {    //executer
+function* getMaincategorySaga(action) {
+  try {
     var response = yield getMaincategoryAPI()
-    yield put({type:GET_MAINCATEGORY_RED,payload:response.data})
+    if (response && response.data && Array.isArray(response.data)) {
+      yield put({type:GET_MAINCATEGORY_RED,payload:response.data})
+    } else {
+      yield put({type:GET_MAINCATEGORY_RED,payload:[]})
+    }
+  } catch (error) {
+    console.error('Error fetching main categories:', error)
+    yield put({type:GET_MAINCATEGORY_RED,payload:[]})
+  }
 }
 function* updateMaincategorySaga(action) {    //executer
  yield updateMaincategoryAPI(action.payload)

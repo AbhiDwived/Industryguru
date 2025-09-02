@@ -12,9 +12,9 @@ export default function BrandReducer(state = [], action) {
     case ADD_BRAND_RED:
       return [...state, action.payload];
     case GET_BRAND_RED:
-      return action.payload;
+      return Array.isArray(action.payload) ? action.payload : [];
     case GET_BRAND_BY_SUB_CATEGORY_ID_RED:
-      return action.payload;
+      return Array.isArray(action.payload) ? action.payload : [];
     case UPDATE_BRAND_RED:
       index = state.findIndex((x) => x._id === action.payload._id);
       return state.map((item, i) => i === index ? action.payload : item);
