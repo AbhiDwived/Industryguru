@@ -16,7 +16,11 @@ dotenv.config();
 const router = require("./Routes/index");
 const { performanceMonitor } = require('./performanceMonitor');
 const imageOptimizer = require('./imageOptimizer');
+<<<<<<< HEAD
 
+=======
+const { csrfProtection } = require('./middleware/csrf');
+>>>>>>> d16e7f6 (feat: add performance optimizations and security enhancements)
 
 require("./dbConnect");
 const app = express();
@@ -37,12 +41,21 @@ app.use(rateLimit({
 
 app.use(performanceMonitor);
 app.use(express.urlencoded({ extended: true }))
+<<<<<<< HEAD
 // app.use(cors({
 //   origin: ['https://www.industryguru.in', 'http://www.industryguru.in', 'https://industryguru-backend.hcx5k4.easypanel.host', 'http://localhost:3000', 'http://localhost:5173'],
 //   credentials: true,
 //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 //   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 // }));
+=======
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://industryguru-backend.hcx5k4.easypanel.host']
+    : ['http://localhost:3000', 'http://localhost:5173'],
+  credentials: true
+}));
+>>>>>>> d16e7f6 (feat: add performance optimizations and security enhancements)
 
 // Ensure public directories exist
 const publicDir = path.join(__dirname, "public");
@@ -116,6 +129,10 @@ app.get("/api/check-image", (req, res) => {
 // Security middleware
 const { sanitizeInput } = require('./middleware/security');
 app.use(sanitizeInput);
+<<<<<<< HEAD
+=======
+app.use(csrfProtection);
+>>>>>>> d16e7f6 (feat: add performance optimizations and security enhancements)
 
 app.use(express.json({ limit: '10mb' }));
 app.use("/api", router);
