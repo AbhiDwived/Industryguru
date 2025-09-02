@@ -37,12 +37,12 @@ app.use(rateLimit({
 
 app.use(performanceMonitor);
 app.use(express.urlencoded({ extended: true }))
-app.use(cors({
-  origin: ['https://www.industryguru.in', 'http://www.industryguru.in', 'https://industryguru-backend.hcx5k4.easypanel.host', 'http://localhost:3000', 'http://localhost:5173'],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
+// app.use(cors({
+//   origin: ['https://www.industryguru.in', 'http://www.industryguru.in', 'https://industryguru-backend.hcx5k4.easypanel.host', 'http://localhost:3000', 'http://localhost:5173'],
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+// }));
 
 // Ensure public directories exist
 const publicDir = path.join(__dirname, "public");
