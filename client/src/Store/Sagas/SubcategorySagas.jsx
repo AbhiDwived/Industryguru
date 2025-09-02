@@ -25,9 +25,17 @@ function* addSubcategorySaga(action) {
   yield put({ type: ADD_SUBCATEGORY_RED, payload: response.data });
 }
 function* getSubcategorySaga(action) {
-  //executer
-  var response = yield getSubcategoryAPI();
-  yield put({ type: GET_SUBCATEGORY_RED, payload: response.data });
+  try {
+    var response = yield getSubcategoryAPI();
+    if (response && response.data && Array.isArray(response.data)) {
+      yield put({ type: GET_SUBCATEGORY_RED, payload: response.data });
+    } else {
+      yield put({ type: GET_SUBCATEGORY_RED, payload: [] });
+    }
+  } catch (error) {
+    console.error('Error fetching subcategories:', error);
+    yield put({ type: GET_SUBCATEGORY_RED, payload: [] });
+  }
 }
 function* getSubcategoryByMainIdSaga(action) {
   //executer

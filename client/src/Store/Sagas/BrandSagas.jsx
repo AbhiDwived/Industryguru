@@ -25,9 +25,17 @@ function* addBrandSaga(action) {
   yield put({ type: ADD_BRAND_RED, payload: response.data });
 }
 function* getBrandSaga(action) {
-  //executer
-  var response = yield getBrandAPI();
-  yield put({ type: GET_BRAND_RED, payload: response.data });
+  try {
+    var response = yield getBrandAPI();
+    if (response && response.data && Array.isArray(response.data)) {
+      yield put({ type: GET_BRAND_RED, payload: response.data });
+    } else {
+      yield put({ type: GET_BRAND_RED, payload: [] });
+    }
+  } catch (error) {
+    console.error('Error fetching brands:', error);
+    yield put({ type: GET_BRAND_RED, payload: [] });
+  }
 }
 function* getBrandBySubCategoryIdSaga(action) {
   //executer
