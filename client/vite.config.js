@@ -1,5 +1,6 @@
 export default {
   plugins: [],
+  base: '/',
   server: {
     port: 3000,
     proxy: {
@@ -12,12 +13,16 @@ export default {
   },
   build: {
     outDir: 'dist',
+    assetsDir: 'assets',
     minify: true,
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom']
-        }
+        },
+        assetFileNames: 'assets/[name]-[hash][extname]',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js'
       }
     }
   }
