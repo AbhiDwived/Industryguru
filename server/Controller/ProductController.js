@@ -372,8 +372,12 @@ async function getProductByBrand(req, res) {
 }
 async function updateProduct(req, res) {
   try {
-    console.log("Update request body:", req.body);
-    console.log("Update request files:", req.files);
+    console.log("=== UPDATE PRODUCT REQUEST ===");
+    console.log("Product ID:", req.params._id);
+    console.log("Request body keys:", Object.keys(req.body));
+    console.log("Request body:", req.body);
+    console.log("Request files:", req.files ? Object.keys(req.files) : 'No files');
+    console.log("Authorization header:", req.headers.authorization ? 'Present' : 'Missing');
     
     var data = await Product.findOne({ _id: req.params._id });
     if (data) {
@@ -384,6 +388,8 @@ async function updateProduct(req, res) {
       if (req.body.brand) data.brand = req.body.brand;
       if (req.body.slug) data.slug = req.body.slug;
       if (req.body.subSlug) data.subSlug = req.body.subSlug;
+      if (req.body.innerSlug !== undefined) data.innerSlug = req.body.innerSlug;
+      if (req.body.innerSubSlug !== undefined) data.innerSubSlug = req.body.innerSubSlug;
       if (req.body.color !== undefined) data.color = req.body.color;
       if (req.body.size !== undefined) data.size = req.body.size;
       if (req.body.baseprice !== undefined) data.baseprice = Number(req.body.baseprice);
@@ -391,6 +397,8 @@ async function updateProduct(req, res) {
       if (req.body.finalprice !== undefined) data.finalprice = Number(req.body.finalprice);
       if (req.body.stock !== undefined) data.stock = Number(req.body.stock);
       if (req.body.description !== undefined) data.description = req.body.description;
+      if (req.body.defaultDescription !== undefined) data.defaultDescription = req.body.defaultDescription;
+      if (req.body.variantDescription !== undefined) data.variantDescription = req.body.variantDescription;
       
       // Handle specification
       if (req.body.specification) {
@@ -404,7 +412,15 @@ async function updateProduct(req, res) {
       // Handle variants
       if (req.body.variants) {
         try {
-          data.variants = JSON.parse(req.body.variants);
+          const parsedVariants = JSON.parse(req.body.variants);
+          // Ensure numeric fields in variants are properly converted
+          data.variants = parsedVariants.map(variant => ({
+            ...variant,
+            baseprice: Number(variant.baseprice) || 0,
+            discount: Number(variant.discount) || 0,
+            finalprice: Number(variant.finalprice) || 0,
+            stock: Number(variant.stock) || 0,
+          }));
         } catch (parseError) {
           console.error("Error parsing variants:", parseError);
         }
@@ -452,9 +468,20 @@ async function updateProduct(req, res) {
         }
       } catch (error) {}
 
+      console.log("Saving product with data:", {
+        name: data.name,
+        maincategory: data.maincategory,
+        subcategory: data.subcategory,
+        brand: data.brand,
+        innerSlug: data.innerSlug,
+        innerSubSlug: data.innerSubSlug,
+        defaultDescription: data.defaultDescription,
+        variantDescription: data.variantDescription
+      });
+      
       await data.save();
       console.log("Product updated successfully:", data._id);
-      res.send({ result: "Done", message: "Record is Updated!!!" });
+      res.send({ result: "Done", message: "Record is Updated!!!", data: data });
     } else {
       res.status(404).send({ result: "Fail", message: "Product not found!!!" });
     }

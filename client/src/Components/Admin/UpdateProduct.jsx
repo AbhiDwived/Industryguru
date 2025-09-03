@@ -142,10 +142,24 @@ export default function UpdateProduct() {
   }
   async function postData(e) {
     e.preventDefault();
+    
+    // Check for validation errors
     let error = Object.keys(errorMessage).find(
       (x) => errorMessage[x] && errorMessage[x].length !== 0
     );
+    
+    // Check for required fields
+    if (!data.name || !data.maincategory || !data.subcategory || !data.brand) {
+      setShow(true);
+      showToast.error('Please fill all required fields');
+      return;
+    }
+    
     if (!error) {
+      console.log('Form data before submission:', data);
+      console.log('Specs data:', specsData);
+      console.log('Variants data:', variants);
+      
       let fp = Math.round(
         data.baseprice - (data.baseprice * data.discount) / 100
       );
@@ -168,9 +182,14 @@ export default function UpdateProduct() {
       item.append("variantDescription", data.variantDescription || "");
       item.append("innerSlug", data.innerSlug || "");
       item.append("innerSubSlug", data.innerSubSlug || "");
-      item.append("specification", JSON.stringify(specsData));
+      item.append("specification", JSON.stringify(specsData.filter(spec => spec.key && spec.value)));
       if (variants.length > 0) {
-        item.append("variants", JSON.stringify(variants));
+        // Clean up variants data before sending
+        const cleanVariants = variants.map(variant => ({
+          ...variant,
+          specifications: (variant.specifications || variant.specification || []).filter(spec => spec.key && spec.value)
+        }));
+        item.append("variants", JSON.stringify(cleanVariants));
       }
       if (data.pic1) item.append("pic1", data.pic1);
       if (data.pic2) item.append("pic2", data.pic2);
@@ -180,11 +199,17 @@ export default function UpdateProduct() {
       setIsUpdating(true);
       try {
         const response = await updateProductAPI(item);
-        showToast.success('Product updated successfully!');
-        dispatch(getProduct()); // Refresh product list
-        setTimeout(() => navigate("/admin-products"), 1000);
+        console.log('Update response:', response);
+        if (response.result === 'Done') {
+          showToast.success('Product updated successfully!');
+          dispatch(getProduct()); // Refresh product list
+          setTimeout(() => navigate("/admin-products"), 1000);
+        } else {
+          showToast.error(response.message || 'Failed to update product');
+        }
       } catch (error) {
-        showToast.error('Failed to update product');
+        console.error('Update error:', error);
+        showToast.error('Failed to update product: ' + (error.message || 'Unknown error'));
       } finally {
         setIsUpdating(false);
       }
@@ -217,6 +242,7 @@ export default function UpdateProduct() {
     if (allproducts.length && _id) {
       let item = allproducts.find((x) => x._id === _id);
       if (item && !data.name) {
+        console.log('Loading product data:', item);
         setData({ 
           ...item, 
           brand: item?.brand?._id || item?.brand,
@@ -224,10 +250,13 @@ export default function UpdateProduct() {
           subcategory: item?.subcategory?._id || item?.subcategory,
           slug: item?.slug?._id || item?.slug,
           subSlug: item?.subSlug?._id || item?.subSlug,
-          innerSlug: item?.innerSlug?._id || item?.innerSlug || "",
-          innerSubSlug: item?.innerSubSlug?._id || item?.innerSubSlug || "",
+          innerSlug: item?.innerSlug || "",
+          innerSubSlug: item?.innerSubSlug || "",
           defaultDescription: item.defaultDescription || "",
-          variantDescription: item.variantDescription || ""
+          variantDescription: item.variantDescription || "",
+          baseprice: item.baseprice || 0,
+          discount: item.discount || 0,
+          stock: item.stock || 0
         });
         setSpecsData(item.specification && item.specification.length > 0 ? item.specification : [{ key: "", value: "" }]);
         const updatedVariants = (item.variants || []).map(variant => ({
