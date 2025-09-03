@@ -10,22 +10,21 @@ export default function SubcategoryReducer(state = [], action) {
   var newState, index;
   switch (action.type) {
     case ADD_SUBCATEGORY_RED:
-      newState = [...state];
+      newState = state;
       newState.push(action.payload);
       return newState;
     case GET_SUBCATEGORY_RED:
-      return action.payload || [];
+      return action.payload;
     case GET_SUBCATEGORY_BY_MAIN_ID_RED:
-      return action.payload || [];
+      return action.payload;
     case UPDATE_SUBCATEGORY_RED:
-      newState = [...state];
+      newState = state;
       index = newState.findIndex((x) => x._id === action.payload._id);
-      if (index !== -1) {
-        newState[index] = action.payload;
-      }
+      newState[index] = action.payload;
       return newState;
     case DELETE_SUBCATEGORY_RED:
-      return state.filter((item) => item._id !== action.payload._id);
+      newState = state.filter((item) => item._id !== action.payload._id);
+      return newState;
     default:
       return state;
   }

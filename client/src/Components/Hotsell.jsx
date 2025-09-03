@@ -246,7 +246,7 @@ function Hotsell() {
       </div>
       {/* <SectionTitle></SectionTitle> */}
       <SliderContainer>
-        <NavButton onClick={prevSlide} $position="left">
+        <NavButton onClick={prevSlide} position="left">
           <FaChevronLeft />
         </NavButton>
         <SliderWrapper>
@@ -256,7 +256,7 @@ function Hotsell() {
             ))}
           </SliderTrack>
         </SliderWrapper>
-        <NavButton onClick={nextSlide} $position="right">
+        <NavButton onClick={nextSlide} position="right">
           <FaChevronRight />
         </NavButton>
       </SliderContainer>
@@ -300,7 +300,7 @@ const NavButton = styled.button`
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  ${props => props.$position}: 10px;
+  ${props => props.position}: 10px;
   background: rgba(255,255,255,0.9);
   border: 1px solid #ddd;
   border-radius: 50%;
