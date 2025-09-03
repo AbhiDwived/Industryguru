@@ -52,13 +52,13 @@ export default function Home() {
         const bPrice = getDisplayPrice(b);
         return bPrice.discount - aPrice.discount;
       })
-      .slice(0, 6);
+      .slice(0, 12);
   };
   const trendingProducts = getTrendingProducts();
   useEffect(() => {
     getAPIData();
     if (allproducts.length) {
-      setProducts(allproducts.slice(0, 6));
+      setProducts(allproducts.slice(0, 12));
     }
     // eslint-disable-next-line
   }, [allproducts.length]);
@@ -154,12 +154,8 @@ export default function Home() {
                           <img
                             className="img-fluid w-100"
                             src={`${apiLink}/public/products/${item.pic1}`}
-                            style={{ height: "150px", objectFit: "cover" }}
-                            width="150"
-                            height="150"
-                            alt={item.name}
-                            loading="lazy"
-                            decoding="async"
+                            style={{ height: "150px" }}
+                            alt=""
                           />
                         </Link>
                       </div>
@@ -224,12 +220,8 @@ export default function Home() {
                     <img
                       className="img-fluid w-100"
                       src={`${apiLink}/public/products/${item.pic1}`}
-                      style={{ height: "150px", objectFit: "cover" }}
-                      width="150"
-                      height="150"
-                      alt={item.name}
-                      loading="lazy"
-                      decoding="async"
+                      style={{ height: "150px" }}
+                      alt=""
                     />
                   </Link>
                 </div>
@@ -283,12 +275,8 @@ export default function Home() {
                       <img
                         className="img-fluid w-100"
                         src={`${apiLink}/public/products/${item.pic1}`}
-                        style={{ height: "150px", objectFit: "cover" }}
-                        width="150"
-                        height="150"
-                        alt={item.name}
-                        loading="lazy"
-                        decoding="async"
+                        style={{ height: "150px" }}
+                        alt=""
                       />
                     </Link>
                   </div>
