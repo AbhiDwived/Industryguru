@@ -13,17 +13,17 @@ export default function ProductReducer(state = [], action) {
   var newState, index;
   switch (action.type) {
     case ADD_PRODUCT_RED:
-      newState = [...state];
+      newState = state;
       newState.push(action.payload);
       return newState;
     case GET_PRODUCT_RED:
-      return Array.isArray(action.payload) ? action.payload : [];
+      return action.payload;
     case GET_PRODUCT_BY_MAIN_ID_RED:
-      return Array.isArray(action.payload) ? action.payload : [];
+      return action.payload;
     case GET_PRODUCT_BY_SUB_ID_RED:
-      return Array.isArray(action.payload) ? action.payload : [];
+      return action.payload;
     case GET_PRODUCT_BY_BRAND_ID_RED:
-      return Array.isArray(action.payload) ? action.payload : [];
+      return action.payload;
     case UPDATE_PRODUCT_RED:
       if (!state || !Array.isArray(state)) return [];
       newState = [...state];
