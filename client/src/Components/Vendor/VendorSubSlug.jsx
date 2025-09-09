@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import VendorSideNavbar from "./VendorSideNavbar";
+import Wrapper from "./Wrapper";
 import { getVendorSlug } from "../../Store/ActionCreators/VendorSlugActionCreators";
 import { addVendorSubSlug, deleteVendorSubSlug, getVendorSubSlug, getVendorSubSlugByParent, updateVendorSubSlug } from "../../Store/ActionCreators/VendorSubSlugActionCreators";
 import {
@@ -114,13 +114,7 @@ export default function VendorSubSlug() {
   const selectedSubSlugData = allSubSlugs.find(subSlug => subSlug._id === selectedSubSlug);
 
   return (
-    <div className="page_section">
-      <div className="container-fluid">
-        <div className="row">
-          <div className="col-md-3 col-12">
-            <VendorSideNavbar />
-          </div>
-          <div className="col-md-9 col-12">
+    <Wrapper>
             <Paper 
               elevation={0} 
               sx={{ 
@@ -508,11 +502,8 @@ export default function VendorSubSlug() {
                 </TableContainer>
               </Box>
             </Paper>
-          </div>
-        </div>
-      </div>
-      {/* Edit Sub Slug Modal */}
-      <Dialog 
+            {/* Edit Sub Slug Modal */}
+            <Dialog 
         open={showEditModal} 
         onClose={() => setShowEditModal(false)}
         fullWidth
@@ -676,6 +667,6 @@ export default function VendorSubSlug() {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Wrapper>
   );
 } 

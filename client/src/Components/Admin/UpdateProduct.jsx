@@ -35,8 +35,7 @@ export default function UpdateProduct() {
     brand: "",
     slug: "",
     subSlug: "",
-    innerSlug: "",
-    innerSubSlug: "",
+
     color: "",
     size: "",
     baseprice: "",
@@ -180,8 +179,7 @@ export default function UpdateProduct() {
       item.append("description", data.description || "");
       item.append("defaultDescription", data.defaultDescription || "");
       item.append("variantDescription", data.variantDescription || "");
-      item.append("innerSlug", data.innerSlug || "");
-      item.append("innerSubSlug", data.innerSubSlug || "");
+
       item.append("specification", JSON.stringify(specsData.filter(spec => spec.key && spec.value)));
       if (variants.length > 0) {
         // Clean up variants data before sending
@@ -250,8 +248,7 @@ export default function UpdateProduct() {
           subcategory: item?.subcategory?._id || item?.subcategory,
           slug: item?.slug?._id || item?.slug,
           subSlug: item?.subSlug?._id || item?.subSlug,
-          innerSlug: item?.innerSlug || "",
-          innerSubSlug: item?.innerSubSlug || "",
+
           defaultDescription: item.defaultDescription || "",
           variantDescription: item.variantDescription || "",
           baseprice: item.baseprice || 0,
@@ -261,8 +258,6 @@ export default function UpdateProduct() {
         setSpecsData(item.specification && item.specification.length > 0 ? item.specification : [{ key: "", value: "" }]);
         const updatedVariants = (item.variants || []).map(variant => ({
           ...variant,
-          innerSlug: variant.innerSlug || "",
-          innerSubSlug: variant.innerSubSlug || "",
           defaultDescription: variant.description || "",
           variantDescription: variant.variantDescription || "",
           specifications: variant.specification && variant.specification.length > 0 ? variant.specification : [{ key: "", value: "" }]
@@ -409,38 +404,7 @@ export default function UpdateProduct() {
                             </select>
                           </div>
                         </div>
-                        <div className="col-md-6">
-                          <div className="ui__form">
-                            <label className="ui__form__label">Inner Slug</label>
-                            <select
-                              name="innerSlug"
-                              value={data.innerSlug || ""}
-                              onChange={getInputData}
-                              className="ui__form__field"
-                            >
-                              <option value="">Select Inner Slug</option>
-                              {allSlugs.map((item, index) => (
-                                <option key={index} value={item._id}>{item.slug}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="ui__form">
-                            <label className="ui__form__label">Inner Sub Slug</label>
-                            <select
-                              name="innerSubSlug"
-                              value={data.innerSubSlug || ""}
-                              onChange={getInputData}
-                              className="ui__form__field"
-                            >
-                              <option value="">Select Inner Sub Slug</option>
-                              {allSubSlugs.map((item, index) => (
-                                <option key={index} value={item._id}>{item.slug}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
+
                       </div>
                     </div>
                     <div className="col-md-6">
@@ -492,44 +456,7 @@ export default function UpdateProduct() {
                           <div key={idx} className="border p-3 mb-3 rounded">
                             <h6>Variant {idx + 1}</h6>
                             <div className="row">
-                              <div className="col-md-6">
-                                <div className="ui__form">
-                                  <label className="ui__form__label">Inner Slug</label>
-                                  <select
-                                    value={variant.innerSlug || ""}
-                                    onChange={(e) => {
-                                      const newVariants = [...variants];
-                                      newVariants[idx].innerSlug = e.target.value;
-                                      setVariants(newVariants);
-                                    }}
-                                    className="ui__form__field"
-                                  >
-                                    <option value="">Select Inner Slug</option>
-                                    {allSlugs.map((item, index) => (
-                                      <option key={index} value={item._id}>{item.slug}</option>
-                                    ))}
-                                  </select>
-                                </div>
-                              </div>
-                              <div className="col-md-6">
-                                <div className="ui__form">
-                                  <label className="ui__form__label">Inner Sub Slug</label>
-                                  <select
-                                    value={variant.innerSubSlug || ""}
-                                    onChange={(e) => {
-                                      const newVariants = [...variants];
-                                      newVariants[idx].innerSubSlug = e.target.value;
-                                      setVariants(newVariants);
-                                    }}
-                                    className="ui__form__field"
-                                  >
-                                    <option value="">Select Inner Sub Slug</option>
-                                    {allSubSlugs.map((item, index) => (
-                                      <option key={index} value={item._id}>{item.slug}</option>
-                                    ))}
-                                  </select>
-                                </div>
-                              </div>
+
                               <div className="col-md-6">
                                 <div className="ui__form">
                                   <label className="ui__form__label">Color</label>

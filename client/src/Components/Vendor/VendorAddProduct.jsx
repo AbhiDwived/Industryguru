@@ -256,21 +256,15 @@ export default function VendorAddProduct() {
   }, [dispatch]);
 
   return (
-    <div className="page_section">
-      <div className="container-fluid my-3">
-        <div className="row">
-          <div className="col-md-3">
-            <Wrapper />
+    <Wrapper>
+      <div className="box__layout">
+        <div className="header__layout">
+          <div className="row">
+            <h3 className="flex-1">Add Product</h3>
           </div>
-          <div className="col-md-9">
-            <div className="box__layout">
-              <div className="header__layout">
-                <div className="row">
-                  <h3 className="flex-1">Add Product</h3>
-                </div>
-              </div>
-              <div>
-                <form onSubmit={handleSubmit}>
+        </div>
+        <div>
+          <form onSubmit={handleSubmit}>
                   <div className="row">
                     <div className="col-md-6">
                       <div className="ui__form">
@@ -660,12 +654,9 @@ export default function VendorAddProduct() {
                       Upload Product
                     </button>
                   </div>
-                </form>
-              </div>
-            </div>
-          </div>
+          </form>
         </div>
       </div>
-    </div>
+    </Wrapper>
   );
 }
