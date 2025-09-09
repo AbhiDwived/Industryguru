@@ -200,8 +200,7 @@ export default function UpdateProduct() {
         console.log('Update response:', response);
         if (response.result === 'Done') {
           showToast.success('Product updated successfully!');
-          dispatch(getProduct()); // Refresh product list
-          setTimeout(() => navigate("/admin-products"), 1000);
+          navigate("/admin-products");
         } else {
           showToast.error(response.message || 'Failed to update product');
         }
@@ -219,18 +218,73 @@ export default function UpdateProduct() {
 
 
   useEffect(() => {
-    if (!allproducts.length || !allmaincategories.length) {
-      dispatch(getMaincategory());
-      dispatch(getProduct());
-    }
-    if (!allSlugs.length) {
-      dispatch(getAdminSlug());
-    }
-    if (!allSubSlugs.length) {
-      dispatch(getAdminSubSlug());
+    dispatch(getMaincategory());
+    dispatch(getBrand());
+    dispatch(getAdminSlug());
+    dispatch(getAdminSubSlug());
+    
+    // Fetch specific product by ID
+    if (_id) {
+      fetchProductData();
     }
     // eslint-disable-next-line
-  }, []);
+  }, [_id]);
+
+  const fetchProductData = async () => {
+    try {
+      console.log("Fetching admin product data for ID:", _id);
+      const response = await fetch(`${apiLink}/api/product/${_id}`, {
+        method: "get",
+        headers: {
+          authorization: localStorage.getItem("token"),
+          "content-type": "application/json",
+        },
+      });
+      const result = await response.json();
+      console.log("Admin product fetch result:", result);
+      
+      if (result.result === "Done" && result.data) {
+        const item = result.data;
+        console.log("Setting admin product data:", item);
+        
+        setData({ 
+          ...item, 
+          brand: item?.brand?._id || item?.brand,
+          maincategory: item?.maincategory?._id || item?.maincategory,
+          subcategory: item?.subcategory?._id || item?.subcategory,
+          slug: item?.slug?._id || item?.slug,
+          subSlug: item?.subSlug?._id || item?.subSlug,
+          defaultDescription: item.defaultDescription || "",
+          variantDescription: item.variantDescription || ""
+        });
+        
+        setSpecsData(item.specification && item.specification.length > 0 ? item.specification : [{ key: "", value: "" }]);
+        
+        const updatedVariants = (item.variants || []).map(variant => ({
+          ...variant,
+          defaultDescription: variant.description || variant.defaultDescription || "",
+          variantDescription: variant.variantDescription || variant.additionalDescription || "",
+          specifications: variant.specification && variant.specification.length > 0 ? variant.specification : [{ key: "", value: "" }]
+        }));
+        setVariants(updatedVariants);
+        
+        console.log("Admin data set successfully");
+        
+        // Load related data
+        if (item?.maincategory?._id || item?.maincategory) {
+          dispatch(getSubcategoryByMainId(item?.maincategory?._id || item?.maincategory));
+        }
+        if (item?.subcategory?._id || item?.subcategory) {
+          dispatch(getBrandBySubCategoryId(item?.subcategory?._id || item?.subcategory));
+        }
+        if (item?.slug?._id || item?.slug) {
+          dispatch(getAdminSubSlugByParent(item?.slug?._id || item?.slug));
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching admin product:", error);
+    }
+  };
 
   useEffect(() => {
     if (allmaincategories.length) setMaincategory(allmaincategories);

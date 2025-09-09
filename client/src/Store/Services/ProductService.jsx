@@ -167,14 +167,25 @@ export async function updateProductAPI(data) {
 }
 
 export async function updateVendorProductAPI(id, data) {
-  const link = `${apiLink}/api/vendor-product/`;
-  return fetch(link + id, {
-    method: "put",
-    headers: {
-      authorization: localStorage.getItem("token"),
-    },
-    body: data,
-  });
+  const link = `${apiLink}/api/vendor-product/${id}`;
+  console.log('Updating vendor product with ID:', id);
+  console.log('Update URL:', link);
+  
+  try {
+    const response = await fetch(link, {
+      method: "put",
+      headers: {
+        authorization: localStorage.getItem("token"),
+      },
+      body: data,
+    });
+    
+    console.log('Vendor update API response status:', response.status);
+    return response;
+  } catch (error) {
+    console.error('Vendor update API error:', error);
+    throw error;
+  }
 }
 
 export async function addVendorProductAPI(id, data) {
