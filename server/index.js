@@ -87,9 +87,24 @@ app.use((err, req, res, next) => {
 
 const startServer = async (port) => {
   try {
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
       console.log(`Server is running at PORT ${port}`);
     });
+
+    // Graceful shutdown handling
+    const gracefulShutdown = (signal) => {
+      console.log(`Received ${signal}. Graceful shutdown...`);
+      server.close(() => {
+        console.log('HTTP server closed.');
+        process.exit(0);
+      });
+    };
+
+    // Listen for termination signals
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+    return server;
   } catch (error) {
     if (error.code === 'EADDRINUSE') {
       console.log(`Port ${port} is busy, trying ${port + 1}`);
