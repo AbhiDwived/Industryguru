@@ -59,6 +59,14 @@ const ProductShema = new mongoose.Schema({
     type: String,
     default: "This is Sample Product",
   },
+  defaultDescription: {
+    type: String,
+    default: "",
+  },
+  variantDescription: {
+    type: String,
+    default: "",
+  },
   pic1: {
     type: String,
     required: function() {
@@ -112,6 +120,10 @@ const ProductShema = new mongoose.Schema({
     description: {
       type: String,
       default: "This is a sample variant description",
+    },
+    variantDescription: {
+      type: String,
+      default: "",
     },
     specification: [{
       key: String,

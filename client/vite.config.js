@@ -11,14 +11,6 @@ export default {
     }
   },
   build: {
-    outDir: 'dist',
-    minify: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom']
-        }
-      }
-    }
+    outDir: 'dist'
   }
 }

@@ -5,7 +5,7 @@ const Vendor = require('../Models/Vendor');
 const verifyVendor = async (req, res, next) => {
   try {
     // Get token from header
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+    const token = req.headers.authorization?.replace('Bearer ', '') || req.headers.authorization;
     
     if (!token) {
       return res.status(401).json({ 

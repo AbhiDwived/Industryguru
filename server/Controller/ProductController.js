@@ -2,7 +2,6 @@ const jwt = require("jsonwebtoken");
 const Product = require("../Models/Product");
 const Checkout = require("../Models/Checkout");
 const fs = require("fs");
-const path = require("path");
 const { MongoClient, ObjectId } = require("mongodb");
 const mongoose = require("mongoose");
 
@@ -255,10 +254,16 @@ async function CreateProductByVendor(req, res) {
 async function getAllProduct(req, res) {
   try {
     var data = await Product.find()
-      .select('name pic1 baseprice discount finalprice variants')
-      .sort({ _id: -1 })
-      .limit(20)
-      .lean();
+      .populate("brand")
+      .populate({
+        path: "slug",
+        model: "slug"
+      })
+      .populate({
+        path: "subSlug",
+        model: "subslug"
+      })
+      .sort({ _id: -1 });
       
     console.log("Product data fetched successfully");
     res.send({ result: "Done", count: data.length, data: data });
@@ -286,13 +291,20 @@ async function getAllProductByVendor(req, res) {
       query.name = { $regex: new RegExp(search, "i") };
     }
     var data = await Product.find(query)
-      .select('name pic1 baseprice discount finalprice stock variants')
+      .populate("brand")
+      .populate({
+        path: "slug",
+        model: "slug"
+      })
+      .populate({
+        path: "subSlug",
+        model: "subslug"
+      })
       .sort({ _id: -1 })
       .limit(limit)
-      .skip(skip)
-      .lean();
+      .skip(skip);
       
-    var count = await Product.countDocuments(query);
+    var count = await Product.count(query);
     console.log(`Found ${data.length} products for vendor ${user}`);
     res.send({ result: "Done", count: count, data: data });
   } catch (error) {
@@ -360,7 +372,12 @@ async function getProductByBrand(req, res) {
 }
 async function updateProduct(req, res) {
   try {
-    console.log("Update request received");
+    console.log("=== UPDATE PRODUCT REQUEST ===");
+    console.log("Product ID:", req.params._id);
+    console.log("Request body keys:", Object.keys(req.body));
+    console.log("Request body:", req.body);
+    console.log("Request files:", req.files ? Object.keys(req.files) : 'No files');
+    console.log("Authorization header:", req.headers.authorization ? 'Present' : 'Missing');
     
     var data = await Product.findOne({ _id: req.params._id });
     if (data) {
@@ -371,6 +388,8 @@ async function updateProduct(req, res) {
       if (req.body.brand) data.brand = req.body.brand;
       if (req.body.slug) data.slug = req.body.slug;
       if (req.body.subSlug) data.subSlug = req.body.subSlug;
+      if (req.body.innerSlug !== undefined) data.innerSlug = req.body.innerSlug;
+      if (req.body.innerSubSlug !== undefined) data.innerSubSlug = req.body.innerSubSlug;
       if (req.body.color !== undefined) data.color = req.body.color;
       if (req.body.size !== undefined) data.size = req.body.size;
       if (req.body.baseprice !== undefined) data.baseprice = Number(req.body.baseprice);
@@ -378,22 +397,30 @@ async function updateProduct(req, res) {
       if (req.body.finalprice !== undefined) data.finalprice = Number(req.body.finalprice);
       if (req.body.stock !== undefined) data.stock = Number(req.body.stock);
       if (req.body.description !== undefined) data.description = req.body.description;
+      if (req.body.defaultDescription !== undefined) data.defaultDescription = req.body.defaultDescription;
+      if (req.body.variantDescription !== undefined) data.variantDescription = req.body.variantDescription;
       
       // Handle specification
       if (req.body.specification) {
         try {
-          const spec = JSON.parse(req.body.specification);
-          data.specification = Array.isArray(spec) ? spec : [];
+          data.specification = JSON.parse(req.body.specification);
         } catch (parseError) {
-          console.error("Invalid specification format");
-          data.specification = [];
+          console.error("Error parsing specification:", parseError);
         }
       }
       
       // Handle variants
       if (req.body.variants) {
         try {
-          data.variants = JSON.parse(req.body.variants);
+          const parsedVariants = JSON.parse(req.body.variants);
+          // Ensure numeric fields in variants are properly converted
+          data.variants = parsedVariants.map(variant => ({
+            ...variant,
+            baseprice: Number(variant.baseprice) || 0,
+            discount: Number(variant.discount) || 0,
+            finalprice: Number(variant.finalprice) || 0,
+            stock: Number(variant.stock) || 0,
+          }));
         } catch (parseError) {
           console.error("Error parsing variants:", parseError);
         }
@@ -403,9 +430,8 @@ async function updateProduct(req, res) {
       try {
         if (req.files?.pic1?.[0]) {
           if (data.pic1) {
-            const safePath = path.join(__dirname, "../public/products/", path.basename(data.pic1));
             try {
-              fs.unlinkSync(safePath);
+              fs.unlinkSync("public/products/" + data.pic1);
             } catch (unlinkError) {}
           }
           data.pic1 = req.files.pic1[0].filename;
@@ -442,9 +468,20 @@ async function updateProduct(req, res) {
         }
       } catch (error) {}
 
+      console.log("Saving product with data:", {
+        name: data.name,
+        maincategory: data.maincategory,
+        subcategory: data.subcategory,
+        brand: data.brand,
+        innerSlug: data.innerSlug,
+        innerSubSlug: data.innerSubSlug,
+        defaultDescription: data.defaultDescription,
+        variantDescription: data.variantDescription
+      });
+      
       await data.save();
       console.log("Product updated successfully:", data._id);
-      res.send({ result: "Done", message: "Record is Updated!!!" });
+      res.send({ result: "Done", message: "Record is Updated!!!", data: data });
     } else {
       res.status(404).send({ result: "Fail", message: "Product not found!!!" });
     }
@@ -462,6 +499,11 @@ async function updateProduct(req, res) {
 }
 async function updateProductByVendor(req, res) {
   try {
+    console.log("=== VENDOR UPDATE PRODUCT DEBUG ===");
+    console.log("Product ID:", req.params._id);
+    console.log("Request body keys:", Object.keys(req.body));
+    console.log("Variants in request:", req.body.variants ? "YES" : "NO");
+    
     var decoded = jwt.verify(
       req.headers.authorization,
       process.env.JWT_VENDOR_KEY
@@ -469,60 +511,121 @@ async function updateProductByVendor(req, res) {
     const user = decoded.data._id;
     var data = await Product.findOne({ _id: req.params._id, addedBy: user });
     if (data) {
-      data.name = req.body.name ?? data.name;
-      data.maincategory = req.body.maincategory ?? data.maincategory;
-      data.subcategory = req.body.subcategory ?? data.subcategory;
-      data.brand = req.body.brand ?? data.brand;
-      data.color = req.body.color ?? data.color;
-      data.size = req.body.size ?? data.size;
-      data.baseprice = req.body.baseprice ?? data.baseprice;
-      data.discount = req.body.discount ?? data.discount;
-      data.finalprice = req.body.finalprice ?? data.finalprice;
-      data.stock = req.body.stock ?? data.stock;
-      data.description = req.body.description ?? data.description;
+      // Update basic fields
+      if (req.body.name) data.name = req.body.name;
+      if (req.body.maincategory) data.maincategory = req.body.maincategory;
+      if (req.body.subcategory) data.subcategory = req.body.subcategory;
+      if (req.body.brand) data.brand = req.body.brand;
+      if (req.body.slug) data.slug = req.body.slug;
+      if (req.body.subSlug) data.subSlug = req.body.subSlug;
+      if (req.body.innerSlug !== undefined) data.innerSlug = req.body.innerSlug;
+      if (req.body.innerSubSlug !== undefined) data.innerSubSlug = req.body.innerSubSlug;
+      if (req.body.color !== undefined) data.color = req.body.color;
+      if (req.body.size !== undefined) data.size = req.body.size;
+      if (req.body.baseprice !== undefined) data.baseprice = Number(req.body.baseprice);
+      if (req.body.discount !== undefined) data.discount = Number(req.body.discount);
+      if (req.body.finalprice !== undefined) data.finalprice = Number(req.body.finalprice);
+      if (req.body.stock !== undefined) data.stock = Number(req.body.stock);
+      if (req.body.description !== undefined) data.description = req.body.description;
+      if (req.body.defaultDescription !== undefined) data.defaultDescription = req.body.defaultDescription;
+      if (req.body.variantDescription !== undefined) data.variantDescription = req.body.variantDescription;
+      
+      // Handle specification
       if (req.body.specification) {
         try {
-          const spec = JSON.parse(req.body.specification);
-          data.specification = Array.isArray(spec) ? spec : [];
-        } catch (e) {
-          data.specification = [];
+          data.specification = JSON.parse(req.body.specification);
+        } catch (parseError) {
+          console.error("Error parsing specification:", parseError);
         }
       }
-      try {
-        if (req.files.pic1[0] && data.pic1) {
-          fs.unlinkSync("public/products/" + data.pic1);
+      
+      // Handle variants - FIXED: Added variant handling
+      if (req.body.variants) {
+        try {
+          console.log("Processing variants:", req.body.variants);
+          const parsedVariants = JSON.parse(req.body.variants);
+          console.log("Parsed variants:", parsedVariants);
+          console.log("Variant 0 before processing:", parsedVariants[0]);
+          data.variants = parsedVariants.map((variant, idx) => {
+            const processed = {
+              ...variant,
+              baseprice: Number(variant.baseprice) || 0,
+              discount: Number(variant.discount) || 0,
+              finalprice: Number(variant.finalprice) || 0,
+              stock: Number(variant.stock) || 0,
+            };
+            if (idx === 0) console.log("Variant 0 after processing:", processed);
+            return processed;
+          });
+          console.log("Final variants to save:", data.variants[0]);
+        } catch (parseError) {
+          console.error("Error parsing variants:", parseError);
         }
-        data.pic1 = req.files.pic1[0].filename;
+      }
+      // Handle file uploads
+      try {
+        if (req.files?.pic1?.[0]) {
+          if (data.pic1) {
+            try {
+              fs.unlinkSync("public/products/" + data.pic1);
+            } catch (unlinkError) {}
+          }
+          data.pic1 = req.files.pic1[0].filename;
+        }
       } catch (error) {}
       try {
-        if (req.files.pic2[0] && data.pic2) {
-          fs.unlinkSync("public/products/" + data.pic2);
+        if (req.files?.pic2?.[0]) {
+          if (data.pic2) {
+            try {
+              fs.unlinkSync("public/products/" + data.pic2);
+            } catch (unlinkError) {}
+          }
+          data.pic2 = req.files.pic2[0].filename;
         }
-        data.pic2 = req.files.pic2[0].filename;
       } catch (error) {}
       try {
-        if (req.files.pic3[0] && data.pic3) {
-          fs.unlinkSync("public/products/" + data.pic3);
+        if (req.files?.pic3?.[0]) {
+          if (data.pic3) {
+            try {
+              fs.unlinkSync("public/products/" + data.pic3);
+            } catch (unlinkError) {}
+          }
+          data.pic3 = req.files.pic3[0].filename;
         }
-        data.pic3 = req.files.pic3[0].filename;
       } catch (error) {}
       try {
-        if (req.files.pic4[0] && data.pic4) {
-          fs.unlinkSync("public/products/" + data.pic4);
+        if (req.files?.pic4?.[0]) {
+          if (data.pic4) {
+            try {
+              fs.unlinkSync("public/products/" + data.pic4);
+            } catch (unlinkError) {}
+          }
+          data.pic4 = req.files.pic4[0].filename;
         }
-        data.pic4 = req.files.pic4[0].filename;
       } catch (error) {}
 
+      console.log("Saving product with variants:", data.variants ? data.variants.length : 0);
+      if (data.variants && data.variants[0]) {
+        console.log("Variant 0 being saved:", data.variants[0]);
+      }
       await data.save();
+      console.log("Product saved successfully");
       res.send({ result: "Done", message: "Record is Updated!!!" });
     } else res.send({ result: "Fail", message: "Invalid Id!!!" });
   } catch (error) {
-    if (error.keyValue)
+    console.error("=== VENDOR UPDATE ERROR ===");
+    console.error("Error details:", error);
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
+    
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      res.status(400).send({ result: "Fail", message: validationErrors.join(', ') });
+    } else if (error.keyValue) {
       res.send({ result: "Fail", message: "Name Must Be Unique!!!" });
-    else
-      res
-        .status(500)
-        .send({ result: "Fail", message: "Internal Server Error!!!" });
+    } else {
+      res.status(500).send({ result: "Fail", message: "Internal Server Error!!!", error: error.message });
+    }
   }
 }
 async function deleteProduct(req, res) {
@@ -584,30 +687,28 @@ async function deleteProductByVendor(req, res) {
 async function searchProduct(req, res) {
   try {
     const search = req.body.search;
-    const limit = parseInt(req.query.limit) || 20;
-    
-    // Use text search for better performance
     var data = await Product.find({
-      $text: { $search: search }
+      $or: [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { innerSlug: { $regex: search, $options: "i" } },
+        { innerSubSlug: { $regex: search, $options: "i" } },
+        { color: { $regex: search, $options: "i" } },
+        { size: { $regex: search, $options: "i" } },
+      ],
     })
-      .populate("brand", "name")
-      .populate("maincategory", "name")
-      .populate("subcategory", "name")
+      .populate("brand")
+      .populate("maincategory")
+      .populate("subcategory")
       .populate({
         path: "slug",
-        model: "slug",
-        select: "name"
+        model: "slug"
       })
       .populate({
         path: "subSlug",
-        model: "subslug",
-        select: "name"
+        model: "subslug"
       })
-      .select('-specification')
-      .sort({ score: { $meta: "textScore" } })
-      .limit(limit)
-      .lean();
-      
+      .sort({ _id: -1 });
     res.send({ result: "Done", count: data.length, data: data });
   } catch (error) {
     console.error("Error in searchProduct:", error);
@@ -919,7 +1020,7 @@ async function getSingleProductByVendor(req, res) {
       process.env.JWT_VENDOR_KEY
     );
     const user = decoded.data._id;
-    console.log("Fetching product for vendor");
+    console.log(`Fetching product: ID=${req.params._id}, User=${user}`);
     
     // Find product by ID where the vendor is the owner (addedBy)
     const data = await Product.findOne({ 

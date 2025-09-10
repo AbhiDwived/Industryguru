@@ -142,26 +142,50 @@ export async function deleteProductAPI(data) {
 }
 
 export async function updateProductAPI(data) {
-  const link = `${apiLink}/api/product/`;
-  var response = await fetch(link + data.get("_id"), {
-    method: "put",
-    headers: {
-      authorization: localStorage.getItem("token"),
-    },
-    body: data,
-  });
-  return await response.json();
+  const productId = data.get("_id");
+  const link = `${apiLink}/api/product/${productId}`;
+  
+  console.log('Updating product with ID:', productId);
+  console.log('Update URL:', link);
+  
+  try {
+    var response = await fetch(link, {
+      method: "put",
+      headers: {
+        authorization: localStorage.getItem("token"),
+      },
+      body: data,
+    });
+    
+    const result = await response.json();
+    console.log('Update API response:', result);
+    return result;
+  } catch (error) {
+    console.error('Update API error:', error);
+    throw error;
+  }
 }
 
 export async function updateVendorProductAPI(id, data) {
-  const link = `${apiLink}/api/vendor-product/`;
-  return fetch(link + id, {
-    method: "put",
-    headers: {
-      authorization: localStorage.getItem("token"),
-    },
-    body: data,
-  });
+  const link = `${apiLink}/api/vendor-product/${id}`;
+  console.log('Updating vendor product with ID:', id);
+  console.log('Update URL:', link);
+  
+  try {
+    const response = await fetch(link, {
+      method: "put",
+      headers: {
+        authorization: localStorage.getItem("token"),
+      },
+      body: data,
+    });
+    
+    console.log('Vendor update API response status:', response.status);
+    return response;
+  } catch (error) {
+    console.error('Vendor update API error:', error);
+    throw error;
+  }
 }
 
 export async function addVendorProductAPI(id, data) {

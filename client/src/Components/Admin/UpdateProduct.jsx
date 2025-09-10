@@ -35,8 +35,7 @@ export default function UpdateProduct() {
     brand: "",
     slug: "",
     subSlug: "",
-    innerSlug: "",
-    innerSubSlug: "",
+
     color: "",
     size: "",
     baseprice: "",
@@ -142,10 +141,24 @@ export default function UpdateProduct() {
   }
   async function postData(e) {
     e.preventDefault();
+    
+    // Check for validation errors
     let error = Object.keys(errorMessage).find(
       (x) => errorMessage[x] && errorMessage[x].length !== 0
     );
+    
+    // Check for required fields
+    if (!data.name || !data.maincategory || !data.subcategory || !data.brand) {
+      setShow(true);
+      showToast.error('Please fill all required fields');
+      return;
+    }
+    
     if (!error) {
+      console.log('Form data before submission:', data);
+      console.log('Specs data:', specsData);
+      console.log('Variants data:', variants);
+      
       let fp = Math.round(
         data.baseprice - (data.baseprice * data.discount) / 100
       );
@@ -166,11 +179,15 @@ export default function UpdateProduct() {
       item.append("description", data.description || "");
       item.append("defaultDescription", data.defaultDescription || "");
       item.append("variantDescription", data.variantDescription || "");
-      item.append("innerSlug", data.innerSlug || "");
-      item.append("innerSubSlug", data.innerSubSlug || "");
-      item.append("specification", JSON.stringify(specsData));
+
+      item.append("specification", JSON.stringify(specsData.filter(spec => spec.key && spec.value)));
       if (variants.length > 0) {
-        item.append("variants", JSON.stringify(variants));
+        // Clean up variants data before sending
+        const cleanVariants = variants.map(variant => ({
+          ...variant,
+          specifications: (variant.specifications || variant.specification || []).filter(spec => spec.key && spec.value)
+        }));
+        item.append("variants", JSON.stringify(cleanVariants));
       }
       if (data.pic1) item.append("pic1", data.pic1);
       if (data.pic2) item.append("pic2", data.pic2);
@@ -180,11 +197,16 @@ export default function UpdateProduct() {
       setIsUpdating(true);
       try {
         const response = await updateProductAPI(item);
-        showToast.success('Product updated successfully!');
-        dispatch(getProduct()); // Refresh product list
-        setTimeout(() => navigate("/admin-products"), 1000);
+        console.log('Update response:', response);
+        if (response.result === 'Done') {
+          showToast.success('Product updated successfully!');
+          navigate("/admin-products");
+        } else {
+          showToast.error(response.message || 'Failed to update product');
+        }
       } catch (error) {
-        showToast.error('Failed to update product');
+        console.error('Update error:', error);
+        showToast.error('Failed to update product: ' + (error.message || 'Unknown error'));
       } finally {
         setIsUpdating(false);
       }
@@ -196,18 +218,73 @@ export default function UpdateProduct() {
 
 
   useEffect(() => {
-    if (!allproducts.length || !allmaincategories.length) {
-      dispatch(getMaincategory());
-      dispatch(getProduct());
-    }
-    if (!allSlugs.length) {
-      dispatch(getAdminSlug());
-    }
-    if (!allSubSlugs.length) {
-      dispatch(getAdminSubSlug());
+    dispatch(getMaincategory());
+    dispatch(getBrand());
+    dispatch(getAdminSlug());
+    dispatch(getAdminSubSlug());
+    
+    // Fetch specific product by ID
+    if (_id) {
+      fetchProductData();
     }
     // eslint-disable-next-line
-  }, []);
+  }, [_id]);
+
+  const fetchProductData = async () => {
+    try {
+      console.log("Fetching admin product data for ID:", _id);
+      const response = await fetch(`${apiLink}/api/product/${_id}`, {
+        method: "get",
+        headers: {
+          authorization: localStorage.getItem("token"),
+          "content-type": "application/json",
+        },
+      });
+      const result = await response.json();
+      console.log("Admin product fetch result:", result);
+      
+      if (result.result === "Done" && result.data) {
+        const item = result.data;
+        console.log("Setting admin product data:", item);
+        
+        setData({ 
+          ...item, 
+          brand: item?.brand?._id || item?.brand,
+          maincategory: item?.maincategory?._id || item?.maincategory,
+          subcategory: item?.subcategory?._id || item?.subcategory,
+          slug: item?.slug?._id || item?.slug,
+          subSlug: item?.subSlug?._id || item?.subSlug,
+          defaultDescription: item.defaultDescription || "",
+          variantDescription: item.variantDescription || ""
+        });
+        
+        setSpecsData(item.specification && item.specification.length > 0 ? item.specification : [{ key: "", value: "" }]);
+        
+        const updatedVariants = (item.variants || []).map(variant => ({
+          ...variant,
+          defaultDescription: variant.description || variant.defaultDescription || "",
+          variantDescription: variant.variantDescription || variant.additionalDescription || "",
+          specifications: variant.specification && variant.specification.length > 0 ? variant.specification : [{ key: "", value: "" }]
+        }));
+        setVariants(updatedVariants);
+        
+        console.log("Admin data set successfully");
+        
+        // Load related data
+        if (item?.maincategory?._id || item?.maincategory) {
+          dispatch(getSubcategoryByMainId(item?.maincategory?._id || item?.maincategory));
+        }
+        if (item?.subcategory?._id || item?.subcategory) {
+          dispatch(getBrandBySubCategoryId(item?.subcategory?._id || item?.subcategory));
+        }
+        if (item?.slug?._id || item?.slug) {
+          dispatch(getAdminSubSlugByParent(item?.slug?._id || item?.slug));
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching admin product:", error);
+    }
+  };
 
   useEffect(() => {
     if (allmaincategories.length) setMaincategory(allmaincategories);
@@ -217,6 +294,7 @@ export default function UpdateProduct() {
     if (allproducts.length && _id) {
       let item = allproducts.find((x) => x._id === _id);
       if (item && !data.name) {
+        console.log('Loading product data:', item);
         setData({ 
           ...item, 
           brand: item?.brand?._id || item?.brand,
@@ -224,16 +302,16 @@ export default function UpdateProduct() {
           subcategory: item?.subcategory?._id || item?.subcategory,
           slug: item?.slug?._id || item?.slug,
           subSlug: item?.subSlug?._id || item?.subSlug,
-          innerSlug: item?.innerSlug?._id || item?.innerSlug || "",
-          innerSubSlug: item?.innerSubSlug?._id || item?.innerSubSlug || "",
+
           defaultDescription: item.defaultDescription || "",
-          variantDescription: item.variantDescription || ""
+          variantDescription: item.variantDescription || "",
+          baseprice: item.baseprice || 0,
+          discount: item.discount || 0,
+          stock: item.stock || 0
         });
         setSpecsData(item.specification && item.specification.length > 0 ? item.specification : [{ key: "", value: "" }]);
         const updatedVariants = (item.variants || []).map(variant => ({
           ...variant,
-          innerSlug: variant.innerSlug || "",
-          innerSubSlug: variant.innerSubSlug || "",
           defaultDescription: variant.description || "",
           variantDescription: variant.variantDescription || "",
           specifications: variant.specification && variant.specification.length > 0 ? variant.specification : [{ key: "", value: "" }]
@@ -380,38 +458,7 @@ export default function UpdateProduct() {
                             </select>
                           </div>
                         </div>
-                        <div className="col-md-6">
-                          <div className="ui__form">
-                            <label className="ui__form__label">Inner Slug</label>
-                            <select
-                              name="innerSlug"
-                              value={data.innerSlug || ""}
-                              onChange={getInputData}
-                              className="ui__form__field"
-                            >
-                              <option value="">Select Inner Slug</option>
-                              {allSlugs.map((item, index) => (
-                                <option key={index} value={item._id}>{item.slug}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="ui__form">
-                            <label className="ui__form__label">Inner Sub Slug</label>
-                            <select
-                              name="innerSubSlug"
-                              value={data.innerSubSlug || ""}
-                              onChange={getInputData}
-                              className="ui__form__field"
-                            >
-                              <option value="">Select Inner Sub Slug</option>
-                              {allSubSlugs.map((item, index) => (
-                                <option key={index} value={item._id}>{item.slug}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
+
                       </div>
                     </div>
                     <div className="col-md-6">
@@ -463,44 +510,7 @@ export default function UpdateProduct() {
                           <div key={idx} className="border p-3 mb-3 rounded">
                             <h6>Variant {idx + 1}</h6>
                             <div className="row">
-                              <div className="col-md-6">
-                                <div className="ui__form">
-                                  <label className="ui__form__label">Inner Slug</label>
-                                  <select
-                                    value={variant.innerSlug || ""}
-                                    onChange={(e) => {
-                                      const newVariants = [...variants];
-                                      newVariants[idx].innerSlug = e.target.value;
-                                      setVariants(newVariants);
-                                    }}
-                                    className="ui__form__field"
-                                  >
-                                    <option value="">Select Inner Slug</option>
-                                    {allSlugs.map((item, index) => (
-                                      <option key={index} value={item._id}>{item.slug}</option>
-                                    ))}
-                                  </select>
-                                </div>
-                              </div>
-                              <div className="col-md-6">
-                                <div className="ui__form">
-                                  <label className="ui__form__label">Inner Sub Slug</label>
-                                  <select
-                                    value={variant.innerSubSlug || ""}
-                                    onChange={(e) => {
-                                      const newVariants = [...variants];
-                                      newVariants[idx].innerSubSlug = e.target.value;
-                                      setVariants(newVariants);
-                                    }}
-                                    className="ui__form__field"
-                                  >
-                                    <option value="">Select Inner Sub Slug</option>
-                                    {allSubSlugs.map((item, index) => (
-                                      <option key={index} value={item._id}>{item.slug}</option>
-                                    ))}
-                                  </select>
-                                </div>
-                              </div>
+
                               <div className="col-md-6">
                                 <div className="ui__form">
                                   <label className="ui__form__label">Color</label>
