@@ -74,6 +74,11 @@ app.get("/", (req, res) => {
   res.send("<h2>🚀 Server is running successfully! Welcome to the backend!</h2>");
 });
 
+// Health check endpoint for Docker
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK", timestamp: new Date().toISOString() });
+});
+
 app.use("*", express.static(path.join(__dirname, "build")));
 
 // Error handling middleware
