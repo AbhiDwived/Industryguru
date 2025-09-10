@@ -74,6 +74,11 @@ app.get("/", (req, res) => {
   res.send("<h2>🚀 Server is running successfully! Welcome to the backend!</h2>");
 });
 
+// Health check endpoint for Docker
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK", timestamp: new Date().toISOString() });
+});
+
 app.use("*", express.static(path.join(__dirname, "build")));
 
 // Error handling middleware
@@ -87,9 +92,24 @@ app.use((err, req, res, next) => {
 
 const startServer = async (port) => {
   try {
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
       console.log(`Server is running at PORT ${port}`);
     });
+
+    // Graceful shutdown handling
+    const gracefulShutdown = (signal) => {
+      console.log(`Received ${signal}. Graceful shutdown...`);
+      server.close(() => {
+        console.log('HTTP server closed.');
+        process.exit(0);
+      });
+    };
+
+    // Listen for termination signals
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+    return server;
   } catch (error) {
     if (error.code === 'EADDRINUSE') {
       console.log(`Port ${port} is busy, trying ${port + 1}`);

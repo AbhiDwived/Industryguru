@@ -61,6 +61,21 @@ export default function VendorUpdateProduct() {
 
   const [specsData, setSpecsData] = useState([{ key: "", value: "" }]);
   const [variants, setVariants] = useState([]);
+  const [innerSlugs, setInnerSlugs] = useState([]);
+  const [innerSubSlugs, setInnerSubSlugs] = useState([]);
+  const [newVariant, setNewVariant] = useState({
+    color: '',
+    size: '',
+    innerSlug: '',
+    innerSubSlug: '',
+    stock: 0,
+    finalprice: 0,
+    baseprice: 0,
+    discount: 0,
+    description: 'This is a sample variant description',
+    variantDescription: '',
+    specifications: [{ key: '', value: '' }]
+  });
   const handleInputChange = (index, keyOrValue, newValue) => {
     const updatedFormData = [...specsData];
     updatedFormData[index][keyOrValue] = newValue;
@@ -111,8 +126,29 @@ export default function VendorUpdateProduct() {
   const handleSlugChange = (e) => {
     getInputData(e);
     const selectedSlugId = e.target.value;
+    setInnerSlugs([]);
+    setInnerSubSlugs([]);
     if (selectedSlugId) {
       dispatch(getSubSlugByParent({ parentSlugId: selectedSlugId }));
+      // Get inner slugs from selected slug
+      const selectedSlug = allSlugs.find(s => s._id === selectedSlugId);
+      if (selectedSlug && selectedSlug.innerSlugs) {
+        setInnerSlugs(selectedSlug.innerSlugs);
+      }
+    }
+  };
+
+  // Handle sub slug change
+  const handleSubSlugChange = (e) => {
+    getInputData(e);
+    const selectedSubSlugId = e.target.value;
+    setInnerSubSlugs([]);
+    if (selectedSubSlugId) {
+      // Get inner sub slugs from selected sub slug
+      const selectedSubSlug = allSubSlugs.find(ss => ss._id === selectedSubSlugId);
+      if (selectedSubSlug && selectedSubSlug.innerSubSlugs) {
+        setInnerSubSlugs(selectedSubSlug.innerSubSlugs);
+      }
     }
   };
   function getInputFile(e) {
@@ -126,10 +162,16 @@ export default function VendorUpdateProduct() {
   }
   async function postData(e) {
     e.preventDefault();
-    console.log("Data:", data);
+    console.log("=== FORM SUBMITTED - UPDATE PRODUCT DEBUG ===");
+    console.log("Form submission triggered");
+    console.log("Main Data:", data);
+    console.log("Variants Data:", variants);
+    console.log("Variants Length:", variants.length);
     let error = Object.keys(errorMessage).find(
       (x) => errorMessage[x] && errorMessage[x].length !== 0
     );
+    console.log("Validation errors:", errorMessage);
+    console.log("Error found:", error);
     if (!error) {
       let fp = Math.round(
         data.baseprice - (data.baseprice * data.discount) / 100
@@ -155,15 +197,58 @@ export default function VendorUpdateProduct() {
       item.append("variantDescription", data.variantDescription || "");
       item.append("specification", JSON.stringify(specsData));
       if (variants.length > 0) {
-        item.append("variants", JSON.stringify(variants));
+        // Ensure variant specifications are properly formatted
+        const formattedVariants = variants.map((variant, idx) => {
+          console.log(`Variant ${idx}:`, {
+            color: variant.color,
+            size: variant.size,
+            baseprice: variant.baseprice,
+            discount: variant.discount,
+            finalprice: variant.finalprice,
+            stock: variant.stock,
+            innerSlug: variant.innerSlug,
+            innerSubSlug: variant.innerSubSlug
+          });
+          return {
+            ...variant,
+            specification: variant.specifications || variant.specification || []
+          };
+        });
+        console.log("Formatted Variants:", formattedVariants);
+        item.append("variants", JSON.stringify(formattedVariants));
       }
       if (data.pic1) item.append("pic1", data.pic1);
       if (data.pic2) item.append("pic2", data.pic2);
       if (data.pic3) item.append("pic3", data.pic3);
       if (data.pic4) item.append("pic4", data.pic4);
-      await updateVendorProductAPI(_id, item);
-      showToast.success('Product updated successfully!');
-      navigate("/vendor/products");
+      console.log("=== API CALL DEBUG ===");
+      console.log("Product ID:", _id);
+      console.log("Variants being sent:", variants);
+      console.log("FormData contents:");
+      for (let [key, value] of item.entries()) {
+        if (key === 'variants') {
+          console.log(`${key}:`, JSON.parse(value));
+        } else {
+          console.log(`${key}:`, value);
+        }
+      }
+      console.log("Sending update request...");
+      console.log("API URL will be:", `http://localhost:8001/api/vendor-product/${_id}`);
+      const response = await updateVendorProductAPI(_id, item);
+      console.log("Raw response:", response);
+      console.log("=== API RESPONSE DEBUG ===");
+      console.log("Response status:", response.status);
+      console.log("Response ok:", response.ok);
+      const result = await response.json();
+      console.log("Response JSON:", result);
+      
+      if (result.result === 'Done') {
+        showToast.success('Product updated successfully!');
+        navigate('/vendor/products');
+      } else {
+        console.error('Update failed:', result.message);
+        showToast.error('Update failed: ' + (result.message || 'Unknown error'));
+      }
     } else {
       setShow(true);
       showToast.error('Please fix the validation errors');
@@ -172,27 +257,35 @@ export default function VendorUpdateProduct() {
 
 
   useEffect(() => {
-    if (!allproducts.length || !allmaincategories.length) {
-      dispatch(getMaincategory());
-      dispatch(getProduct());
-    }
-    if (!allSlugs.length) {
-      dispatch(getSlug());
-    }
-    if (!allSubSlugs.length) {
-      dispatch(getSubSlug());
+    dispatch(getMaincategory());
+    dispatch(getBrand());
+    dispatch(getSlug());
+    dispatch(getSubSlug());
+    
+    // Fetch specific product by ID
+    if (_id) {
+      fetchProductData();
     }
     // eslint-disable-next-line
-  }, []);
+  }, [_id]);
 
-  useEffect(() => {
-    if (allmaincategories.length) setMaincategory(allmaincategories);
-    if (allsubcategories.length) setSubcategory(allsubcategories);
-    if (allbrands.length) setBrand(allbrands);
-
-    if (allproducts.length && _id) {
-      let item = allproducts.find((x) => x._id === _id);
-      if (item && !data.name) {
+  const fetchProductData = async () => {
+    try {
+      console.log("Fetching product data for ID:", _id);
+      const response = await fetch(`${apiLink}/api/vendor-product/${_id}`, {
+        method: "get",
+        headers: {
+          authorization: localStorage.getItem("token"),
+          "content-type": "application/json",
+        },
+      });
+      const result = await response.json();
+      console.log("Product fetch result:", result);
+      
+      if (result.result === "Done" && result.data) {
+        const item = result.data;
+        console.log("Setting product data:", item);
+        
         setData({ 
           ...item, 
           brand: item?.brand?._id || item?.brand,
@@ -200,23 +293,27 @@ export default function VendorUpdateProduct() {
           subcategory: item?.subcategory?._id || item?.subcategory,
           slug: item?.slug?._id || item?.slug,
           subSlug: item?.subSlug?._id || item?.subSlug,
-          innerSlug: item?.innerSlug?._id || item?.innerSlug || "",
-          innerSubSlug: item?.innerSubSlug?._id || item?.innerSubSlug || "",
+          innerSlug: item?.innerSlug || "",
+          innerSubSlug: item?.innerSubSlug || "",
           defaultDescription: item.defaultDescription || "",
           variantDescription: item.variantDescription || ""
         });
+        
         setSpecsData(item.specification && item.specification.length > 0 ? item.specification : [{ key: "", value: "" }]);
+        
         const updatedVariants = (item.variants || []).map(variant => ({
           ...variant,
           innerSlug: variant.innerSlug || "",
           innerSubSlug: variant.innerSubSlug || "",
-          defaultDescription: variant.description || "",
-          variantDescription: variant.variantDescription || "",
+          defaultDescription: variant.description || variant.defaultDescription || "",
+          variantDescription: variant.variantDescription || variant.additionalDescription || "",
           specifications: variant.specification && variant.specification.length > 0 ? variant.specification : [{ key: "", value: "" }]
         }));
         setVariants(updatedVariants);
         
-        // Load related data for the current product
+        console.log("Data set successfully");
+        
+        // Load related data
         if (item?.maincategory?._id || item?.maincategory) {
           dispatch(getSubcategoryByMainId(item?.maincategory?._id || item?.maincategory));
         }
@@ -224,24 +321,46 @@ export default function VendorUpdateProduct() {
           dispatch(getSubSlugByParent({ parentSlugId: item?.slug?._id || item?.slug }));
         }
       }
+    } catch (error) {
+      console.error("Error fetching product:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (allmaincategories.length) setMaincategory(allmaincategories);
+    if (allsubcategories.length) setSubcategory(allsubcategories);
+    if (allbrands.length) setBrand(allbrands);
+    // eslint-disable-next-line
+  }, [allmaincategories.length, allsubcategories.length, allbrands.length]);
+
+  useEffect(() => {
+    // Load inner slugs when slug data is available and product data is loaded
+    if (allSlugs.length && data.slug) {
+      const selectedSlug = allSlugs.find(s => s._id === data.slug);
+      if (selectedSlug && selectedSlug.innerSlugs) {
+        setInnerSlugs(selectedSlug.innerSlugs);
+      }
     }
     // eslint-disable-next-line
-  }, [allproducts.length, allmaincategories.length, allsubcategories.length, allbrands.length, allSlugs.length, allSubSlugs.length]);
+  }, [allSlugs.length, data.slug]);
+
+  useEffect(() => {
+    // Load inner sub slugs when sub slug data is available and product data is loaded
+    if (allSubSlugs.length && data.subSlug) {
+      const selectedSubSlug = allSubSlugs.find(ss => ss._id === data.subSlug);
+      if (selectedSubSlug && selectedSubSlug.innerSubSlugs) {
+        setInnerSubSlugs(selectedSubSlug.innerSubSlugs);
+      }
+    }
+    // eslint-disable-next-line
+  }, [allSubSlugs.length, data.subSlug]);
   return (
-    <div className="page_section">
-      <div className="container-fluid my-3">
-        <div className="row">
-          <div className="col-md-3">
-            <Wrapper />
-          </div>
-          <div className="col-md-9">
-            <div className="box__layout">
-              <div className="header__layout">
-                <div className="row">
-                  <h3 className="flex-1">Update Product</h3>
-                </div>
-              </div>
-              <div>
+    <Wrapper>
+      <div className="box__layout">
+        <div className="header__layout">
+          <h3>Update Product</h3>
+        </div>
+        <div>
                 <form onSubmit={postData}>
                   <div className="row">
                     <div className="col-md-6">
@@ -342,7 +461,7 @@ export default function VendorUpdateProduct() {
                             <select
                               name="subSlug"
                               value={data.subSlug || ""}
-                              onChange={getInputData}
+                              onChange={handleSubSlugChange}
                               className="ui__form__field"
                               disabled={!data.slug}
                             >
@@ -353,38 +472,7 @@ export default function VendorUpdateProduct() {
                             </select>
                           </div>
                         </div>
-                        <div className="col-md-6">
-                          <div className="ui__form">
-                            <label className="ui__form__label">Inner Slug</label>
-                            <select
-                              name="innerSlug"
-                              value={data.innerSlug || ""}
-                              onChange={getInputData}
-                              className="ui__form__field"
-                            >
-                              <option value="">Select Inner Slug</option>
-                              {allSlugs.map((item, index) => (
-                                <option key={index} value={item._id}>{item.name || item.slug}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="ui__form">
-                            <label className="ui__form__label">Inner Sub Slug</label>
-                            <select
-                              name="innerSubSlug"
-                              value={data.innerSubSlug || ""}
-                              onChange={getInputData}
-                              className="ui__form__field"
-                            >
-                              <option value="">Select Inner Sub Slug</option>
-                              {allSubSlugs.map((item, index) => (
-                                <option key={index} value={item._id}>{item.name || item.slug}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
+
                       </div>
                     </div>
                     <div className="col-md-6">
@@ -481,7 +569,159 @@ export default function VendorUpdateProduct() {
                       </div>
                     </div>
                   </div>
-                  {/* VARIANTS SECTION */}
+                  {/* ADD NEW VARIANT SECTION */}
+                  <div className="card mt-4 mb-4">
+                    <div className="card-header bg-light">
+                      <h5 className="mb-0">Add New Variant</h5>
+                    </div>
+                    <div className="card-body">
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Inner Slug</label>
+                            <select
+                              value={newVariant.innerSlug}
+                              onChange={(e) => setNewVariant({...newVariant, innerSlug: e.target.value})}
+                              className="ui__form__field"
+                            >
+                              <option value="">Select Inner Slug</option>
+                              {innerSlugs.map((slug, index) => (
+                                <option key={index} value={slug}>{slug}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Inner Sub Slug</label>
+                            <select
+                              value={newVariant.innerSubSlug}
+                              onChange={(e) => setNewVariant({...newVariant, innerSubSlug: e.target.value})}
+                              className="ui__form__field"
+                            >
+                              <option value="">Select Inner Sub Slug</option>
+                              {innerSubSlugs.map((subSlug, index) => (
+                                <option key={index} value={subSlug}>{subSlug}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Color</label>
+                            <input
+                              value={newVariant.color}
+                              onChange={(e) => setNewVariant({...newVariant, color: e.target.value})}
+                              className="ui__form__field"
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Size</label>
+                            <input
+                              value={newVariant.size}
+                              onChange={(e) => setNewVariant({...newVariant, size: e.target.value})}
+                              className="ui__form__field"
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Base Price</label>
+                            <input
+                              type="number"
+                              value={newVariant.baseprice}
+                              onChange={(e) => {
+                                const bp = Number(e.target.value);
+                                const fp = Math.round(bp - (bp * newVariant.discount) / 100);
+                                setNewVariant({...newVariant, baseprice: bp, finalprice: fp});
+                              }}
+                              className="ui__form__field"
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Discount (%)</label>
+                            <input
+                              type="number"
+                              value={newVariant.discount}
+                              onChange={(e) => {
+                                const disc = Number(e.target.value);
+                                const fp = Math.round(newVariant.baseprice - (newVariant.baseprice * disc) / 100);
+                                setNewVariant({...newVariant, discount: disc, finalprice: fp});
+                              }}
+                              className="ui__form__field"
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Stock</label>
+                            <input
+                              type="number"
+                              value={newVariant.stock}
+                              onChange={(e) => setNewVariant({...newVariant, stock: Number(e.target.value)})}
+                              className="ui__form__field"
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Final Price</label>
+                            <input
+                              value={newVariant.finalprice}
+                              readOnly
+                              className="ui__form__field"
+                              style={{ backgroundColor: '#f8f9fa' }}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-12">
+                          <div className="ui__form">
+                            <label className="ui__form__label">Description</label>
+                            <textarea
+                              value={newVariant.description}
+                              onChange={(e) => setNewVariant({...newVariant, description: e.target.value})}
+                              rows="3"
+                              className="ui__form__field"
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-12">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!newVariant.color || !newVariant.size || !newVariant.baseprice) {
+                                alert('Please fill all required fields');
+                                return;
+                              }
+                              setVariants([...variants, {...newVariant}]);
+                              setNewVariant({
+                                color: '',
+                                size: '',
+                                innerSlug: '',
+                                innerSubSlug: '',
+                                stock: 0,
+                                finalprice: 0,
+                                baseprice: 0,
+                                discount: 0,
+                                description: 'This is a sample variant description',
+                                variantDescription: '',
+                                specifications: [{ key: '', value: '' }]
+                              });
+                            }}
+                            className="btn btn-success"
+                          >
+                            Add Variant
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* EXISTING VARIANTS SECTION */}
                   {variants && variants.length > 0 ? (
                     <div className="card mt-4 mb-4">
                       <div className="card-header bg-light">
@@ -490,7 +730,19 @@ export default function VendorUpdateProduct() {
                       <div className="card-body">
                         {variants.map((variant, idx) => (
                           <div key={idx} className="border p-3 mb-3 rounded">
-                            <h6>Variant {idx + 1}</h6>
+                            <div className="d-flex justify-content-between align-items-center">
+                              <h6>Variant {idx + 1}</h6>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newVariants = variants.filter((_, i) => i !== idx);
+                                  setVariants(newVariants);
+                                }}
+                                className="btn btn-danger btn-sm"
+                              >
+                                Remove
+                              </button>
+                            </div>
                             <div className="row">
                               <div className="col-md-6">
                                 <div className="ui__form">
@@ -505,8 +757,8 @@ export default function VendorUpdateProduct() {
                                     className="ui__form__field"
                                   >
                                     <option value="">Select Inner Slug</option>
-                                    {allSlugs.map((item, index) => (
-                                      <option key={index} value={item._id}>{item.name || item.slug}</option>
+                                    {innerSlugs.map((slug, index) => (
+                                      <option key={index} value={slug}>{slug}</option>
                                     ))}
                                   </select>
                                 </div>
@@ -524,8 +776,8 @@ export default function VendorUpdateProduct() {
                                     className="ui__form__field"
                                   >
                                     <option value="">Select Inner Sub Slug</option>
-                                    {allSubSlugs.map((item, index) => (
-                                      <option key={index} value={item._id}>{item.name || item.slug}</option>
+                                    {innerSubSlugs.map((subSlug, index) => (
+                                      <option key={index} value={subSlug}>{subSlug}</option>
                                     ))}
                                   </select>
                                 </div>
@@ -563,11 +815,14 @@ export default function VendorUpdateProduct() {
                                   <label className="ui__form__label">Base Price</label>
                                   <input
                                     type="number"
-                                    value={variant.baseprice}
+                                    value={variant.baseprice || ""}
                                     onChange={(e) => {
                                       const newVariants = [...variants];
-                                      newVariants[idx].baseprice = Number(e.target.value);
-                                      newVariants[idx].finalprice = Math.round(newVariants[idx].baseprice - (newVariants[idx].baseprice * newVariants[idx].discount) / 100);
+                                      const basepriceValue = e.target.value === "" ? 0 : Number(e.target.value);
+                                      console.log(`Updating variant ${idx} baseprice from ${newVariants[idx].baseprice} to ${basepriceValue}`);
+                                      newVariants[idx].baseprice = basepriceValue;
+                                      newVariants[idx].finalprice = Math.round((basepriceValue || 0) - ((basepriceValue || 0) * (newVariants[idx].discount || 0)) / 100);
+                                      console.log(`New final price for variant ${idx}:`, newVariants[idx].finalprice);
                                       setVariants(newVariants);
                                     }}
                                     className="ui__form__field"
@@ -579,11 +834,23 @@ export default function VendorUpdateProduct() {
                                   <label className="ui__form__label">Discount (%)</label>
                                   <input
                                     type="number"
-                                    value={variant.discount}
+                                    value={variant.discount || 0}
                                     onChange={(e) => {
+                                      console.log(`Variant ${idx} discount change:`, e.target.value);
                                       const newVariants = [...variants];
-                                      newVariants[idx].discount = Number(e.target.value);
-                                      newVariants[idx].finalprice = Math.round(newVariants[idx].baseprice - (newVariants[idx].baseprice * newVariants[idx].discount) / 100);
+                                      const discountValue = Number(e.target.value) || 0;
+                                      const baseprice = Number(newVariants[idx].baseprice) || 0;
+                                      const newFinalprice = Math.round(baseprice - (baseprice * discountValue) / 100);
+                                      
+                                      console.log(`Variant ${idx} - Baseprice: ${baseprice}, Discount: ${discountValue}%, New Finalprice: ${newFinalprice}`);
+                                      
+                                      newVariants[idx] = {
+                                        ...newVariants[idx],
+                                        discount: discountValue,
+                                        finalprice: newFinalprice
+                                      };
+                                      
+                                      console.log(`Updated variant ${idx}:`, newVariants[idx]);
                                       setVariants(newVariants);
                                     }}
                                     className="ui__form__field"
@@ -595,10 +862,10 @@ export default function VendorUpdateProduct() {
                                   <label className="ui__form__label">Stock</label>
                                   <input
                                     type="number"
-                                    value={variant.stock}
+                                    value={variant.stock || ""}
                                     onChange={(e) => {
                                       const newVariants = [...variants];
-                                      newVariants[idx].stock = Number(e.target.value);
+                                      newVariants[idx].stock = e.target.value === "" ? "" : Number(e.target.value);
                                       setVariants(newVariants);
                                     }}
                                     className="ui__form__field"
@@ -609,7 +876,7 @@ export default function VendorUpdateProduct() {
                                 <div className="ui__form">
                                   <label className="ui__form__label">Final Price (Auto-calculated)</label>
                                   <input
-                                    value={Math.round(variant.baseprice - (variant.baseprice * variant.discount) / 100) || 0}
+                                    value={variant.finalprice || 0}
                                     readOnly
                                     className="ui__form__field"
                                     style={{ backgroundColor: '#f8f9fa' }}
@@ -788,7 +1055,7 @@ export default function VendorUpdateProduct() {
                             <div className="ui__form">
                               <label className="ui__form__label">Final Price (Auto-calculated)</label>
                               <input
-                                value={Math.round(data.baseprice - (data.baseprice * data.discount) / 100) || 0}
+                                value={Math.round((data.baseprice || 0) - ((data.baseprice || 0) * (data.discount || 0)) / 100) || 0}
                                 readOnly
                                 className="ui__form__field"
                                 style={{ backgroundColor: '#f8f9fa' }}
@@ -856,16 +1123,20 @@ export default function VendorUpdateProduct() {
                     <button
                       type="submit"
                       className="ui__form__button w-100"
+                      onClick={(e) => {
+                        console.log("=== UPDATE BUTTON CLICKED ===");
+                        console.log("Current data state:", data);
+                        console.log("Current variants state:", variants);
+                        console.log("Current specs state:", specsData);
+                        console.log("Error messages:", errorMessage);
+                      }}
                     >
                       Update Product
                     </button>
                   </div>
                 </form>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
-    </div>
+    </Wrapper>
   );
 }
