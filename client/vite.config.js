@@ -12,6 +12,17 @@ export default defineConfig({
     host: '0.0.0.0'
   },
   build: {
-    outDir: 'dist'
+    outDir: 'dist',
+    sourcemap: false,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          ui: ['@mui/material', '@mui/icons-material']
+        }
+      }
+    }
   }
 })
