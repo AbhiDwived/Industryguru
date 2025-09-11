@@ -33,4 +33,5 @@ RUN echo 'server { \
 
 EXPOSE 3000
 
-CMD ["nginx", "-g", "daemon off;"]
+# Start nginx
+CMD ["sh", "-c", "nginx -g 'daemon off;'"]
