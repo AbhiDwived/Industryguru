@@ -1,0 +1,14 @@
+[providers]
+static = true
+
+[phases.setup]
+nixPkgs = []
+
+[phases.install]
+cmds = []
+
+[phases.build]
+cmds = []
+
+[start]
+cmd = "nginx -g 'daemon off;'"
