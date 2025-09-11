@@ -15,7 +15,10 @@ export default {
   preview: {
     port: 3000,
     host: '0.0.0.0',
-    allowedHosts: 'all'
+    allowedHosts: [
+      'all',
+      'industryguru-frontend-1neygd-23b016-147-93-18-171.traefik.me'
+    ]
   },
   build: {
     outDir: 'dist'
