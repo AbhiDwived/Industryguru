@@ -1,30 +1,37 @@
-# Static nginx approach - no build step
+# Build stage
+FROM node:20-alpine as build
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Build the app
+RUN npm run build
+
+# Production stage
 FROM nginx:alpine
 
-# Remove default nginx files
-RUN rm -rf /usr/share/nginx/html/*
+# Copy built app to nginx
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy pre-built static files
-COPY dist/ /usr/share/nginx/html/
-
-# Create nginx configuration for SPA
+# Copy nginx config for SPA
 RUN echo 'server { \
-    listen 3000 default_server; \
-    listen [::]:3000 default_server; \
-    root /usr/share/nginx/html; \
-    index index.html; \
+    listen 3000; \
     location / { \
+        root /usr/share/nginx/html; \
+        index index.html index.htm; \
         try_files $uri $uri/ /index.html; \
-    } \
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ { \
-        expires 1y; \
-        add_header Cache-Control "public, immutable"; \
     } \
 }' > /etc/nginx/conf.d/default.conf
 
-# Remove default nginx config
-RUN rm /etc/nginx/conf.d/default.conf.dpkg-dist 2>/dev/null || true
-
 EXPOSE 3000
 
-CMD ["nginx", "-g", "daemon off;"]
+# Start nginx
+CMD ["sh", "-c", "nginx -g 'daemon off;'"]
