@@ -1,8 +1,13 @@
 {
-  "buildCommand": "cd client && npm ci && npm run build",
+  "buildCommand": "cd client && rm -rf node_modules package-lock.json && npm install && npm run build",
   "outputDirectory": "client/dist",
   "installCommand": "npm install --prefix client",
   "framework": null,
+  "functions": {
+    "app": {
+      "runtime": "nodejs20.x"
+    }
+  },
   "routes": [
     {
       "handle": "filesystem"
