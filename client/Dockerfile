@@ -1,47 +1,36 @@
-FROM node:20-alpine as builder
+# Build stage
+FROM node:20-alpine as build
 
-# Create app directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Install app dependencies
+# Copy package files
 COPY package*.json ./
-RUN npm ci --only=production
 
-# Copy app source
+# Install dependencies
+RUN npm ci
+
+# Copy source code
 COPY . .
 
-# Build stage for production
-FROM node:20-alpine
+# Build the app
+RUN npm run build
 
-# Set environment variables
-ENV NODE_ENV=production
-ENV PORT=5000
+# Production stage
+FROM nginx:alpine
 
-# Create non-root user for security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S -u 1001 -G nodejs nodeuser
+# Copy built app to nginx
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Create app directory
-WORKDIR /usr/src/app
+# Copy nginx config for SPA
+RUN echo 'server { \
+    listen 3000; \
+    location / { \
+        root /usr/share/nginx/html; \
+        index index.html index.htm; \
+        try_files $uri $uri/ /index.html; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
 
-# Copy from builder stage
-COPY --from=builder --chown=nodeuser:nodejs /usr/src/app/node_modules ./node_modules
-COPY --chown=nodeuser:nodejs . .
+EXPOSE 3000
 
-# Create uploads directory with proper permissions
-RUN mkdir -p uploads/temp && \
-    mkdir -p logs && \
-    chown -R nodeuser:nodejs uploads logs
-
-# Switch to non-root user
-USER nodeuser
-
-# Expose port
-EXPOSE 5000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-  CMD wget -qO- http://localhost:5000/health || exit 1
-
-# Start the server
-CMD ["node", "server.js"]
+CMD ["nginx", "-g", "daemon off;"]
