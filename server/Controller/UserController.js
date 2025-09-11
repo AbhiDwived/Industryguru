@@ -173,7 +173,14 @@ async function verifyOtp(req, res) {
 async function getAllUser(req, res) {
   try {
     var data = await User.find().sort({ _id: -1 });
-    res.send({ result: "Done", count: data.length, data: data });
+    // Sanitize user data before sending
+    const sanitizedData = data.map(user => ({
+      ...user.toObject(),
+      name: user.name ? String(user.name).replace(/[<>"'&]/g, '') : user.name,
+      email: user.email ? String(user.email).replace(/[<>"'&]/g, '') : user.email,
+      username: user.username ? String(user.username).replace(/[<>"'&]/g, '') : user.username
+    }));
+    res.send({ result: "Done", count: sanitizedData.length, data: sanitizedData });
   } catch (error) {
     res
       .status(500)

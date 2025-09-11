@@ -686,7 +686,7 @@ async function deleteProductByVendor(req, res) {
 
 async function searchProduct(req, res) {
   try {
-    const search = req.body.search;
+    const search = req.body.search ? String(req.body.search).replace(/[<>"'&$]/g, '') : '';
     var data = await Product.find({
       $or: [
         { name: { $regex: search, $options: "i" } },

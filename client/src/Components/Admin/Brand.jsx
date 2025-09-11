@@ -39,7 +39,7 @@ export default function Brand() {
                     >
                         {params.value ? params.value.charAt(0) : 'N'}
                     </Avatar>
-                    <Typography variant="body1">{params.value || 'No Name'}</Typography>
+                    <Typography variant="body1">{params.value ? String(params.value).replace(/[<>"'&]/g, '') : 'No Name'}</Typography>
                 </Box>
             )
         },

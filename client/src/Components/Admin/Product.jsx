@@ -68,7 +68,7 @@ export default function Product() {
           >
             {params.value.charAt(0)}
           </Avatar>
-          <Typography variant="body1">{params.value}</Typography>
+          <Typography variant="body1">{String(params.value).replace(/[<>"'&]/g, '')}</Typography>
         </Box>
       )
     },
@@ -78,7 +78,7 @@ export default function Product() {
       width: 150,
       renderCell: (params) => (
         <Chip 
-          label={params.value}
+          label={String(params.value).replace(/[<>"'&]/g, '')}
           size="small"
           sx={{ 
             bgcolor: '#e8eaff',
@@ -95,7 +95,7 @@ export default function Product() {
       width: 150,
       renderCell: (params) => (
         <Chip 
-          label={params.value}
+          label={String(params.value).replace(/[<>"'&]/g, '')}
           size="small"
           sx={{ 
             bgcolor: '#f0f4ff',

@@ -1,12 +1,13 @@
 import { apiLink } from "../../utils/utils";
+import { addCSRFHeaders } from "../../utils/csrf";
 
 export async function addProductAPI(data) {
   const link = localStorage.getItem("role") == "Vendor" ? `${apiLink}/api/vendor-product` : `${apiLink}/api/product`;
   var response = await fetch(link, {
     method: "post",
-    headers: {
+    headers: addCSRFHeaders({
       authorization: localStorage.getItem("token"),
-    },
+    }),
     body: data,
   });
   return await response.json();
@@ -133,10 +134,10 @@ export async function getProductByBrandAPI(id) {
 export async function deleteProductAPI(data) {
   var response = await fetch(`${apiLink}/api/product/` + data._id, {
     method: "delete",
-    headers: {
+    headers: addCSRFHeaders({
       "content-type": "application/json",
       authorization: localStorage.getItem("token"),
-    },
+    }),
   });
   return await response.json();
 }
@@ -151,9 +152,9 @@ export async function updateProductAPI(data) {
   try {
     var response = await fetch(link, {
       method: "put",
-      headers: {
+      headers: addCSRFHeaders({
         authorization: localStorage.getItem("token"),
-      },
+      }),
       body: data,
     });
     
