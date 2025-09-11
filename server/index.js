@@ -3,38 +3,30 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
-const helmet = require("helmet");
-require('./Controller/UserController')
-
 const port = process.env.PORT || 8001;
 
 dotenv.config();
 
-const router = require("./Routes/index");
+try {
+  require('./Controller/UserController');
+} catch (error) {
+  console.error('❌ Error loading UserController:', error.message);
+}
 
-require("./dbConnect");
+let router;
+try {
+  router = require("./Routes/index");
+} catch (error) {
+  console.error('❌ Error loading routes:', error.message);
+  process.exit(1);
+}
+
+try {
+  require("./dbConnect");
+} catch (error) {
+  console.error('❌ Database connection error:', error.message);
+}
 const app = express();
-
-// Security middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https:"],
-      scriptSrc: ["'self'", "https:"],
-      imgSrc: ["'self'", "data:", "https:"],
-    },
-  },
-}));
-
-// Rate limiting
-const rateLimit = require("express-rate-limit");
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: "Too many requests from this IP, please try again later."
-});
-app.use(limiter);
 
 app.use(express.urlencoded({ extended: true }))
 app.use(cors());
@@ -99,7 +91,12 @@ app.get("/", (req, res) => {
 
 // Health check endpoint for Docker
 app.get("/health", (req, res) => {
-  res.status(200).json({ status: "OK", timestamp: new Date().toISOString() });
+  res.status(200).json({ 
+    status: "OK", 
+    timestamp: new Date().toISOString(),
+    port: port,
+    env: process.env.NODE_ENV || 'development'
+  });
 });
 
 app.use("*", express.static(path.join(__dirname, "build")));
