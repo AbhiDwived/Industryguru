@@ -18,7 +18,8 @@ export default {
     allowedHosts: [
       'all',
       'industryguru-frontend-1neygd-23b016-147-93-18-171.traefik.me',
-      'industryguru.in'
+      'industryguru.in',
+      'www.industryguru.in'
     ]
   },
   build: {
