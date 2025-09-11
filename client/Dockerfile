@@ -15,23 +15,25 @@ COPY . .
 # Build the app
 RUN npm run build
 
-# Production stage
-FROM nginx:alpine
+# Production stage - use Node.js with serve
+FROM node:20-alpine
 
-# Copy built app to nginx
-COPY --from=build /app/dist /usr/share/nginx/html
+WORKDIR /app
 
-# Copy nginx config for SPA
-RUN echo 'server { \
-    listen 3000; \
-    location / { \
-        root /usr/share/nginx/html; \
-        index index.html index.htm; \
-        try_files $uri $uri/ /index.html; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
+# Install serve globally
+RUN npm install -g serve
+
+# Copy built app
+COPY --from=build /app/dist ./dist
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S -u 1001 -G nodejs nodeuser && \
+    chown -R nodeuser:nodejs /app
+
+USER nodeuser
 
 EXPOSE 3000
 
-# Start nginx
-CMD ["sh", "-c", "nginx -g 'daemon off;'"]
+# Start the app
+CMD ["serve", "-s", "dist", "-l", "3000"]
