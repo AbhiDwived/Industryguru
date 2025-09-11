@@ -3,11 +3,7 @@
   "outputDirectory": "client/dist",
   "installCommand": "npm install --prefix client",
   "framework": null,
-  "functions": {
-    "app": {
-      "runtime": "nodejs20.x"
-    }
-  },
+
   "routes": [
     {
       "handle": "filesystem"
