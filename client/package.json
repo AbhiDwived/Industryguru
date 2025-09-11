@@ -57,7 +57,7 @@
   "scripts": {
     "dev": "npx vite",
     "start": "npx serve -s dist -l 3000 -n",
-    "build": "vite build",
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' vite build",
     "preview": "npx vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },

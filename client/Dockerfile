@@ -1,13 +1,16 @@
-# Build stage
-FROM node:20-alpine as build
+# Use Node.js 18 for better compatibility
+FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Set memory limit for Node.js
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 
-# Install dependencies (remove lock file first to avoid conflicts)
-RUN rm -f package-lock.json && npm install
+# Copy package files
+COPY package.json ./
+
+# Install dependencies with legacy peer deps to avoid conflicts
+RUN npm install --legacy-peer-deps --production=false
 
 # Copy source code
 COPY . .
@@ -15,17 +18,8 @@ COPY . .
 # Build the app
 RUN npm run build
 
-# Production stage - use Node.js with serve
-FROM node:20-alpine
-
-WORKDIR /app
-
 # Install serve globally
 RUN npm install -g serve
-
-# Copy built app and serve config
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/serve.json ./serve.json
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
@@ -36,5 +30,5 @@ USER nodeuser
 
 EXPOSE 3000
 
-# Start the app using serve.json config
-CMD ["serve", "-l", "3000", "-n"]
+# Start the app
+CMD ["serve", "-s", "dist", "-l", "3000", "-n"]
