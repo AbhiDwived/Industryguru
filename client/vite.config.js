@@ -4,7 +4,7 @@ export default {
     host: '0.0.0.0',
     proxy: {
       '/api': {
-        target: 'http://localhost:8001',
+        target: 'https://industryguru-backend-msj9ri-6fb126-147-93-18-171.traefik.me',
         changeOrigin: true,
         secure: false,
       }
