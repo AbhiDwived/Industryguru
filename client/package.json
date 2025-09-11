@@ -55,7 +55,7 @@
   },
   "scripts": {
     "dev": "npx vite",
-    "start": "npx vite",
+    "start": "npx vite preview --host 0.0.0.0 --port 3000",
     "build": "vite build",
     "preview": "npx vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
