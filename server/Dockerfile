@@ -15,7 +15,7 @@ FROM node:20-alpine
 
 # Set environment variables
 ENV NODE_ENV=production
-ENV PORT=5000
+ENV PORT=8001
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
@@ -37,11 +37,11 @@ RUN mkdir -p uploads/temp && \
 USER nodeuser
 
 # Expose port
-EXPOSE 5000
+EXPOSE 8001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-  CMD wget -qO- http://localhost:5000/health || exit 1
+  CMD wget -qO- http://localhost:8001/health || exit 1
 
 # Start the server
 CMD ["node", "index.js"]

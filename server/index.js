@@ -115,7 +115,7 @@ app.use((err, req, res, next) => {
 
 const startServer = async (port) => {
   try {
-    const server = app.listen(port, () => {
+    const server = app.listen(port, '0.0.0.0', () => {
       console.log(`Server is running at PORT ${port}`);
     });
 
