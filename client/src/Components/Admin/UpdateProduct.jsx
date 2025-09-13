@@ -170,6 +170,8 @@ export default function UpdateProduct() {
       item.append("brand", data.brand || "");
       item.append("slug", data.slug || "");
       item.append("subSlug", data.subSlug || "");
+      item.append("innerSlug", data.innerSlug || "");
+      item.append("innerSubSlug", data.innerSubSlug || "");
       item.append("color", data.color || "");
       item.append("size", data.size || "");
       item.append("baseprice", parseInt(data.baseprice || 0));
@@ -218,6 +220,26 @@ export default function UpdateProduct() {
 
 
   useEffect(() => {
+    // Clear existing data first
+    setData({
+      name: "",
+      maincategory: "",
+      subcategory: "",
+      brand: "",
+      slug: "",
+      subSlug: "",
+      innerSlug: "",
+      innerSubSlug: "",
+      color: "",
+      size: "",
+      baseprice: "",
+      discount: "",
+      stock: "",
+      description: "",
+      defaultDescription: "",
+      variantDescription: ""
+    });
+    
     dispatch(getMaincategory());
     dispatch(getBrand());
     dispatch(getAdminSlug());
@@ -229,6 +251,21 @@ export default function UpdateProduct() {
     }
     // eslint-disable-next-line
   }, [_id]);
+
+  // Force reload sub-slugs when slugs are loaded
+  useEffect(() => {
+    if (allSlugs.length > 0) {
+      dispatch(getAdminSubSlug());
+    }
+  }, [allSlugs.length, dispatch]);
+
+  // Separate useEffect to handle slug-based sub-slug loading
+  useEffect(() => {
+    if (data.slug && allSlugs.length > 0) {
+      console.log("Loading sub-slugs for slug:", data.slug);
+      dispatch(getAdminSubSlugByParent(data.slug));
+    }
+  }, [data.slug, allSlugs.length, dispatch]);
 
   const fetchProductData = async () => {
     try {
@@ -254,6 +291,8 @@ export default function UpdateProduct() {
           subcategory: item?.subcategory?._id || item?.subcategory,
           slug: item?.slug?._id || item?.slug,
           subSlug: item?.subSlug?._id || item?.subSlug,
+          innerSlug: item?.innerSlug || "",
+          innerSubSlug: item?.innerSubSlug || "",
           defaultDescription: item.defaultDescription || "",
           variantDescription: item.variantDescription || ""
         });
@@ -264,6 +303,8 @@ export default function UpdateProduct() {
           ...variant,
           defaultDescription: variant.description || variant.defaultDescription || "",
           variantDescription: variant.variantDescription || variant.additionalDescription || "",
+          innerSlug: variant.innerSlug || variant.inner_slug || "",
+          innerSubSlug: variant.innerSubSlug || variant.inner_sub_slug || "",
           specifications: variant.specification && variant.specification.length > 0 ? variant.specification : [{ key: "", value: "" }]
         }));
         setVariants(updatedVariants);
@@ -278,60 +319,36 @@ export default function UpdateProduct() {
           dispatch(getBrandBySubCategoryId(item?.subcategory?._id || item?.subcategory));
         }
         if (item?.slug?._id || item?.slug) {
-          dispatch(getAdminSubSlugByParent(item?.slug?._id || item?.slug));
+          setTimeout(() => {
+            dispatch(getAdminSubSlugByParent(item?.slug?._id || item?.slug));
+          }, 100);
         }
+        
+        console.log("Product data loaded with slug:", item?.slug, "and subSlug:", item?.subSlug);
       }
     } catch (error) {
       console.error("Error fetching admin product:", error);
     }
   };
 
+  // Debug useEffect to monitor slug data
+  useEffect(() => {
+    console.log("Slug data changed:", {
+      allSlugs: allSlugs.length,
+      allSubSlugs: allSubSlugs.length,
+      allSubSlugsData: allSubSlugs,
+      currentSlug: data.slug,
+      currentSubSlug: data.subSlug,
+      filteredSubSlugs: allSubSlugs.filter(item => !data.slug || item.parentSlug === data.slug)
+    });
+  }, [allSlugs, allSubSlugs, data.slug, data.subSlug]);
+
   useEffect(() => {
     if (allmaincategories.length) setMaincategory(allmaincategories);
     if (allsubcategories.length) setSubcategory(allsubcategories);
     if (allbrands.length) setBrand(allbrands);
-
-    if (allproducts.length && _id) {
-      let item = allproducts.find((x) => x._id === _id);
-      if (item && !data.name) {
-        console.log('Loading product data:', item);
-        setData({ 
-          ...item, 
-          brand: item?.brand?._id || item?.brand,
-          maincategory: item?.maincategory?._id || item?.maincategory,
-          subcategory: item?.subcategory?._id || item?.subcategory,
-          slug: item?.slug?._id || item?.slug,
-          subSlug: item?.subSlug?._id || item?.subSlug,
-
-          defaultDescription: item.defaultDescription || "",
-          variantDescription: item.variantDescription || "",
-          baseprice: item.baseprice || 0,
-          discount: item.discount || 0,
-          stock: item.stock || 0
-        });
-        setSpecsData(item.specification && item.specification.length > 0 ? item.specification : [{ key: "", value: "" }]);
-        const updatedVariants = (item.variants || []).map(variant => ({
-          ...variant,
-          defaultDescription: variant.description || "",
-          variantDescription: variant.variantDescription || "",
-          specifications: variant.specification && variant.specification.length > 0 ? variant.specification : [{ key: "", value: "" }]
-        }));
-        setVariants(updatedVariants);
-        
-        // Load related data for the current product
-        if (item?.maincategory?._id || item?.maincategory) {
-          dispatch(getSubcategoryByMainId(item?.maincategory?._id || item?.maincategory));
-        }
-        if (item?.subcategory?._id || item?.subcategory) {
-          dispatch(getBrandBySubCategoryId(item?.subcategory?._id || item?.subcategory));
-        }
-        if (item?.slug?._id || item?.slug) {
-          dispatch(getAdminSubSlugByParent(item?.slug?._id || item?.slug));
-        }
-      }
-    }
     // eslint-disable-next-line
-  }, [allproducts.length, allmaincategories.length, allsubcategories.length, allbrands.length, allSlugs.length, allSubSlugs.length]);
+  }, [allmaincategories.length, allsubcategories.length, allbrands.length]);
   return (
     <div className="page_section">
       <div className="container-fluid my-3">
@@ -435,9 +452,13 @@ export default function UpdateProduct() {
                               className="ui__form__field"
                             >
                               <option value="">Select Slug</option>
-                              {allSlugs.map((item, index) => (
-                                <option key={index} value={item._id}>{item.slug}</option>
-                              ))}
+                              {allSlugs.length === 0 ? (
+                                <option disabled>Loading slugs...</option>
+                              ) : (
+                                allSlugs.map((item, index) => (
+                                  <option key={index} value={item._id}>{item.slug}</option>
+                                ))
+                              )}
                             </select>
                           </div>
                         </div>
@@ -451,10 +472,18 @@ export default function UpdateProduct() {
                               className="ui__form__field"
                               disabled={!data.slug}
                             >
-                              <option value="">Select Sub Slug</option>
-                              {allSubSlugs.map((item, index) => (
-                                <option key={index} value={item._id}>{item.slug}</option>
-                              ))}
+                              <option value="">
+                                {!data.slug ? "Select Slug first" : "Select Sub Slug"}
+                              </option>
+                              {allSubSlugs
+                                .filter(item => {
+                                  if (!data.slug) return true;
+                                  const parentId = typeof item.parentSlug === 'object' ? item.parentSlug?._id : item.parentSlug;
+                                  return parentId === data.slug;
+                                })
+                                .map((item, index) => (
+                                  <option key={index} value={item._id}>{item.name || item.slug}</option>
+                                ))}
                             </select>
                           </div>
                         </div>
@@ -466,10 +495,9 @@ export default function UpdateProduct() {
                       <div className="row">
                         {[1, 2, 3, 4].map((num) => {
                           const picKey = `pic${num}`;
-                          const currentProduct = allproducts.find(p => p._id === _id);
-                          const existingImage = currentProduct?.[picKey];
-                          const newImage = data[picKey];
-                          const imageUrl = (newImage && newImage instanceof File) ? URL.createObjectURL(newImage) : (existingImage ? `${apiLink}/products/${existingImage}` : null);
+                          const existingImage = data[picKey] && typeof data[picKey] === 'string' ? data[picKey] : null;
+                          const newImage = data[picKey] && data[picKey] instanceof File ? data[picKey] : null;
+                          const imageUrl = newImage ? URL.createObjectURL(newImage) : (existingImage ? `${apiLink}/products/${existingImage}` : null);
                           
                           return (
                             <div key={num} className="col-md-6 mb-3">
@@ -510,7 +538,46 @@ export default function UpdateProduct() {
                           <div key={idx} className="border p-3 mb-3 rounded">
                             <h6>Variant {idx + 1}</h6>
                             <div className="row">
-
+                              <div className="col-md-6">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Inner Slug</label>
+                                  <select
+                                    value={variant.innerSlug || ""}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].innerSlug = e.target.value;
+                                      setVariants(newVariants);
+                                    }}
+                                    className="ui__form__field"
+                                    disabled={!data.slug}
+                                  >
+                                    <option value="">Select Inner Slug</option>
+                                    {data.slug && allSlugs.find(s => s._id === data.slug)?.innerSlugs?.map((innerSlug, index) => (
+                                      <option key={index} value={innerSlug}>{innerSlug}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="col-md-6">
+                                <div className="ui__form">
+                                  <label className="ui__form__label">Inner Sub Slug</label>
+                                  <select
+                                    value={variant.innerSubSlug || ""}
+                                    onChange={(e) => {
+                                      const newVariants = [...variants];
+                                      newVariants[idx].innerSubSlug = e.target.value;
+                                      setVariants(newVariants);
+                                    }}
+                                    className="ui__form__field"
+                                    disabled={!data.subSlug}
+                                  >
+                                    <option value="">Select Inner Sub Slug</option>
+                                    {data.subSlug && allSubSlugs.find(s => s._id === data.subSlug)?.innerSubSlugs?.map((innerSubSlug, index) => (
+                                      <option key={index} value={innerSubSlug}>{innerSubSlug}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </div>
                               <div className="col-md-6">
                                 <div className="ui__form">
                                   <label className="ui__form__label">Color</label>

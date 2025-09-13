@@ -5,13 +5,46 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Button, Box, Typography, Paper, Avatar, Chip } from "@mui/material";
 
 import { getProduct, deleteProduct } from "../../Store/ActionCreators/ProductActionCreators";
+import { getMaincategory } from "../../Store/ActionCreators/MaincategoryActionCreators";
+import { getSubcategory } from "../../Store/ActionCreators/SubcategoryActionCreators";
+import { getBrand } from "../../Store/ActionCreators/BrandActionCreators";
 import { useDispatch, useSelector } from "react-redux";
 import { apiLink } from "../../utils/utils";
 
 export default function Product() {
   var dispatch = useDispatch();
   var allproducts = useSelector((state) => state.ProductStateData);
+  var allMaincategories = useSelector((state) => state.MaincategoryStateData);
+  var allSubcategories = useSelector((state) => state.SubcategoryStateData);
+  var allBrands = useSelector((state) => state.BrandStateData);
   var navigate = useNavigate();
+
+  // Helper functions to get names by ID
+  const getMaincategoryName = (id) => {
+    if (!id || !allMaincategories.length) return "N/A";
+    const category = allMaincategories.find(cat => cat._id === id);
+    return category?.name || "N/A";
+  };
+
+  const getSubcategoryName = (id) => {
+    if (!id || !allSubcategories.length) return "N/A";
+    const category = allSubcategories.find(cat => cat._id === id);
+    return category?.name || "N/A";
+  };
+
+  const getBrandName = (brandValue) => {
+    if (!brandValue || !allBrands.length) return "N/A";
+    
+    // Handle if brand is already an object with name
+    if (typeof brandValue === 'object' && brandValue.name) {
+      return brandValue.name;
+    }
+    
+    // Handle if brand is an ID string
+    const brandId = typeof brandValue === 'object' ? brandValue._id : brandValue;
+    const brand = allBrands.find(br => br._id === brandId);
+    return brand?.name || "N/A";
+  };
   
   const columns = [
     {
@@ -78,7 +111,7 @@ export default function Product() {
       width: 150,
       renderCell: (params) => (
         <Chip 
-          label={String(params.value).replace(/[<>"'&]/g, '')}
+          label={getMaincategoryName(params.value)}
           size="small"
           sx={{ 
             bgcolor: '#e8eaff',
@@ -95,7 +128,7 @@ export default function Product() {
       width: 150,
       renderCell: (params) => (
         <Chip 
-          label={String(params.value).replace(/[<>"'&]/g, '')}
+          label={getSubcategoryName(params.value)}
           size="small"
           sx={{ 
             bgcolor: '#f0f4ff',
@@ -113,7 +146,7 @@ export default function Product() {
       renderCell: ({ row }) => {
         return (
           <Chip 
-            label={row?.brand?._id || "N/A"}
+            label={getBrandName(row.brand)}
             size="small"
             sx={{ 
               bgcolor: '#f5f5f5',
@@ -411,12 +444,15 @@ export default function Product() {
   
   function getAPIData() {
     dispatch(getProduct());
+    dispatch(getMaincategory());
+    dispatch(getSubcategory());
+    dispatch(getBrand());
   }
   
   useEffect(() => {
     getAPIData();
     // eslint-disable-next-line
-  }, [allproducts.length]);
+  }, []);
   
   return (
     <div className="page_section">
