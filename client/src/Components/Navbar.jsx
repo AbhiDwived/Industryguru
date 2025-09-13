@@ -21,7 +21,7 @@ import "./BrandSlider.css";
 export default function Navbar({ product }) {
   var [user, setUser] = useState({});
   var [search, setSearch] = useState("");
-  var [setProduct] = useState([]);
+  var [products, setProduct] = useState([]);
   var allProducts = useSelector((state) => state.ProductStateData);
   var allMaincategories = useSelector((state) => state.MaincategoryStateData);
   var allSubcategories = useSelector((state) => state.SubcategoryStateData);
@@ -77,10 +77,8 @@ export default function Navbar({ product }) {
       }
     );
     response = await response.json();
-    if (query.get("search")) searchPage();
-    else if (allProducts.length)
-      if (response.result === "Done") setUser(response.data);
-      else navigate("/login");
+    if (response.result === "Done") setUser(response.data);
+    else navigate("/login");
   }
 
   function useQuery() {
@@ -99,60 +97,71 @@ export default function Navbar({ product }) {
     const handleResize = () => {
       setShowMobileMenu(window.innerWidth <= 500);
     };
-    // Call handleResize initially
     handleResize();
+    
     const container = containerRef.current;
-    window.addEventListener("resize", handleResize);
+    if (container) {
+      window.addEventListener("resize", handleResize);
 
-    const cloneChildren = () => {
-      const children = container.children;
-      if (children.length > 0) {
-        const firstChild = children[0].cloneNode(true);
-        const lastChild = children[children.length - 1].cloneNode(true);
+      const cloneChildren = () => {
+        const children = container.children;
+        if (children.length > 0) {
+          const firstChild = children[0].cloneNode(true);
+          const lastChild = children[children.length - 1].cloneNode(true);
 
-        container.appendChild(firstChild);
-        container.insertBefore(lastChild, container.firstChild);
-      }
-    };
+          container.appendChild(firstChild);
+          container.insertBefore(lastChild, container.firstChild);
+        }
+      };
 
-    cloneChildren();
+      cloneChildren();
 
-    let scrollAmount = 1;
+      let scrollAmount = 1;
 
-    const startScrolling = () => {
-      container.scrollLeft += scrollAmount;
+      const startScrolling = () => {
+        container.scrollLeft += scrollAmount;
 
-      if (
-        container.scrollLeft >=
-        container.scrollWidth - container.clientWidth
-      ) {
-        container.scrollLeft = 0;
-      }
-    };
+        if (
+          container.scrollLeft >=
+          container.scrollWidth - container.clientWidth
+        ) {
+          container.scrollLeft = 0;
+        }
+      };
 
-    let scrollInterval = setInterval(startScrolling, 15);
+      let scrollInterval = setInterval(startScrolling, 15);
 
-    const handleMouseEnter = () => {
-      clearInterval(scrollInterval);
-    };
+      const handleMouseEnter = () => {
+        clearInterval(scrollInterval);
+      };
 
-    const handleMouseLeave = () => {
-      scrollInterval = setInterval(startScrolling, 15);
-    };
+      const handleMouseLeave = () => {
+        scrollInterval = setInterval(startScrolling, 15);
+      };
 
-    container.addEventListener("mouseenter", handleMouseEnter);
-    container.addEventListener("mouseleave", handleMouseLeave);
+      container.addEventListener("mouseenter", handleMouseEnter);
+      container.addEventListener("mouseleave", handleMouseLeave);
 
-    dispatch(getMaincategory());
+      return () => {
+        clearInterval(scrollInterval);
+        container.removeEventListener("mouseenter", handleMouseEnter);
+        container.removeEventListener("mouseleave", handleMouseLeave);
+        window.removeEventListener("resize", handleResize);
+      };
+    }
+
     getAPIData();
 
     return () => {
-      clearInterval(scrollInterval);
-      container.removeEventListener("mouseenter", handleMouseEnter);
-      container.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener('click', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (query.get("search") && allProducts.length && allBrands.length && allSubcategories.length && allMaincategories.length) {
+      searchPage();
+    }
+  }, [query.get("search"), allProducts, allBrands, allSubcategories, allMaincategories]);
   const handleChange = (_id) => {
     navigate(`/shop/${_id}/All/All`);
     setShowSidebar(false); // Close the sidebar
@@ -318,9 +327,8 @@ export default function Navbar({ product }) {
                   <input
                     type="text"
                     name="search"
-                    onChange={(e) =>
-                      setSearch(e.target.value.toLocaleLowerCase())
-                    }
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
                     className="form-control searchBar"
                     placeholder="Search for products"
                   />
