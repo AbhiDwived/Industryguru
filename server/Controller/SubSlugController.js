@@ -38,7 +38,14 @@ exports.createSubSlug = async (req, res) => {
       return res.status(404).json({ result: "Fail", message: 'Parent Slug not found' });
     }
 
-    const slug = slugify(name, { lower: true });
+    let slug = slugify(name, { lower: true });
+    let counter = 1;
+    
+    // Check for existing slug with same parent and generate unique one if needed
+    while (await SubSlug.findOne({ slug, parentSlug })) {
+      slug = slugify(name, { lower: true }) + '-' + counter;
+      counter++;
+    }
 
     const newSubSlug = new SubSlug({
       parentSlug,

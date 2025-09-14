@@ -188,11 +188,17 @@ export default function Shop() {
   }, []);
 
   useEffect(() => {
-    if (allProducts.length > 0) {
+    if (allProducts.length > 0 && !query.get("search")) {
       filterData(mc, sc, br, min, max, priceFilter);
     }
     // eslint-disable-next-line
   }, [allProducts, mc, sc, br]);
+
+  useEffect(() => {
+    if (query.get("search") && allProducts.length > 0 && allBrands.length > 0 && allSubcategories.length > 0 && allMaincategories.length > 0) {
+      searchPage();
+    }
+  }, [query.get("search"), allProducts, allBrands, allSubcategories, allMaincategories]);
 
   useEffect(() => {
     setMc(maincat || "All");

@@ -3,13 +3,11 @@ const mongoose = require('mongoose');
 const SubSlugSchema = new mongoose.Schema({
   name: {
     type: String,
-        required: [true, "Name is Required"],
-        unique: true
+        required: [true, "Name is Required"]
   },
   slug: {
     type: String,
-        required: [true, "Slug is Required"],
-        unique: true
+        required: [true, "Slug is Required"]
     },
     description: {
         type: String
@@ -31,5 +29,8 @@ const SubSlugSchema = new mongoose.Schema({
         default: true
     }
 }, { timestamps: true });
+
+// Create compound index for unique slug per parent
+SubSlugSchema.index({ slug: 1, parentSlug: 1 }, { unique: true });
 
 module.exports = mongoose.model('subslug', SubSlugSchema); 
