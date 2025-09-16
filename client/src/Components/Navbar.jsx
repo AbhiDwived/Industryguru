@@ -66,6 +66,9 @@ export default function Navbar({ product }) {
   }
 
   async function getAPIData() {
+    if (!localStorage.getItem("login") || !localStorage.getItem("token")) {
+      return;
+    }
     var response = await fetch(
       `${apiLink}/api/user/` + localStorage.getItem("userid"),
       {
@@ -78,7 +81,6 @@ export default function Navbar({ product }) {
     );
     response = await response.json();
     if (response.result === "Done") setUser(response.data);
-    else navigate("/login");
   }
 
   function useQuery() {
@@ -150,7 +152,9 @@ export default function Navbar({ product }) {
       };
     }
 
-    getAPIData();
+    if (localStorage.getItem("login")) {
+      getAPIData();
+    }
 
     return () => {
       document.removeEventListener('click', handleClickOutside);
